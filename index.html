@@ -1,119 +1,381 @@
 <!doctype html>
-<html lang="en">
+<html>
 <head>
 <meta charset="utf-8">
 <title>GAHAN KHATIWODA OFFICIAL</title>
+<meta name="generator" content="WYSIWYG Web Builder 20 - http://www.wysiwygwebbuilder.com">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<!-- CACHE PREVENTION META TAGS -->
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
 
-<!-- Retro Font -->
+<link href="css/font-awesome.min.css" rel="stylesheet">
+<link href="css/avantage.css" rel="stylesheet">
+<link href="css/index.css" rel="stylesheet">
+<!-- Add retro counter font -->
 <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+<script src="jquery-1.12.4.min.js"></script>
+<script src="skrollr.min.js"></script>
+<script src="js/particles.min.js"></script>
+<script src="index.js"></script>
+</head>
+<body>
+<!-- =========== RETRO VISITOR COUNTER =========== -->
+<div class="retro-counter" id="counter">
+   <div class="pixel-corner"></div>
+   <div class="pixel-corner"></div>
+   <div class="pixel-corner"></div>
+   <div class="pixel-corner"></div>
+   
+   <div class="counter-label">Live Visitor Counter</div>
+   <div class="counter-screen">
+      <div class="counter-digits" id="retroCount">0000</div>
+      <div class="scan-line"></div>
+   </div>
+   <div style="font-size: 9px; color: #ff00ff; margin-top: 10px;">>>> SYSTEM ACTIVE <<<</div>
+</div>
 
 <style>
-body {
-  margin: 0;
-  font-family: Arial, sans-serif;
-  background: #050505;
-  color: white;
-  text-align: center;
-}
-
-/* ================= RETRO COUNTER ================= */
+/* Retro Counter Styles */
 .retro-counter {
-  position: fixed;
-  top: 15px;
-  left: 50%;
-  transform: translateX(-50%);
-  background: black;
-  border: 3px solid #ff00ff;
-  padding: 12px 24px;
-  font-family: 'Press Start 2P', monospace;
-  color: #00ffff;
-  z-index: 9999;
-  box-shadow: 0 0 20px #ff00ff;
+   position: fixed;
+   top: 15px;
+   left: 50%;
+   transform: translateX(-50%) translateY(0);
+   background: rgba(0, 0, 0, 0.95);
+   border: 3px solid #ff00ff;
+   border-radius: 0;
+   padding: 12px 24px;
+   font-family: 'Press Start 2P', monospace;
+   font-size: 11px;
+   color: #00ffff;
+   text-shadow: 0 0 10px #00ffff;
+   z-index: 99999;
+   box-shadow: 
+      0 0 20px rgba(255, 0, 255, 0.7),
+      inset 0 0 20px rgba(255, 0, 255, 0.3);
+   transition: transform 0.4s cubic-bezier(0.68, -0.55, 0.27, 1.55), opacity 0.4s ease;
+   max-width: 380px;
+   width: auto;
+   min-width: 300px;
+   opacity: 1;
 }
 
-.counter-label {
-  font-size: 9px;
-  color: #ff9900;
-  margin-bottom: 10px;
+.retro-counter.hidden {
+   transform: translateX(-50%) translateY(-120%);
+   opacity: 0;
+   pointer-events: none;
 }
 
 .counter-screen {
-  background: #001122;
-  padding: 10px;
-  border: 2px solid #00ffff;
+   background: #001122;
+   padding: 12px;
+   border: 2px solid #00ffff;
+   margin: 10px 0;
+   text-align: center;
+   position: relative;
+   overflow: hidden;
 }
 
 .counter-digits {
-  font-size: 24px;
-  color: #00ff00;
-  text-shadow: 0 0 10px #00ff00;
-  letter-spacing: 3px;
+   font-size: 24px;
+   color: #00ff00;
+   text-shadow: 0 0 15px #00ff00;
+   letter-spacing: 3px;
+   animation: blink 1.2s infinite;
+   font-weight: bold;
 }
 
-/* ================= PAGE CONTENT ================= */
-.hero {
-  margin-top: 150px;
+.counter-label {
+   font-size: 9px;
+   color: #ff9900;
+   text-transform: uppercase;
+   letter-spacing: 2px;
+   margin-bottom: 10px;
+   text-align: center;
 }
 
-h1 {
-  font-size: 32px;
-  color: #00ffff;
+.scan-line {
+   position: absolute;
+   top: 0;
+   left: 0;
+   width: 100%;
+   height: 2px;
+   background: linear-gradient(90deg, transparent, #00ff00, transparent);
+   opacity: 0.7;
+   animation: scan 2.5s linear infinite;
 }
 
-h2 {
-  color: #ff00ff;
+@keyframes blink {
+   0%, 100% { opacity: 1; text-shadow: 0 0 15px #00ff00; }
+   50% { opacity: 0.7; text-shadow: 0 0 5px #00ff00; }
 }
 
-.footer {
-  margin-top: 80px;
-  font-size: 14px;
-  color: #aaa;
+@keyframes scan {
+   0% { top: 0; opacity: 0; }
+   10% { opacity: 1; }
+   90% { opacity: 1; }
+   100% { top: 100%; opacity: 0; }
+}
+
+.pixel-corner {
+   position: absolute;
+   width: 8px;
+   height: 8px;
+   background: #ff00ff;
+   box-shadow: 0 0 8px #ff00ff;
+}
+
+.pixel-corner:nth-child(1) { top: -4px; left: -4px; }
+.pixel-corner:nth-child(2) { top: -4px; right: -4px; }
+.pixel-corner:nth-child(3) { bottom: -4px; left: -4px; }
+.pixel-corner:nth-child(4) { bottom: -4px; right: -4px; }
+
+/* Add subtle glitch effect */
+.retro-counter::before {
+   content: '';
+   position: absolute;
+   top: 0;
+   left: 0;
+   right: 0;
+   bottom: 0;
+   background: linear-gradient(90deg, 
+      transparent 0%, 
+      rgba(0, 255, 255, 0.1) 50%, 
+      transparent 100%);
+   pointer-events: none;
+   animation: glitch 4s infinite;
+}
+
+@keyframes glitch {
+   0%, 100% { opacity: 0; }
+   50% { opacity: 0.3; }
+}
+
+/* Prevent content from hiding behind counter */
+#wb_welcome {
+   padding-top: 120px !important;
+}
+
+/* Mobile responsive */
+@media (max-width: 768px) {
+   .retro-counter {
+      top: 10px;
+      padding: 8px 16px;
+      min-width: 280px;
+      font-size: 9px;
+   }
+   
+   .counter-digits {
+      font-size: 18px;
+      letter-spacing: 2px;
+   }
+   
+   .counter-label {
+      font-size: 7px;
+   }
+   
+   #wb_welcome {
+      padding-top: 100px !important;
+   }
 }
 </style>
-</head>
 
-<body>
-
-<!-- ============ VISITOR COUNTER ============ -->
-<div class="retro-counter">
-  <div class="counter-label">REAL VISITOR COUNTER</div>
-  <div class="counter-screen">
-    <div class="counter-digits" id="visitorCount">0000</div>
-  </div>
-</div>
-
-<!-- ============ CONTENT ============ -->
-<!-- ============ REAL COUNTER SCRIPT ============ -->
 <script>
-const NAMESPACE = "gahan-khatiwoda";
-const KEY = "website-visitors";
-
-// Check if visitor already counted
-const visited = localStorage.getItem("gahan_visited");
-
-function pad(num) {
-  return num.toString().padStart(4, "0");
-}
-
-if (!visited) {
-  fetch(`https://api.countapi.xyz/hit/${NAMESPACE}/${KEY}`)
-    .then(res => res.json())
-    .then(data => {
-      document.getElementById("visitorCount").innerText = pad(data.value);
-      localStorage.setItem("gahan_visited", "true");
-    });
-} else {
-  fetch(`https://api.countapi.xyz/get/${NAMESPACE}/${KEY}`)
-    .then(res => res.json())
-    .then(data => {
-      document.getElementById("visitorCount").innerText = pad(data.value);
-    });
-}
+// FIXED Counter Logic - Hides when scrolling down
+(function() {
+   // Unique session ID to prevent duplicate counts
+   const sessionId = 'counter_' + new Date().getTime() + '_' + Math.random().toString(36).substr(2, 9);
+   const sessionKey = 'gahan_counter_session';
+   const countKey = 'gahan_visitor_count';
+   
+   // Check if this session already counted
+   const lastSession = sessionStorage.getItem(sessionKey);
+   const currentTime = Date.now();
+   
+   // Only count if:
+   // 1. First visit in this session, OR
+   // 2. Last count was more than 1 hour ago
+   let shouldCount = true;
+   
+   if (lastSession) {
+      const lastSessionData = JSON.parse(lastSession);
+      const timeSinceLastCount = currentTime - lastSessionData.timestamp;
+      
+      if (timeSinceLastCount < 3600000) { // 1 hour
+         shouldCount = false;
+      }
+   }
+   
+   // Get current count from localStorage
+   let currentCount = parseInt(localStorage.getItem(countKey) || '1000');
+   
+   // Pad with zeros (4 digits)
+   function padNumber(num, length = 4) {
+      return num.toString().padStart(length, '0');
+   }
+   
+   // Update counter if needed
+   if (shouldCount) {
+      currentCount++;
+      localStorage.setItem(countKey, currentCount.toString());
+      
+      // Save session data
+      sessionStorage.setItem(sessionKey, JSON.stringify({
+         id: sessionId,
+         timestamp: currentTime,
+         counted: true
+      }));
+   }
+   
+   // Display counter with smooth animation
+   const retroElement = document.getElementById('retroCount');
+   const startNumber = shouldCount ? currentCount - 1 : currentCount;
+   const endNumber = currentCount;
+   
+   let displayNumber = startNumber;
+   const duration = 1500; // 1.5 seconds animation
+   const steps = 60;
+   const increment = (endNumber - startNumber) / steps;
+   let currentStep = 0;
+   
+   function animateCounter() {
+      if (currentStep < steps) {
+         displayNumber += increment;
+         currentStep++;
+         retroElement.textContent = padNumber(Math.floor(displayNumber));
+         
+         // Add subtle visual effect during animation
+         if (currentStep % 3 === 0) {
+            retroElement.style.color = currentStep % 6 === 0 ? '#00ff00' : '#00ff88';
+         }
+         
+         setTimeout(animateCounter, duration / steps);
+      } else {
+         retroElement.textContent = padNumber(endNumber);
+         retroElement.style.color = '#00ff00';
+      }
+   }
+   
+   // Start animation after a brief delay
+   setTimeout(animateCounter, 500);
+   
+   // =========== FIXED: SCROLL HIDE/SHOW LOGIC ===========
+   let lastScrollTop = 0;
+   const counter = document.getElementById('counter');
+   let hideTimeout;
+   let isHidden = false;
+   const scrollThreshold = 100; // Hide after scrolling 100px down
+   
+   window.addEventListener('scroll', function() {
+      const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+      const scrollDirection = scrollTop > lastScrollTop ? 'down' : 'up';
+      
+      // Clear any pending hide timeout
+      clearTimeout(hideTimeout);
+      
+      // HIDE when scrolling DOWN past threshold
+      if (scrollTop > scrollThreshold && scrollDirection === 'down' && !isHidden) {
+         counter.classList.add('hidden');
+         isHidden = true;
+      }
+      
+      // SHOW when scrolling UP
+      else if (scrollDirection === 'up' && isHidden) {
+         counter.classList.remove('hidden');
+         isHidden = false;
+         
+         // Auto-hide again after 3 seconds if not at top
+         if (scrollTop > scrollThreshold) {
+            hideTimeout = setTimeout(() => {
+               if (!counter.matches(':hover')) {
+                  counter.classList.add('hidden');
+                  isHidden = true;
+               }
+            }, 3000);
+         }
+      }
+      
+      // Always show at the very top of page
+      if (scrollTop < 50) {
+         counter.classList.remove('hidden');
+         isHidden = false;
+      }
+      
+      lastScrollTop = scrollTop;
+   });
+   
+   // Keep visible when hovering over counter
+   counter.addEventListener('mouseenter', function() {
+      clearTimeout(hideTimeout);
+      counter.classList.remove('hidden');
+      isHidden = false;
+   });
+   
+   counter.addEventListener('mouseleave', function() {
+      const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+      if (scrollTop > scrollThreshold) {
+         hideTimeout = setTimeout(() => {
+            counter.classList.add('hidden');
+            isHidden = true;
+         }, 1000);
+      }
+   });
+   
+   // Click to toggle hide/show
+   counter.addEventListener('click', function(e) {
+      if (counter.classList.contains('hidden')) {
+         counter.classList.remove('hidden');
+         isHidden = false;
+         
+         // Auto-hide after 3 seconds
+         hideTimeout = setTimeout(() => {
+            if (!counter.matches(':hover')) {
+               counter.classList.add('hidden');
+               isHidden = true;
+            }
+         }, 3000);
+      } else {
+         counter.classList.add('hidden');
+         isHidden = true;
+      }
+   });
+   
+   // Show counter when mouse moves near top of screen
+   let mouseMoveTimer;
+   document.addEventListener('mousemove', function(e) {
+      if (e.clientY < 80) { // Mouse near top of screen (80px from top)
+         clearTimeout(mouseMoveTimer);
+         counter.classList.remove('hidden');
+         isHidden = false;
+         
+         // Hide again after 2 seconds if not hovering
+         mouseMoveTimer = setTimeout(() => {
+            const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+            if (scrollTop > scrollThreshold && !counter.matches(':hover')) {
+               counter.classList.add('hidden');
+               isHidden = true;
+            }
+         }, 2000);
+      }
+   });
+})();
 </script>
+<!-- =========== END RETRO COUNTER =========== -->
 
-</body>
-</html>
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
