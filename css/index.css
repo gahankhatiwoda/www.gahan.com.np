@@ -937,7 +937,7 @@ body:after
 #Heading3
 {
    color: #FFFFFF;
-   font-family: Arial;
+   font-family: "Times New Roman";
    font-weight: bold;
    font-style: normal;
    font-size: 32px;
@@ -959,11 +959,11 @@ body:after
 }
 #Heading4
 {
-   color: #B9D5D8;
-   font-family: Arial;
+   color: #FFFF00;
+   font-family: "Bookman Old Style";
    font-weight: normal;
    font-style: normal;
-   font-size: 27px;
+   font-size: 53px;
    margin: 0;
    text-align: center;
    text-transform: none;
