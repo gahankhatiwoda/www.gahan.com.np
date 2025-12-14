@@ -5,6 +5,11 @@
 <title>Avantage</title>
 <meta name="generator" content="WYSIWYG Web Builder 20 - http://www.wysiwygwebbuilder.com">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<!-- CACHE PREVENTION META TAGS -->
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
+
 <link href="css/font-awesome.min.css" rel="stylesheet">
 <link href="css/avantage.css" rel="stylesheet">
 <link href="css/index.css" rel="stylesheet">
@@ -457,5 +462,45 @@
       </div>
    </div>
 
+   <!-- AUTO-REFRESH AND CACHE BUSTING SCRIPT -->
+   <script>
+   // Auto-refresh page every 30 seconds (30000 milliseconds = 30 seconds)
+   // Change 30000 to 60000 for 1 minute, 120000 for 2 minutes, etc.
+   setTimeout(function() {
+       // Force reload from server (bypass cache)
+       window.location.reload(true);
+   }, 30000);
+   
+   // Add cache-busting timestamps to CSS and JS files
+   document.addEventListener('DOMContentLoaded', function() {
+       const timestamp = new Date().getTime();
+       
+       // Update CSS files
+       document.querySelectorAll('link[rel="stylesheet"]').forEach(link => {
+           const href = link.getAttribute('href');
+           if (href && !href.includes('?v=')) {
+               link.href = href + '?v=' + timestamp;
+           }
+       });
+       
+       // Update JS files (except this script)
+       document.querySelectorAll('script[src]').forEach(script => {
+           const src = script.getAttribute('src');
+           if (src && !src.includes('?v=')) {
+               script.src = src + '?v=' + timestamp;
+           }
+       });
+   });
+   
+   // Clear browser cache on page load
+   if ('caches' in window) {
+       caches.keys().then(function(names) {
+           for (let name of names) {
+               caches.delete(name);
+           }
+       });
+   }
+   </script>
+   
 </body>
 </html>
