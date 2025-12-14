@@ -21,216 +21,307 @@
 <script src="index.js"></script>
 </head>
 <body>
-   <!-- Retro Hit Counter -->
-   <div class="retro-counter" id="counter">
-      <div class="pixel-corner"></div>
-      <div class="pixel-corner"></div>
-      <div class="pixel-corner"></div>
-      <div class="pixel-corner"></div>
-      
-      <div class="counter-label">Live Visitor Counter</div>
-      <div class="counter-screen">
-         <div class="counter-digits" id="retroCount">0000</div>
-         <div class="scan-line"></div>
-      </div>
-      <div style="font-size: 9px; color: #ff00ff; margin-top: 10px;">>>> SYSTEM ACTIVE <<<</div>
+<!-- =========== RETRO VISITOR COUNTER =========== -->
+<div class="retro-counter" id="counter">
+   <div class="pixel-corner"></div>
+   <div class="pixel-corner"></div>
+   <div class="pixel-corner"></div>
+   <div class="pixel-corner"></div>
+   
+   <div class="counter-label">Live Visitor Counter</div>
+   <div class="counter-screen">
+      <div class="counter-digits" id="retroCount">0000</div>
+      <div class="scan-line"></div>
    </div>
-   
-   <style>
-   /* Retro Counter Styles */
+   <div style="font-size: 9px; color: #ff00ff; margin-top: 10px;">>>> SYSTEM ACTIVE <<<</div>
+</div>
+
+<style>
+/* Retro Counter Styles */
+.retro-counter {
+   position: fixed;
+   top: 15px;
+   left: 50%;
+   transform: translateX(-50%);
+   background: rgba(0, 0, 0, 0.95);
+   border: 3px solid #ff00ff;
+   border-radius: 0;
+   padding: 12px 24px;
+   font-family: 'Press Start 2P', monospace;
+   font-size: 11px;
+   color: #00ffff;
+   text-shadow: 0 0 10px #00ffff;
+   z-index: 99999;
+   box-shadow: 
+      0 0 20px rgba(255, 0, 255, 0.7),
+      inset 0 0 20px rgba(255, 0, 255, 0.3);
+   transition: transform 0.4s cubic-bezier(0.68, -0.55, 0.27, 1.55), opacity 0.4s ease;
+   max-width: 380px;
+   width: auto;
+   min-width: 300px;
+}
+
+.retro-counter.hidden {
+   transform: translateX(-50%) translateY(-120%);
+   opacity: 0;
+   pointer-events: none;
+}
+
+.counter-screen {
+   background: #001122;
+   padding: 12px;
+   border: 2px solid #00ffff;
+   margin: 10px 0;
+   text-align: center;
+   position: relative;
+   overflow: hidden;
+}
+
+.counter-digits {
+   font-size: 24px;
+   color: #00ff00;
+   text-shadow: 0 0 15px #00ff00;
+   letter-spacing: 3px;
+   animation: blink 1.2s infinite;
+   font-weight: bold;
+}
+
+.counter-label {
+   font-size: 9px;
+   color: #ff9900;
+   text-transform: uppercase;
+   letter-spacing: 2px;
+   margin-bottom: 10px;
+   text-align: center;
+}
+
+.scan-line {
+   position: absolute;
+   top: 0;
+   left: 0;
+   width: 100%;
+   height: 2px;
+   background: linear-gradient(90deg, transparent, #00ff00, transparent);
+   opacity: 0.7;
+   animation: scan 2.5s linear infinite;
+}
+
+@keyframes blink {
+   0%, 100% { opacity: 1; text-shadow: 0 0 15px #00ff00; }
+   50% { opacity: 0.7; text-shadow: 0 0 5px #00ff00; }
+}
+
+@keyframes scan {
+   0% { top: 0; opacity: 0; }
+   10% { opacity: 1; }
+   90% { opacity: 1; }
+   100% { top: 100%; opacity: 0; }
+}
+
+.pixel-corner {
+   position: absolute;
+   width: 8px;
+   height: 8px;
+   background: #ff00ff;
+   box-shadow: 0 0 8px #ff00ff;
+}
+
+.pixel-corner:nth-child(1) { top: -4px; left: -4px; }
+.pixel-corner:nth-child(2) { top: -4px; right: -4px; }
+.pixel-corner:nth-child(3) { bottom: -4px; left: -4px; }
+.pixel-corner:nth-child(4) { bottom: -4px; right: -4px; }
+
+/* Add subtle glitch effect */
+.retro-counter::before {
+   content: '';
+   position: absolute;
+   top: 0;
+   left: 0;
+   right: 0;
+   bottom: 0;
+   background: linear-gradient(90deg, 
+      transparent 0%, 
+      rgba(0, 255, 255, 0.1) 50%, 
+      transparent 100%);
+   pointer-events: none;
+   animation: glitch 4s infinite;
+}
+
+@keyframes glitch {
+   0%, 100% { opacity: 0; }
+   50% { opacity: 0.3; }
+}
+
+/* Prevent content from hiding behind counter */
+#wb_welcome {
+   padding-top: 120px !important;
+}
+
+/* Mobile responsive */
+@media (max-width: 768px) {
    .retro-counter {
-      position: fixed;
       top: 10px;
-      left: 50%;
-      transform: translateX(-50%);
-      background: rgba(0, 0, 0, 0.9);
-      border: 3px solid #ff00ff;
-      border-radius: 0;
-      padding: 10px 20px;
-      font-family: 'Press Start 2P', monospace;
-      font-size: 10px;
-      color: #00ffff;
-      text-shadow: 0 0 8px #00ffff;
-      z-index: 99999;
-      box-shadow: 
-         0 0 15px rgba(255, 0, 255, 0.7),
-         inset 0 0 15px rgba(255, 0, 255, 0.3);
-      transition: transform 0.3s ease, opacity 0.3s ease;
-      max-width: 350px;
-      width: auto;
-   }
-   
-   .retro-counter.hidden {
-      transform: translateX(-50%) translateY(-100%);
-      opacity: 0;
-   }
-   
-   .counter-screen {
-      background: #001122;
-      padding: 10px;
-      border: 2px solid #00ffff;
-      margin: 8px 0;
-      text-align: center;
+      padding: 8px 16px;
+      min-width: 280px;
+      font-size: 9px;
    }
    
    .counter-digits {
-      font-size: 20px;
-      color: #00ff00;
-      text-shadow: 0 0 12px #00ff00;
+      font-size: 18px;
       letter-spacing: 2px;
-      animation: blink 1s infinite;
    }
    
    .counter-label {
-      font-size: 8px;
-      color: #ff9900;
-      text-transform: uppercase;
-      letter-spacing: 1.5px;
-      margin-bottom: 8px;
+      font-size: 7px;
    }
    
-   .scan-line {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 2px;
-      background: #00ff00;
-      opacity: 0.5;
-      animation: scan 3s linear infinite;
-   }
-   
-   @keyframes blink {
-      0%, 50% { opacity: 1; }
-      51%, 100% { opacity: 0.8; }
-   }
-   
-   @keyframes scan {
-      0% { top: 0; }
-      100% { top: 100%; }
-   }
-   
-   .pixel-corner {
-      position: absolute;
-      width: 6px;
-      height: 6px;
-      background: #ff00ff;
-   }
-   
-   .pixel-corner:nth-child(1) { top: -3px; left: -3px; }
-   .pixel-corner:nth-child(2) { top: -3px; right: -3px; }
-   .pixel-corner:nth-child(3) { bottom: -3px; left: -3px; }
-   .pixel-corner:nth-child(4) { bottom: -3px; right: -3px; }
-   
-   /* Prevent content from hiding behind counter */
    #wb_welcome {
       padding-top: 100px !important;
    }
-   </style>
+}
+</style>
+
+<script>
+// FIXED Counter Logic - Prevents auto-refresh increments
+(function() {
+   // Unique session ID to prevent duplicate counts
+   const sessionId = 'counter_' + new Date().getTime() + '_' + Math.random().toString(36).substr(2, 9);
+   const sessionKey = 'gahan_counter_session';
+   const countKey = 'gahan_visitor_count';
    
-   <script>
-   // Retro Counter JavaScript
-   (function() {
-      // Counter logic
-      let retroCount = parseInt(localStorage.getItem('retroCounter') || '1000');
-      retroCount++;
-      localStorage.setItem('retroCounter', retroCount);
+   // Check if this session already counted
+   const lastSession = sessionStorage.getItem(sessionKey);
+   const currentTime = Date.now();
+   
+   // Only count if:
+   // 1. First visit in this session, OR
+   // 2. Last count was more than 1 hour ago
+   let shouldCount = true;
+   
+   if (lastSession) {
+      const lastSessionData = JSON.parse(lastSession);
+      const timeSinceLastCount = currentTime - lastSessionData.timestamp;
       
-      // Pad with zeros
-      function padNumber(num, length = 4) {
-         return num.toString().padStart(length, '0');
+      if (timeSinceLastCount < 3600000) { // 1 hour
+         shouldCount = false;
       }
+   }
+   
+   // Get current count from localStorage
+   let currentCount = parseInt(localStorage.getItem(countKey) || '1000');
+   
+   // Pad with zeros (4 digits)
+   function padNumber(num, length = 4) {
+      return num.toString().padStart(length, '0');
+   }
+   
+   // Update counter if needed
+   if (shouldCount) {
+      currentCount++;
+      localStorage.setItem(countKey, currentCount.toString());
       
-      // Animate counting
-      const retroElement = document.getElementById('retroCount');
-      let displayNum = 1000;
-      const finalNum = retroCount;
-      
-      function updateCounter() {
-         if (displayNum < finalNum) {
-            displayNum++;
-            retroElement.textContent = padNumber(displayNum);
-            setTimeout(updateCounter, 50);
-         }
-      }
-      
-      updateCounter();
-      
-      // Scroll hide/show logic
-      let lastScrollTop = 0;
-      const counter = document.getElementById('counter');
-      
-      window.addEventListener('scroll', function() {
-         const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+      // Save session data
+      sessionStorage.setItem(sessionKey, JSON.stringify({
+         id: sessionId,
+         timestamp: currentTime,
+         counted: true
+      }));
+   }
+   
+   // Display counter with smooth animation
+   const retroElement = document.getElementById('retroCount');
+   const startNumber = shouldCount ? currentCount - 1 : currentCount;
+   const endNumber = currentCount;
+   
+   let displayNumber = startNumber;
+   const duration = 1500; // 1.5 seconds animation
+   const steps = 60;
+   const increment = (endNumber - startNumber) / steps;
+   let currentStep = 0;
+   
+   function animateCounter() {
+      if (currentStep < steps) {
+         displayNumber += increment;
+         currentStep++;
+         retroElement.textContent = padNumber(Math.floor(displayNumber));
          
-         // Hide counter when scrolling down more than 50px
-         if (scrollTop > 50 && scrollTop > lastScrollTop) {
+         // Add subtle visual effect during animation
+         if (currentStep % 3 === 0) {
+            retroElement.style.color = currentStep % 6 === 0 ? '#00ff00' : '#00ff88';
+         }
+         
+         setTimeout(animateCounter, duration / steps);
+      } else {
+         retroElement.textContent = padNumber(endNumber);
+         retroElement.style.color = '#00ff00';
+      }
+   }
+   
+   // Start animation after a brief delay
+   setTimeout(animateCounter, 500);
+   
+   // Scroll hide/show logic
+   let lastScrollTop = 0;
+   const counter = document.getElementById('counter');
+   let hideTimeout;
+   
+   window.addEventListener('scroll', function() {
+      const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+      
+      // Clear any pending hide timeout
+      clearTimeout(hideTimeout);
+      
+      // Hide counter when scrolling down (after delay)
+      if (scrollTop > 100 && scrollTop > lastScrollTop) {
+         hideTimeout = setTimeout(() => {
             counter.classList.add('hidden');
-         } 
-         // Show counter when scrolling up
-         else if (scrollTop < lastScrollTop) {
-            counter.classList.remove('hidden');
-         }
-         
-         // Always show counter when at the top
-         if (scrollTop < 30) {
-            counter.classList.remove('hidden');
-         }
-         
-         lastScrollTop = scrollTop;
-      });
+         }, 300);
+      } 
+      // Immediately show counter when scrolling up
+      else if (scrollTop < lastScrollTop) {
+         counter.classList.remove('hidden');
+      }
       
-      // Click to temporarily hide
-      counter.addEventListener('click', function(e) {
+      // Always show counter at the top of page
+      if (scrollTop < 50) {
+         counter.classList.remove('hidden');
+      }
+      
+      lastScrollTop = scrollTop;
+   });
+   
+   // Click to hide/show
+   counter.addEventListener('click', function(e) {
+      if (counter.classList.contains('hidden')) {
+         counter.classList.remove('hidden');
+      } else {
          counter.classList.add('hidden');
+         // Auto-show after 10 seconds
          setTimeout(() => {
             counter.classList.remove('hidden');
-         }, 3000);
-      });
-   })();
-   </script>
+         }, 10000);
+      }
+   });
    
-              <!-- ... rest of your HTML remains exactly the same ... -->
-			   
-			   
-			   
-			   
+   // Show counter on mouse move near top
+   let mouseMoveTimer;
+   document.addEventListener('mousemove', function(e) {
+      if (e.clientY < 100) { // Mouse near top of screen
+         counter.classList.remove('hidden');
+         clearTimeout(mouseMoveTimer);
+         
+         // Hide again after 3 seconds if not interacting
+         mouseMoveTimer = setTimeout(() => {
+            if (window.pageYOffset > 100) {
+               counter.classList.add('hidden');
+            }
+         }, 3000);
+      }
+   });
+})();
+</script>
+<!-- =========== END RETRO COUNTER =========== -->
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<!doctype html>
-<html>
-<head>
-<meta charset="utf-8">
-<title>GAHAN KHATIWODA OFFICIAL</title>
-<meta name="generator" content="WYSIWYG Web Builder 20 - http://www.wysiwygwebbuilder.com">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<!-- CACHE PREVENTION META TAGS -->
-<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-<meta http-equiv="Pragma" content="no-cache">
-<meta http-equiv="Expires" content="0">
-
-<link href="css/font-awesome.min.css" rel="stylesheet">
-<link href="css/avantage.css" rel="stylesheet">
-<link href="css/index.css" rel="stylesheet">
-<script src="jquery-1.12.4.min.js"></script>
-<script src="skrollr.min.js"></script>
-<script src="js/particles.min.js"></script>
-<script src="index.js"></script>
-</head>
-<body>
    <div id="wb_welcome">
       <form name="welcome" method="post" action="mailto:yourname@yourdomain.com" enctype="multipart/form-data" id="welcome">
          <div class="row">
@@ -674,16 +765,9 @@
       </div>
    </div>
 
-   <!-- AUTO-REFRESH AND CACHE BUSTING SCRIPT -->
+   <!-- FIXED AUTO-REFRESH - Won't increment counter -->
    <script>
-   // Auto-refresh page every 30 seconds (30000 milliseconds = 30 seconds)
-   // Change 30000 to 60000 for 1 minute, 120000 for 2 minutes, etc.
-   setTimeout(function() {
-       // Force reload from server (bypass cache)
-       window.location.reload(true);
-   }, 30000);
-   
-   // Add cache-busting timestamps to CSS and JS files
+   // Cache busting without page reload
    document.addEventListener('DOMContentLoaded', function() {
        const timestamp = new Date().getTime();
        
@@ -704,11 +788,46 @@
        });
    });
    
+   // Soft refresh that preserves counter state
+   setTimeout(function() {
+       // Check if user is active
+       const hasFocus = document.querySelector('input:focus, textarea:focus, select:focus');
+       const now = new Date().getTime();
+       const lastInteraction = parseInt(sessionStorage.getItem('lastInteraction') || '0');
+       const timeSinceInteraction = now - lastInteraction;
+       
+       // Only refresh if user is inactive for more than 2 minutes
+       if (!hasFocus && timeSinceInteraction > 120000) {
+           // Update URL without full page reload (preserves counter)
+           history.replaceState(null, '', window.location.pathname + '?nocache=' + now);
+           
+           // Clear browser cache
+           if ('caches' in window) {
+               caches.keys().then(function(names) {
+                   for (let name of names) {
+                       if (name.includes(window.location.hostname)) {
+                           caches.delete(name);
+                       }
+                   }
+               });
+           }
+       }
+   }, 30000); // Check every 30 seconds
+   
+   // Track user interaction
+   ['click', 'keydown', 'scroll', 'mousemove'].forEach(event => {
+       document.addEventListener(event, function() {
+           sessionStorage.setItem('lastInteraction', new Date().getTime().toString());
+       }, { passive: true });
+   });
+   
    // Clear browser cache on page load
-   if ('caches' in window) {
+   if ('caches' in window && performance.navigation.type === 1) {
        caches.keys().then(function(names) {
            for (let name of names) {
-               caches.delete(name);
+               if (name.includes(window.location.hostname)) {
+                   caches.delete(name);
+               }
            }
        });
    }
