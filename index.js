@@ -1,4 +1,39 @@
    
+   // Login check
+   function checkLogin() {
+       const user = document.getElementById("username").value;
+       const pass = document.getElementById("password").value;
+   
+       if(user === "gahan" && pass === "gahan") {
+           document.getElementById("loginOverlay").style.display = "none"; // hide overlay
+       } else {
+           document.getElementById("errorMsg").innerText = "Incorrect username or password!";
+       }
+   }
+   
+   // Visitor counter
+   const NAMESPACE = "gahan-khatiwoda";
+   const KEY = "website-visitors";
+   
+   const visited = localStorage.getItem("gahan_visited");
+   
+   function pad(num) { return num.toString().padStart(4,"0"); }
+   
+   if(!visited){
+     fetch(`https://api.countapi.xyz/hit/${NAMESPACE}/${KEY}`)
+       .then(res => res.json())
+       .then(data => {
+         document.getElementById("visitorCount").innerText = pad(data.value);
+         localStorage.setItem("gahan_visited","true");
+       });
+   } else {
+     fetch(`https://api.countapi.xyz/get/${NAMESPACE}/${KEY}`)
+       .then(res => res.json())
+       .then(data => {
+         document.getElementById("visitorCount").innerText = pad(data.value);
+       });
+   }
+      
    $(document).ready(function()
    {
       $("a[href*='#welcome']").click(function(event)
@@ -11,51 +46,6 @@
          skrollr.init({forceHeight: false, mobileCheck: function() { return false; }, smoothScrolling: false});
       }
       skrollrInit();
-      $("#RollOverLayer2").click(function(e)
-      {
-         if (!$(this).hasClass('active'))
-         {
-            $(this).addClass('active');
-            $('.default, .hover', this).removeClass('animate reverse').width();
-            $('.default, .hover', this).addClass('animate');
-         }
-         else
-         {
-            $(this).removeClass('active');
-            $('.default, .hover', this).removeClass('animate').width();
-            $('.default, .hover', this).addClass('animate reverse');
-         }
-      });
-      $("#RollOverLayer1").click(function(e)
-      {
-         if (!$(this).hasClass('active'))
-         {
-            $(this).addClass('active');
-            $('.default, .hover', this).removeClass('animate reverse').width();
-            $('.default, .hover', this).addClass('animate');
-         }
-         else
-         {
-            $(this).removeClass('active');
-            $('.default, .hover', this).removeClass('animate').width();
-            $('.default, .hover', this).addClass('animate reverse');
-         }
-      });
-      $("#RollOverLayer3").click(function(e)
-      {
-         if (!$(this).hasClass('active'))
-         {
-            $(this).addClass('active');
-            $('.default, .hover', this).removeClass('animate reverse').width();
-            $('.default, .hover', this).addClass('animate');
-         }
-         else
-         {
-            $(this).removeClass('active');
-            $('.default, .hover', this).removeClass('animate').width();
-            $('.default, .hover', this).addClass('animate reverse');
-         }
-      });
    });
    
    $(document).ready(function()
