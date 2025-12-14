@@ -1,6 +1,11 @@
    
    $(document).ready(function()
    {
+      $("a[href*='#welcome']").click(function(event)
+      {
+         event.preventDefault();
+         $('html, body').stop().animate({ scrollTop: $('#wb_welcome').offset().top }, 600, 'linear');
+      });
       function skrollrInit()
       {
          skrollr.init({forceHeight: false, mobileCheck: function() { return false; }, smoothScrolling: false});
