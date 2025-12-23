@@ -26,7 +26,6 @@ body {
   text-align: center;
   width: 320px;
   min-width: 320px;
-  border-radius: 10px;
 }
 .login-box h2 {
   color: #22d3ee;
@@ -38,8 +37,7 @@ body {
 .login-box input,
 .login-box button {
   width: 100%;
-  box-sizing: border-box;
-  border-radius: 5px;
+  box-sizing: border-box; /* Include padding in width calculation */
 }
 .login-box input {
   padding: 12px;
@@ -90,19 +88,16 @@ body {
   color: #00ffff;
   z-index: 999;
   box-shadow: 0 0 20px #ff00ff;
-  border-radius: 10px;
 }
 .counter-label {
   font-size: 9px;
   color: #ff9900;
   margin-bottom: 10px;
-  text-transform: uppercase;
 }
 .counter-screen {
   background: #001122;
   padding: 10px;
   border: 2px solid #00ffff;
-  border-radius: 5px;
 }
 .counter-digits {
   font-size: 24px;
@@ -120,12 +115,10 @@ h1 {
   font-size: 32px;
   color: #00ffff;
   font-family: 'Press Start 2P', monospace;
-  text-shadow: 0 0 15px rgba(0, 255, 255, 0.5);
 }
 h2 {
   color: #ff00ff;
   font-family: 'Press Start 2P', monospace;
-  text-shadow: 0 0 15px rgba(255, 0, 255, 0.5);
 }
 .footer {
   margin-top: 80px;
@@ -319,7 +312,7 @@ body:after
    font-family: "Times New Roman";
    font-weight: bold;
    font-style: normal;
-   font-size: 37px;
+   font-size: 27px;
    margin: 0;
    text-align: center;
    text-transform: none;
@@ -342,7 +335,7 @@ body:after
    font-family: "Bookman Old Style";
    font-weight: normal;
    font-style: normal;
-   font-size: 35px;
+   font-size: 27px;
    margin: 0;
    text-align: center;
    text-transform: none;
