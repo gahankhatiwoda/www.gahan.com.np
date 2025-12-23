@@ -3,13 +3,26 @@
    function checkLogin() {
        const user = document.getElementById("username").value;
        const pass = document.getElementById("password").value;
+       const errorMsg = document.getElementById("errorMsg");
    
        if(user === "gahan" && pass === "gahan") {
-           document.getElementById("loginOverlay").style.display = "none"; // hide overlay
+           document.getElementById("loginOverlay").style.display = "none";
+           errorMsg.innerText = "";
        } else {
-           document.getElementById("errorMsg").innerText = "Incorrect username or password!";
+           errorMsg.innerText = "Incorrect username or password!";
+           // Clear password field
+           document.getElementById("password").value = "";
        }
    }
+   
+   // Add Enter key support for login
+   document.addEventListener('DOMContentLoaded', function() {
+       document.getElementById('password').addEventListener('keypress', function(e) {
+           if (e.key === 'Enter') {
+               checkLogin();
+           }
+       });
+   });
    
    // Visitor counter
    const NAMESPACE = "gahan-khatiwoda";
@@ -25,12 +38,20 @@
        .then(data => {
          document.getElementById("visitorCount").innerText = pad(data.value);
          localStorage.setItem("gahan_visited","true");
+       })
+       .catch(error => {
+         console.error("Counter error:", error);
+         document.getElementById("visitorCount").innerText = "ERR";
        });
    } else {
      fetch(`https://api.countapi.xyz/get/${NAMESPACE}/${KEY}`)
        .then(res => res.json())
        .then(data => {
          document.getElementById("visitorCount").innerText = pad(data.value);
+       })
+       .catch(error => {
+         console.error("Counter error:", error);
+         document.getElementById("visitorCount").innerText = "ERR";
        });
    }
       

@@ -1,481 +1,105 @@
-<!DOCTYPE html>
+<!doctype html>
+<html <!doctype="" html="">
 <html lang="en">
 <head>
 <meta charset="utf-8">
 <title>GAHAN KHATIWODA OFFICIAL</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<!-- Retro Font -->
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+<script src="index.js"></script>
+</head>
+<body>
+<!-- ================= LOGIN OVERLAY ================= -->
+   <div id="loginOverlay">
+      <div class="login-box">
+         <h2>LOGIN</h2>
+         <input type="text" id="username" placeholder="Username" autocomplete="off">
+         <input type="password" id="password" placeholder="Password" autocomplete="off">
+         <button onclick="checkLogin()">Login</button>
+         <div id="errorMsg"></div>
+      </div>
+   </div>
+<!-- ============ VISITOR COUNTER ============ -->
+   <div class="retro-counter">
+      <div class="counter-label">REAL VISITOR COUNTER</div>
+      <div class="counter-screen">
+         <div class="counter-digits" id="visitorCount">0000</div>
+      </div>
+   </div>
+
+<!-- ================= SCRIPTS ================= -->
+   </body>
+</html>>
+<head>
+<meta charset="utf-8">
+<title>Avantage</title>
 <meta name="generator" content="WYSIWYG Web Builder 20 - http://www.wysiwygwebbuilder.com">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<!-- CSS Files -->
-<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
 <link href="css/avantage1.css" rel="stylesheet">
 <link href="css/index.css" rel="stylesheet">
-
-<!-- JavaScript Files -->
 <script src="jquery-1.12.4.min.js"></script>
 <script src="skrollr.min.js"></script>
 <script src="js/particles.min.js"></script>
 <script src="index.js"></script>
-
-<style>
-/* ================= RETRO COUNTER STYLES ================= */
-.retro-counter {
-    position: fixed;
-    top: 20px;
-    left: 50%;
-    transform: translateX(-50%) translateY(0);
-    background: rgba(0, 0, 0, 0.95);
-    border: 3px solid #ff00ff;
-    border-radius: 0;
-    padding: 12px 24px;
-    font-family: 'Press Start 2P', monospace;
-    font-size: 11px;
-    color: #00ffff;
-    text-shadow: 0 0 10px #00ffff;
-    z-index: 10000;
-    box-shadow: 
-        0 0 20px rgba(255, 0, 255, 0.7),
-        inset 0 0 20px rgba(255, 0, 255, 0.3);
-    transition: transform 0.4s cubic-bezier(0.68, -0.55, 0.27, 1.55), opacity 0.4s ease;
-    max-width: 380px;
-    width: auto;
-    min-width: 320px;
-    opacity: 1;
-    pointer-events: auto;
-}
-
-.retro-counter.hidden {
-    transform: translateX(-50%) translateY(-150%);
-    opacity: 0;
-    pointer-events: none;
-}
-
-.counter-screen {
-    background: #001122;
-    padding: 10px;
-    border: 2px solid #00ffff;
-    margin: 10px 0;
-    text-align: center;
-    position: relative;
-    overflow: hidden;
-}
-
-.counter-digits {
-    font-size: 22px;
-    color: #00ff00;
-    text-shadow: 0 0 15px #00ff00;
-    letter-spacing: 2px;
-    animation: blink 1.2s infinite;
-    font-weight: bold;
-}
-
-.counter-label {
-    font-size: 9px;
-    color: #ff9900;
-    text-transform: uppercase;
-    letter-spacing: 2px;
-    margin-bottom: 8px;
-    text-align: center;
-}
-
-.scan-line {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 2px;
-    background: linear-gradient(90deg, transparent, #00ff00, transparent);
-    opacity: 0.7;
-    animation: scan 2.5s linear infinite;
-}
-
-@keyframes blink {
-    0%, 100% { opacity: 1; text-shadow: 0 0 15px #00ff00; }
-    50% { opacity: 0.7; text-shadow: 0 0 5px #00ff00; }
-}
-
-@keyframes scan {
-    0% { top: 0; opacity: 0; }
-    10% { opacity: 1; }
-    90% { opacity: 1; }
-    100% { top: 100%; opacity: 0; }
-}
-
-.pixel-corner {
-    position: absolute;
-    width: 8px;
-    height: 8px;
-    background: #ff00ff;
-    box-shadow: 0 0 8px #ff00ff;
-}
-
-.pixel-corner:nth-child(1) { top: -4px; left: -4px; }
-.pixel-corner:nth-child(2) { top: -4px; right: -4px; }
-.pixel-corner:nth-child(3) { bottom: -4px; left: -4px; }
-.pixel-corner:nth-child(4) { bottom: -4px; right: -4px; }
-
-/* ================= LOGIN STYLES ================= */
-#loginOverlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(5, 5, 5, 0.98);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 99999;
-}
-
-.login-box {
-    background: #020617;
-    padding: 40px;
-    border: 3px solid #22d3ee;
-    box-shadow: 0 0 30px rgba(34, 211, 238, 0.7);
-    text-align: center;
-    width: 280px;
-}
-
-.login-box h2 {
-    color: #22d3ee;
-    margin-bottom: 20px;
-    font-family: 'Press Start 2P', monospace;
-    font-size: 16px;
-}
-
-.login-box input,
-.login-box button {
-    width: 100%;
-    padding: 12px;
-    margin: 10px 0;
-    border: none;
-    outline: none;
-    font-size: 14px;
-    box-sizing: border-box;
-}
-
-.login-box input {
-    background: #0f172a;
-    color: white;
-    border: 1px solid #334155;
-}
-
-.login-box button {
-    background: #22d3ee;
-    color: #020617;
-    cursor: pointer;
-    font-weight: bold;
-    font-family: 'Press Start 2P', monospace;
-    font-size: 12px;
-    letter-spacing: 1px;
-}
-
-.login-box button:hover {
-    background: #06b6d4;
-}
-
-#errorMsg {
-    color: #f87171;
-    margin-top: 10px;
-    font-size: 12px;
-    min-height: 20px;
-}
-
-/* Prevent content from hiding behind counter */
-#wb_welcome {
-    padding-top: 120px !important;
-}
-
-/* Mobile responsive */
-@media (max-width: 768px) {
-    .retro-counter {
-        top: 10px;
-        padding: 8px 16px;
-        min-width: 280px;
-        font-size: 9px;
-    }
-    
-    .counter-digits {
-        font-size: 18px;
-        letter-spacing: 2px;
-    }
-    
-    .counter-label {
-        font-size: 7px;
-    }
-    
-    .login-box {
-        width: 260px;
-        padding: 30px;
-    }
-    
-    #wb_welcome {
-        padding-top: 100px !important;
-    }
-}
-</style>
 </head>
 <body>
-
-<!-- ================= LOGIN OVERLAY ================= -->
-<div id="loginOverlay">
-    <div class="login-box">
-        <h2>SECURE LOGIN</h2>
-        <input type="text" id="username" placeholder="Username">
-        <input type="password" id="password" placeholder="Password">
-        <button onclick="checkLogin()">LOGIN</button>
-        <div id="errorMsg"></div>
-    </div>
-</div>
-
-<!-- ================= VISITOR COUNTER ================= -->
-<div class="retro-counter" id="visitorCounter">
-    <div class="pixel-corner"></div>
-    <div class="pixel-corner"></div>
-    <div class="pixel-corner"></div>
-    <div class="pixel-corner"></div>
-    
-    <div class="counter-label">GAHAN REAL VISITOR COUNTER</div>
-    <div class="counter-screen">
-        <div class="counter-digits" id="visitorCount">0000</div>
-        <div class="scan-line"></div>
-    </div>
-</div>
-
-<!-- ================= MAIN CONTENT ================= -->
-<div id="wb_welcome">
-    <form name="welcome" method="post" action="mailto:yourname@yourdomain.com" enctype="multipart/form-data" id="welcome">
-        <div class="row">
+   <div id="wb_welcome">
+      <form name="welcome" method="post" action="mailto:yourname@yourdomain.com" enctype="multipart/form-data" id="welcome">
+         <div class="row">
             <div class="col-1">
-                <div id="wb_Heading3" style="display:block;width:100%;z-index:0;" data-50-top="transform: scale(1,1);" data--50-top="transform: scale(0,0);">
-                    <h1 id="Heading3">WELCOME<br>TO<br>100-DAYS-CHALLENGE<br>COMPUTER SCIENCE<br>SEE-2082<br></h1>
-                </div>
-                <div id="wb_Heading4" style="display:block;width:100%;z-index:1;" data-50-top="transform: scale(1,1);" data--50-top="transform: scale(0,0);">
-                    <h6 id="Heading4">GAHAN KHATIWODA'S <br><br>OFFICIAL WEBSITE<br>UNDER CONSTRUCTION</h6>
-                </div>
-                <div id="wb_ThemeableButton1" style="display:inline-block;width:190px;height:83px;z-index:2;">
-                    <a class="ui-button ui-corner-all" id="ThemeableButton1" href="./odd.html" style="width:100%;height:100%;"><span class="ui-button-icon ui-icon ui-primary"></span><span class="ui-button-icon-space"> </span>ODD DAYS SETS</a>
-                </div>
-                <div id="wb_ThemeableButton2" style="display:inline-block;width:205px;height:83px;z-index:3;">
-                    <a class="ui-button ui-corner-all" id="ThemeableButton2" href="./even.html" style="width:100%;height:100%;"><span class="ui-button-icon ui-icon ui-primary"></span><span class="ui-button-icon-space"> </span>EVEN DAYS SETS</a>
-                </div>
-                <hr id="Line1" style="display:block;width:100%;z-index:4;">
+               <div id="wb_Heading3" style="display:block;width:100%;z-index:0;" data-50-top="transform: scale(1,1);" data--50-top="transform: scale(0,0);">
+                  <h1 id="Heading3"><br>WELCOME<br>TO<br>GAHAN'S<br>100-DAYS-CHALLENGE<br>COMPUTER SCIENCE-QUESTION SETS<br>SEE-2082<br></h1>
+               </div>
+               <div id="wb_Heading4" style="display:block;width:100%;z-index:1;" data-50-top="transform: scale(1,1);" data--50-top="transform: scale(0,0);">
+                  <h6 id="Heading4">GAHAN KHATIWODA'S <br>OFFICIAL WEBSITE<br>UNDER CONSTRUCTION</h6>
+               </div>
+               <div id="wb_ThemeableButton1" style="display:inline-block;width:190px;height:83px;z-index:2;">
+                  <a class="ui-button ui-corner-all" id="ThemeableButton1" href="./odd.html" style="width:100%;height:100%;"><span class="ui-button-icon ui-icon ui-primary"></span><span class="ui-button-icon-space"> </span>-ODD DAYS SETS</a>
+               </div>
+               <div id="wb_ThemeableButton2" style="display:inline-block;width:205px;height:83px;z-index:3;">
+                  <a class="ui-button ui-corner-all" id="ThemeableButton2" href="./even.html" style="width:100%;height:100%;"><span class="ui-button-icon ui-icon ui-primary"></span><span class="ui-button-icon-space"> </span>-EVEN DAYS SETS</a>
+               </div>
+               <hr id="Line1" style="display:block;width:100%;z-index:4;">
+               <div id="wb_ThemeableButton3" style="display:inline-block;width:205px;height:83px;z-index:5;">
+                  <a class="ui-button ui-corner-all" id="ThemeableButton3" href="./obj.html" style="width:100%;height:100%;"><span class="ui-button-icon ui-icon ui-primary"></span><span class="ui-button-icon-space"> </span>-OBJECTIVE SETS</a>
+               </div>
             </div>
-        </div>
-    </form>
-</div>
-
-<div id="wb_LayoutGrid13">
-    <div id="LayoutGrid13">
-        <div class="row">
+         </div>
+      </form>
+   </div>
+   <div id="wb_LayoutGrid13">
+      <div id="LayoutGrid13">
+         <div class="row">
             <div class="col-1">
-                <div class="col-1-padding">
-                    <div id="wb_Image5" style="display:inline-block;width:141px;height:141px;z-index:6;">
-                        <img src="images/avantage_globev2.png" id="Image5" alt="" width="141" height="142">
-                    </div>
-                    <div id="wb_Heading6" style="display:block;width:100%;z-index:7;">
-                        <h1 id="Heading6">QUEST FOR KNOWLEDGE</h1>
-                    </div>
-                    <div id="wb_Text2">
-                        <span style="color:#15628E;font-family:Arial;font-size:13px;">UNDER CONSTRUCTION</span>
-                    </div>
-                    <button type="submit" id="ThemeableButton4" name="" value="I AM DESIGNING MY WEBSITE" class="ui-button ui-corner-all" style="display:inline-block;width:226px;height:36px;z-index:9;"><span class="ui-button-icon ui-icon ui-primary"></span><span class="ui-button-icon-space"> </span>I AM DESIGNING MY WEBSITE</button>
-                </div>
+               <div class="col-1-padding">
+                  <div id="wb_Image5" style="display:inline-block;width:184px;height:185px;z-index:7;">
+                     <img src="images/avantage_globev2.png" id="Image5" alt="" width="184" height="185">
+                  </div>
+                  <div id="wb_Heading6" style="display:block;width:100%;z-index:8;">
+                     <h1 id="Heading6">QUEST FOR KNOWLEDGE</h1>
+                  </div>
+                  <div id="wb_Text2">
+                     <span style="color:#15628E;font-family:Arial;font-size:13px;">UNDER CONSTRUCTION</span>
+                  </div>
+                  <button type="submit" id="ThemeableButton4" name="" value="I AM DESIGNING MY WEBSITE" class="ui-button ui-corner-all" style="display:inline-block;width:226px;height:36px;z-index:10;"><span class="ui-button-icon ui-icon ui-primary"></span><span class="ui-button-icon-space"> </span>I AM DESIGNING MY WEBSITE</button>
+               </div>
             </div>
-        </div>
-    </div>
-</div>
-
-<div id="wb_LayoutGrid17">
-    <div id="LayoutGrid17">
-        <div class="row">
+         </div>
+      </div>
+   </div>
+   <div id="wb_LayoutGrid17">
+      <div id="LayoutGrid17">
+         <div class="row">
             <div class="col-1">
-                <div class="col-1-padding">
-                    <div id="wb_Text8">
-                        <span style="color:#A2A4A9;font-family:Arial;font-size:15px;">© 2023 Copyright: </span><span style="color:#FFFFFF;font-family:Arial;font-size:15px;">https://www.gahan.com.np</span>
-                    </div>
-                </div>
+               <div class="col-1-padding">
+                  <div id="wb_Text8">
+                     <span style="color:#A2A4A9;font-family:Arial;font-size:15px;">© 2023 Copyright: </span><span style="color:#FFFFFF;font-family:Arial;font-size:15px;">https://www.gahan.com.np</span>
+                  </div>
+               </div>
             </div>
-        </div>
-    </div>
-</div>
-
-<script>
-// ================= LOGIN FUNCTION =================
-function checkLogin() {
-    const user = document.getElementById("username").value;
-    const pass = document.getElementById("password").value;
-    const errorMsg = document.getElementById("errorMsg");
-
-    // Clear previous error
-    errorMsg.innerText = "";
-
-    if (user === "gahan" && pass === "gahan") {
-        document.getElementById("loginOverlay").style.display = "none";
-        // Start counter after login
-        startCounter();
-    } else {
-        errorMsg.innerText = "Incorrect username or password!";
-        
-        // Shake animation for wrong password
-        document.querySelector('.login-box').style.animation = 'none';
-        setTimeout(() => {
-            document.querySelector('.login-box').style.animation = 'shake 0.5s';
-        }, 10);
-    }
-}
-
-// Add shake animation
-const style = document.createElement('style');
-style.textContent = `
-@keyframes shake {
-    0%, 100% { transform: translateX(0); }
-    10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
-    20%, 40%, 60%, 80% { transform: translateX(5px); }
-}
-`;
-document.head.appendChild(style);
-
-// Allow Enter key to submit login
-document.getElementById('password').addEventListener('keypress', function(e) {
-    if (e.key === 'Enter') {
-        checkLogin();
-    }
-});
-
-// ================= VISITOR COUNTER =================
-function startCounter() {
-    const NAMESPACE = "gahan-khatiwoda-official";
-    const KEY = "website-visitors-v2";
-    
-    // Check if visitor already counted in this session
-    const visited = sessionStorage.getItem("gahan_session_visited");
-    
-    function pad(num) {
-        return num.toString().padStart(4, "0");
-    }
-    
-    // Initialize counter display
-    document.getElementById("visitorCount").innerText = pad(1000);
-    
-    // Only count once per session
-    if (!visited) {
-        // Try CountAPI first
-        fetch(`https://api.countapi.xyz/hit/${NAMESPACE}/${KEY}`)
-            .then(res => res.json())
-            .then(data => {
-                document.getElementById("visitorCount").innerText = pad(data.value);
-                sessionStorage.setItem("gahan_session_visited", "true");
-                localStorage.setItem("gahan_local_count", data.value.toString());
-            })
-            .catch(error => {
-                // Fallback to localStorage if API fails
-                let localCount = parseInt(localStorage.getItem('gahan_local_count') || '1000');
-                localCount++;
-                localStorage.setItem('gahan_local_count', localCount.toString());
-                document.getElementById("visitorCount").innerText = pad(localCount);
-                sessionStorage.setItem("gahan_session_visited", "true");
-            });
-    } else {
-        // Get current count
-        fetch(`https://api.countapi.xyz/get/${NAMESPACE}/${KEY}`)
-            .then(res => res.json())
-            .then(data => {
-                document.getElementById("visitorCount").innerText = pad(data.value);
-            })
-            .catch(error => {
-                // Fallback to localStorage
-                let localCount = parseInt(localStorage.getItem('gahan_local_count') || '1000');
-                document.getElementById("visitorCount").innerText = pad(localCount);
-            });
-    }
-    
-    // ================= SCROLL HIDE/SHOW LOGIC =================
-    let lastScroll = 0;
-    let hideTimeout;
-    const counterDiv = document.getElementById("visitorCounter");
-    const SCROLL_THRESHOLD = 100;
-    const SCROLL_SHOW_THRESHOLD = 50;
-    
-    function hideCounter() {
-        counterDiv.classList.add('hidden');
-    }
-    
-    function showCounter() {
-        counterDiv.classList.remove('hidden');
-        // Auto-hide after 3 seconds if still scrolled down
-        clearTimeout(hideTimeout);
-        if (window.pageYOffset > SCROLL_THRESHOLD) {
-            hideTimeout = setTimeout(() => {
-                if (!counterDiv.matches(':hover')) {
-                    hideCounter();
-                }
-            }, 3000);
-        }
-    }
-    
-    window.addEventListener('scroll', () => {
-        const currentScroll = window.pageYOffset || document.documentElement.scrollTop;
-        
-        // HIDE when scrolling DOWN past threshold
-        if (currentScroll > lastScroll && currentScroll > SCROLL_THRESHOLD) {
-            hideCounter();
-        }
-        // SHOW when scrolling UP
-        else if (currentScroll < lastScroll) {
-            showCounter();
-        }
-        
-        // Always show when at the top of the page
-        if (currentScroll < SCROLL_SHOW_THRESHOLD) {
-            showCounter();
-        }
-        
-        lastScroll = currentScroll;
-    });
-    
-    // Show counter when mouse is near top
-    document.addEventListener('mousemove', (e) => {
-        if (e.clientY < 100) {
-            showCounter();
-        }
-    });
-    
-    // Keep counter visible when hovering over it
-    counterDiv.addEventListener('mouseenter', () => {
-        clearTimeout(hideTimeout);
-        showCounter();
-    });
-    
-    counterDiv.addEventListener('mouseleave', () => {
-        if (window.pageYOffset > SCROLL_THRESHOLD) {
-            hideTimeout = setTimeout(() => {
-                hideCounter();
-            }, 1000);
-        }
-    });
-    
-    // Click counter to toggle hide/show
-    counterDiv.addEventListener('click', () => {
-        if (counterDiv.classList.contains('hidden')) {
-            showCounter();
-        } else {
-            hideCounter();
-        }
-    });
-    
-    // Initialize - hide counter if already scrolled down
-    if (window.pageYOffset > SCROLL_THRESHOLD) {
-        hideCounter();
-    }
-}
-
-// Auto-focus username field on page load
-window.addEventListener('load', function() {
-    document.getElementById('username').focus();
-});
-</script>
-
+         </div>
+      </div>
+   </div>
 </body>
 </html>
