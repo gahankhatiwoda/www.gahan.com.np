@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>📊 Real Gmail Analytics - Gahan's Website</title>
+    <title>🔒 Visitor Analytics - Gahan's Website</title>
     <style>
         * {
             margin: 0;
@@ -342,14 +342,6 @@
             transition: width 0.5s ease;
         }
         
-        .user-avatar {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            object-fit: cover;
-            border: 2px solid #4285F4;
-        }
-        
         @media (max-width: 768px) {
             .stats-grid {
                 grid-template-columns: 1fr;
@@ -377,6 +369,7 @@
 </head>
 <body>
 
+<!-- Password Screen -->
 <div id="passwordScreen" class="password-screen">
     <div class="password-box">
         <div class="lock-icon">🔒</div>
@@ -419,46 +412,48 @@
     </div>
 </div>
 
+<!-- Analytics Screen -->
 <div id="analyticsScreen" class="analytics-screen">
     <a href="index.html" class="back-btn">← Back to Site</a>
     
     <div class="container">
         <header>
-            <h1>📊 Real Gmail Analytics</h1>
-            <p class="subtitle">Tracking actual Google OAuth logins with real email data</p>
+            <h1>📊 Google Account Detection Analytics</h1>
+            <p class="subtitle">Shows users logged into Google accounts in their browser</p>
         </header>
         
         <div class="stats-grid">
-            <div class="stat-card" onclick="showTab('realGmail')">
+            <div class="stat-card" onclick="showTab('overview')">
                 <div class="stat-label">Total Visitors</div>
                 <div class="stat-number" id="totalVisitors">0</div>
             </div>
             
-            <div class="stat-card google-stat" onclick="showTab('realGmail')">
-                <div class="stat-label">Real Gmail Users</div>
-                <div class="stat-number" id="realGmailUsers">0</div>
+            <div class="stat-card google-stat" onclick="showTab('detections')">
+                <div class="stat-label">Google Accounts Detected</div>
+                <div class="stat-number" id="googleDetections">0</div>
             </div>
             
-            <div class="stat-card browser-stat" onclick="showTab('gmailDomains')">
-                <div class="stat-label">Email Domains</div>
-                <div class="stat-number" id="emailDomains">0</div>
+            <div class="stat-card browser-stat" onclick="showTab('browsers')">
+                <div class="stat-label">Browser Types</div>
+                <div class="stat-number" id="browserTypes">0</div>
             </div>
             
             <div class="stat-card" style="background: linear-gradient(135deg, #FF9800, #FF5722);" onclick="showTab('activity')">
-                <div class="stat-label">Google OAuth Logins</div>
-                <div class="stat-number" id="googleOAuthLogins">0</div>
+                <div class="stat-label">Detection Events</div>
+                <div class="stat-number" id="detectionEvents">0</div>
             </div>
         </div>
         
+        <!-- Tab Navigation -->
         <div class="tab-buttons">
-            <button class="tab-btn active" onclick="showTab('realGmail')">
-                📧 Real Gmail Data
+            <button class="tab-btn active" onclick="showTab('detections')">
+                🔍 Google Detections
             </button>
-            <button class="tab-btn" onclick="showTab('gmailDomains')">
-                🌐 Email Domains
+            <button class="tab-btn" onclick="showTab('methods')">
+                📊 Detection Methods
             </button>
-            <button class="tab-btn" onclick="showTab('loginMethods')">
-                🔐 Login Methods
+            <button class="tab-btn" onclick="showTab('browsers')">
+                🌐 Browser Info
             </button>
             <button class="tab-btn" onclick="showTab('activity')">
                 📈 Activity Log
@@ -468,42 +463,46 @@
             </button>
         </div>
         
-        <div id="realGmailTab" class="tab-content active">
+        <!-- Google Detections Tab -->
+        <div id="detectionsTab" class="tab-content active">
             <div class="controls">
                 <button class="control-btn" onclick="refreshData()">
                     🔄 Refresh
                 </button>
-                <button class="control-btn" onclick="exportRealGmailData()">
-                    📋 Export Gmail Data
+                <button class="control-btn" onclick="exportDetections()">
+                    📋 Export Detections
                 </button>
             </div>
             
-            <h3 style="margin: 20px 0;">📧 Real Gmail Users (From Google OAuth)</h3>
-            <div id="realGmailContainer"></div>
+            <h3 style="margin: 20px 0;">🔍 Google Account Detection History</h3>
+            <div id="detectionsContainer"></div>
         </div>
         
-        <div id="gmailDomainsTab" class="tab-content">
-            <div class="controls">
-                <button class="control-btn" onclick="refreshData()">
-                    🔄 Refresh
-                </button>
-            </div>
-            
-            <h3 style="margin: 20px 0;">🌐 Email Domain Distribution</h3>
-            <div id="gmailDomainsContainer"></div>
-        </div>
-        
-        <div id="loginMethodsTab" class="tab-content">
+        <!-- Detection Methods Tab -->
+        <div id="methodsTab" class="tab-content">
             <div class="controls">
                 <button class="control-btn" onclick="refreshData()">
                     🔄 Refresh
                 </button>
             </div>
             
-            <h3 style="margin: 20px 0;">🔐 Login Method Analysis</h3>
-            <div id="loginMethodsContainer"></div>
+            <h3 style="margin: 20px 0;">📊 Detection Methods Used</h3>
+            <div id="methodsContainer"></div>
         </div>
         
+        <!-- Browser Info Tab -->
+        <div id="browsersTab" class="tab-content">
+            <div class="controls">
+                <button class="control-btn" onclick="refreshData()">
+                    🔄 Refresh
+                </button>
+            </div>
+            
+            <h3 style="margin: 20px 0;">🌐 Browser & Device Information</h3>
+            <div id="browserContainer"></div>
+        </div>
+        
+        <!-- Activity Log Tab -->
         <div id="activityTab" class="tab-content">
             <div class="controls">
                 <button class="control-btn" onclick="refreshData()">
@@ -518,6 +517,7 @@
             <div id="activityTable"></div>
         </div>
         
+        <!-- Export Tab -->
         <div id="exportTab" class="tab-content">
             <h3 style="margin-bottom: 20px;">📥 Export Analytics Data</h3>
             
@@ -525,8 +525,8 @@
                 <button class="control-btn" onclick="exportFullJSON()">
                     📥 Export Full JSON
                 </button>
-                <button class="control-btn" onclick="exportRealGmailCSV()">
-                    📊 Export Gmail CSV
+                <button class="control-btn" onclick="exportDetectionsCSV()">
+                    📊 Export Detections CSV
                 </button>
                 <button class="control-btn" onclick="copyAllData()">
                     📋 Copy All Data
@@ -562,6 +562,8 @@
 </div>
 
 <script>
+// ========== PASSWORD PROTECTION ==========
+
 const ADMIN_PASSWORD = "Gahan123";
 
 function login() {
@@ -585,6 +587,7 @@ function login() {
     }
 }
 
+// Check if already logged in
 window.onload = function() {
     const isLoggedIn = sessionStorage.getItem('admin_logged_in');
     const loginTime = parseInt(sessionStorage.getItem('login_time') || '0');
@@ -598,24 +601,32 @@ window.onload = function() {
     }
 };
 
+// ========== TAB MANAGEMENT ==========
+
 function showTab(tabName) {
+    // Hide all tabs
     document.querySelectorAll('.tab-content').forEach(tab => {
         tab.classList.remove('active');
     });
     
+    // Remove active class from all buttons
     document.querySelectorAll('.tab-btn').forEach(btn => {
         btn.classList.remove('active');
     });
     
+    // Show selected tab
     document.getElementById(tabName + 'Tab').classList.add('active');
+    
+    // Activate selected button
     event.target.classList.add('active');
     
-    if (tabName === 'realGmail') {
-        displayRealGmailData();
-    } else if (tabName === 'gmailDomains') {
-        displayGmailDomains();
-    } else if (tabName === 'loginMethods') {
-        displayLoginMethods();
+    // Refresh data for specific tab
+    if (tabName === 'detections') {
+        displayGoogleDetections();
+    } else if (tabName === 'methods') {
+        displayDetectionMethods();
+    } else if (tabName === 'browsers') {
+        displayBrowserInfo();
     } else if (tabName === 'activity') {
         displayActivityTable();
     } else if (tabName === 'export') {
@@ -623,138 +634,127 @@ function showTab(tabName) {
     }
 }
 
-// ========== ANALYTICS FUNCTIONS ==========
+// ========== ANALYTICS DATA FUNCTIONS ==========
 
 function loadAnalyticsData() {
+    // Get all data from localStorage
     const totalVisitors = localStorage.getItem('gahan_total_visitors') || '0';
     const visits = JSON.parse(localStorage.getItem('gahan_visits') || '[]');
     const userHistory = JSON.parse(localStorage.getItem('gahan_user_history') || '[]');
-    const googleLog = JSON.parse(localStorage.getItem('gahan_google_log') || '[]');
+    const googleDetections = JSON.parse(localStorage.getItem('gahan_google_detections') || '[]');
     
-    const allRealUsers = getAllRealUsers();
-    
-    if (visits.length === 0 && userHistory.length === 0 && googleLog.length === 0) {
+    if (visits.length === 0 && userHistory.length === 0 && googleDetections.length === 0) {
         document.getElementById('errorMessage').style.display = 'block';
         document.getElementById('analyticsScreen').style.display = 'none';
         return;
     }
     
+    // Update main stats
     document.getElementById('totalVisitors').textContent = parseInt(totalVisitors).toLocaleString();
-    document.getElementById('realGmailUsers').textContent = countUniqueRealGmails(allRealUsers);
-    document.getElementById('emailDomains').textContent = countEmailDomains(allRealUsers);
-    document.getElementById('googleOAuthLogins').textContent = countGoogleOAuthLogins(googleLog, userHistory);
     
-    displayRealGmailData();
-    displayGmailDomains();
-    displayLoginMethods();
+    // Count Google detections
+    const uniqueGoogleDetections = countUniqueGoogleDetections(googleDetections, userHistory);
+    document.getElementById('googleDetections').textContent = uniqueGoogleDetections;
+    
+    // Count browser types
+    const browserTypes = countBrowserTypes(visits, userHistory);
+    document.getElementById('browserTypes').textContent = browserTypes;
+    
+    // Count total detection events
+    const detectionEvents = googleDetections.length + 
+        userHistory.filter(h => h.googleAccountsDetected).length;
+    document.getElementById('detectionEvents').textContent = detectionEvents;
+    
+    // Load tab-specific data
+    displayGoogleDetections();
+    displayDetectionMethods();
+    displayBrowserInfo();
     displayActivityTable();
     updateExportData();
 }
 
-function getAllRealUsers() {
-    const allUsers = [];
+function countUniqueGoogleDetections(googleDetections, userHistory) {
+    const uniqueSessions = new Set();
+    
+    // Add from google detections
+    googleDetections.forEach(detection => {
+        const sessionKey = `${detection.timestamp.substring(0, 13)}-${detection.userAgent?.substring(0, 50)}`;
+        uniqueSessions.add(sessionKey);
+    });
+    
+    // Add from user history
+    userHistory.forEach(history => {
+        if (history.googleAccountsDetected || history.googleDetectionMethods) {
+            const sessionKey = `${history.timestamp.substring(0, 13)}-${history.userAgent?.substring(0, 50)}`;
+            uniqueSessions.add(sessionKey);
+        }
+    });
+    
+    return uniqueSessions.size;
+}
+
+function countBrowserTypes(visits, userHistory) {
+    const browsers = new Set();
+    
+    // Extract browser info from visits
+    visits.forEach(visit => {
+        const browser = detectBrowser(visit.userAgent);
+        if (browser) browsers.add(browser);
+    });
+    
+    // Extract browser info from user history
+    userHistory.forEach(history => {
+        const browser = detectBrowser(history.userAgent);
+        if (browser) browsers.add(browser);
+    });
+    
+    return browsers.size;
+}
+
+function detectBrowser(userAgent) {
+    if (!userAgent) return 'Unknown';
+    
+    if (userAgent.includes('Chrome')) return 'Chrome';
+    if (userAgent.includes('Firefox')) return 'Firefox';
+    if (userAgent.includes('Safari')) return 'Safari';
+    if (userAgent.includes('Edge')) return 'Edge';
+    if (userAgent.includes('Opera')) return 'Opera';
+    
+    return 'Other';
+}
+
+function displayGoogleDetections() {
+    const googleDetections = JSON.parse(localStorage.getItem('gahan_google_detections') || '[]');
     const userHistory = JSON.parse(localStorage.getItem('gahan_user_history') || '[]');
-    const googleLog = JSON.parse(localStorage.getItem('gahan_google_log') || '[]');
     
-    googleLog.forEach(log => {
-        if (log.email && log.type === 'google_oauth_login') {
-            allUsers.push({
-                type: 'real_google_oauth',
-                email: log.email,
-                name: log.name || log.given_name || 'Unknown',
-                timestamp: log.timestamp,
-                verified: log.email_verified || false,
-                method: 'google_oauth',
-                userAgent: log.userAgent,
-                picture: log.picture === 'yes' ? getGoogleProfilePic(log.email) : null,
-                domain: log.email.split('@')[1]
-            });
-        }
-    });
+    // Combine all detections
+    const allDetections = [
+        ...googleDetections.map(d => ({
+            ...d,
+            source: 'background_detection'
+        })),
+        ...userHistory
+            .filter(h => h.googleAccountsDetected || h.googleDetectionMethods)
+            .map(h => ({
+                type: h.type === 'login' ? 'login_with_google' : 'google_detection',
+                timestamp: h.timestamp,
+                accountsDetected: h.googleAccountsDetected || 0,
+                detectionMethods: h.googleDetectionMethods || [],
+                userAgent: h.userAgent,
+                username: h.username,
+                source: 'user_action'
+            }))
+    ];
     
-    userHistory.forEach(log => {
-        if (log.email && (log.email.includes('@gmail.com') || log.email.includes('@googlemail.com'))) {
-            allUsers.push({
-                type: 'traditional_login',
-                email: log.email,
-                name: log.username || 'Unknown',
-                timestamp: log.timestamp,
-                verified: true,
-                method: log.method || 'traditional',
-                userAgent: log.userAgent,
-                domain: log.email.split('@')[1]
-            });
-        }
-    });
+    // Sort by timestamp
+    allDetections.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
     
-    try {
-        const currentUser = JSON.parse(localStorage.getItem('gahan_user') || '{}');
-        if (currentUser.email) {
-            allUsers.push({
-                type: 'current_session',
-                email: currentUser.email,
-                name: currentUser.username || currentUser.googleUserData?.name || 'Unknown',
-                timestamp: currentUser.loginTime || new Date().toISOString(),
-                verified: true,
-                method: currentUser.loginMethod || 'unknown',
-                userAgent: currentUser.userAgent,
-                domain: currentUser.email.split('@')[1]
-            });
-        }
-    } catch (e) {
-        console.error('Error parsing current user:', e);
-    }
-    
-    return allUsers;
-}
-
-function getGoogleProfilePic(email) {
-    return `https://ui-avatars.com/api/?name=${encodeURIComponent(email.split('@')[0])}&background=EA4335&color=fff&size=100`;
-}
-
-function countUniqueRealGmails(allUsers) {
-    const uniqueEmails = new Set();
-    allUsers.forEach(user => {
-        if (user.email && (user.email.includes('@gmail.com') || user.email.includes('@googlemail.com'))) {
-            uniqueEmails.add(user.email);
-        }
-    });
-    return uniqueEmails.size;
-}
-
-function countEmailDomains(allUsers) {
-    const domains = new Set();
-    allUsers.forEach(user => {
-        if (user.domain) domains.add(user.domain);
-    });
-    return domains.size;
-}
-
-function countGoogleOAuthLogins(googleLog, userHistory) {
-    let count = 0;
-    googleLog.forEach(log => {
-        if (log.type === 'google_oauth_login') count++;
-    });
-    userHistory.forEach(log => {
-        if (log.method && log.method.includes('google')) count++;
-    });
-    return count;
-}
-
-function displayRealGmailData() {
-    const allUsers = getAllRealUsers();
-    const realGmailUsers = allUsers.filter(user => 
-        user.email && (user.email.includes('@gmail.com') || user.email.includes('@googlemail.com'))
-    );
-    
-    realGmailUsers.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
-    
-    if (realGmailUsers.length === 0) {
-        document.getElementById('realGmailContainer').innerHTML = `
+    if (allDetections.length === 0) {
+        document.getElementById('detectionsContainer').innerHTML = `
             <div style="text-align: center; padding: 40px; color: #aaa;">
-                <div style="font-size: 60px; margin-bottom: 20px;">📧</div>
-                <h3>No real Gmail users recorded yet</h3>
-                <p>Real Gmail data will appear here when users login with Google OAuth</p>
+                <div style="font-size: 60px; margin-bottom: 20px;">🔍</div>
+                <h3>No Google account detections yet</h3>
+                <p>Google account detection data will appear here when users visit the website</p>
             </div>
         `;
         return;
@@ -763,81 +763,98 @@ function displayRealGmailData() {
     let html = `
         <div class="stats-row">
             <div class="stat-badge">
-                <strong>Total Gmail Users:</strong> ${countUniqueRealGmails(allUsers)}
+                <strong>Total Detections:</strong> ${allDetections.length}
             </div>
             <div class="stat-badge">
-                <strong>Google OAuth Users:</strong> ${realGmailUsers.filter(u => u.method === 'google_oauth').length}
-            </div>
-            <div class="stat-badge">
-                <strong>Traditional Login Users:</strong> ${realGmailUsers.filter(u => u.method === 'traditional').length}
+                <strong>Unique Sessions:</strong> ${countUniqueGoogleDetections(
+                    JSON.parse(localStorage.getItem('gahan_google_detections') || '[]'),
+                    JSON.parse(localStorage.getItem('gahan_user_history') || '[]')
+                )}
             </div>
         </div>
         
         <div class="google-list">
     `;
     
-    realGmailUsers.slice(0, 50).forEach(user => {
-        const time = new Date(user.timestamp);
+    allDetections.slice(0, 50).forEach(detection => {
+        const time = new Date(detection.timestamp);
         const timeStr = time.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
         const dateStr = time.toLocaleDateString();
         
-        const methodBadge = user.method === 'google_oauth' ? 
-            '<span class="detection-badge" style="background: #EA4335;">Google OAuth</span>' : 
-            '<span class="detection-badge" style="background: #4285F4;">Traditional</span>';
+        const accounts = detection.accountsDetected || detection.accountsDetected || 0;
+        const methods = detection.detectionMethods || 
+                       detection.detectionMethods || 
+                       ['unknown'];
         
-        const verifiedBadge = user.verified ? 
-            '<span class="detection-badge" style="background: #34A853;">Verified ✓</span>' : 
-            '<span class="detection-badge" style="background: #FBBC05;">Unverified</span>';
+        let methodBadges = '';
+        methods.forEach(method => {
+            methodBadges += `<span class="detection-badge">${method}</span>`;
+        });
         
         html += `
             <div class="google-card">
                 <div class="google-method">
-                    <span>📧</span>
-                    <span style="font-weight: bold;">${user.email}</span>
-                </div>
-                <div class="google-meta">
-                    <span>👤 ${user.name || 'Unknown'}</span>
+                    <span>🔍</span>
+                    <span>${accounts} Google Account(s) Detected</span>
                 </div>
                 <div class="google-meta">
                     <span>📅 ${dateStr} ${timeStr}</span>
                 </div>
                 <div class="google-meta">
-                    <span>Method: ${methodBadge} ${verifiedBadge}</span>
+                    <span>👤 ${detection.username || 'Anonymous User'}</span>
                 </div>
                 <div class="google-meta">
-                    <span>Type: ${user.type.replace(/_/g, ' ')}</span>
+                    <span>Methods: ${methodBadges}</span>
                 </div>
-                ${user.picture ? `
                 <div class="google-meta">
-                    <img src="${user.picture}" class="user-avatar">
+                    <span>🌐 ${detectBrowser(detection.userAgent) || 'Unknown Browser'}</span>
                 </div>
-                ` : ''}
+                ${detection.source ? `<div class="google-meta"><small>Source: ${detection.source}</small></div>` : ''}
             </div>
         `;
     });
     
     html += '</div>';
-    document.getElementById('realGmailContainer').innerHTML = html;
+    document.getElementById('detectionsContainer').innerHTML = html;
 }
 
-function displayGmailDomains() {
-    const allUsers = getAllRealUsers();
-    const domainStats = {};
+function displayDetectionMethods() {
+    const googleDetections = JSON.parse(localStorage.getItem('gahan_google_detections') || '[]');
+    const userHistory = JSON.parse(localStorage.getItem('gahan_user_history') || '[]');
     
-    allUsers.forEach(user => {
-        if (user.domain) {
-            domainStats[user.domain] = (domainStats[user.domain] || 0) + 1;
+    // Count methods
+    const methodCounts = {};
+    let totalMethods = 0;
+    
+    // Count from google detections
+    googleDetections.forEach(detection => {
+        if (detection.detectionMethods) {
+            detection.detectionMethods.forEach(method => {
+                methodCounts[method] = (methodCounts[method] || 0) + 1;
+                totalMethods++;
+            });
         }
     });
     
-    const sortedDomains = Object.entries(domainStats).sort((a, b) => b[1] - a[1]);
-    const totalUsers = allUsers.length;
+    // Count from user history
+    userHistory.forEach(history => {
+        if (history.googleDetectionMethods) {
+            history.googleDetectionMethods.forEach(method => {
+                methodCounts[method] = (methodCounts[method] || 0) + 1;
+                totalMethods++;
+            });
+        }
+    });
     
-    if (sortedDomains.length === 0) {
-        document.getElementById('gmailDomainsContainer').innerHTML = `
+    // Sort by count
+    const sortedMethods = Object.entries(methodCounts)
+        .sort((a, b) => b[1] - a[1]);
+    
+    if (sortedMethods.length === 0) {
+        document.getElementById('methodsContainer').innerHTML = `
             <div style="text-align: center; padding: 40px; color: #aaa;">
-                <div style="font-size: 60px; margin-bottom: 20px;">🌐</div>
-                <h3>No email domains recorded yet</h3>
+                <div style="font-size: 60px; margin-bottom: 20px;">📊</div>
+                <h3>No detection methods recorded yet</h3>
             </div>
         `;
         return;
@@ -846,62 +863,10 @@ function displayGmailDomains() {
     let html = `
         <div class="stats-row">
             <div class="stat-badge">
-                <strong>Total Email Domains:</strong> ${sortedDomains.length}
+                <strong>Total Methods Used:</strong> ${sortedMethods.length}
             </div>
             <div class="stat-badge">
-                <strong>Total Users:</strong> ${totalUsers}
-            </div>
-        </div>
-        
-        <table>
-            <thead>
-                <tr>
-                    <th>Domain</th>
-                    <th>Users</th>
-                    <th>Percentage</th>
-                    <th>Primary Users</th>
-                </tr>
-            </thead>
-            <tbody>
-    `;
-    
-    sortedDomains.forEach(([domain, count]) => {
-        const percentage = totalUsers > 0 ? ((count / totalUsers) * 100).toFixed(1) : 0;
-        const usersForDomain = allUsers.filter(u => u.domain === domain).slice(0, 3);
-        const primaryUsers = usersForDomain.map(u => u.email.split('@')[0]).join(', ');
-        
-        html += `
-            <tr>
-                <td><strong>${domain}</strong></td>
-                <td>${count}</td>
-                <td>${percentage}%</td>
-                <td>${primaryUsers || 'N/A'}</td>
-            </tr>
-        `;
-    });
-    
-    html += '</tbody></table>';
-    document.getElementById('gmailDomainsContainer').innerHTML = html;
-}
-
-function displayLoginMethods() {
-    const allUsers = getAllRealUsers();
-    const methodStats = {};
-    
-    allUsers.forEach(user => {
-        methodStats[user.method] = (methodStats[user.method] || 0) + 1;
-    });
-    
-    const sortedMethods = Object.entries(methodStats).sort((a, b) => b[1] - a[1]);
-    const totalUsers = allUsers.length;
-    
-    let html = `
-        <div class="stats-row">
-            <div class="stat-badge">
-                <strong>Total Login Methods:</strong> ${sortedMethods.length}
-            </div>
-            <div class="stat-badge">
-                <strong>Total Users:</strong> ${totalUsers}
+                <strong>Total Detections:</strong> ${totalMethods}
             </div>
         </div>
         
@@ -909,52 +874,193 @@ function displayLoginMethods() {
     `;
     
     sortedMethods.forEach(([method, count]) => {
-        const percentage = totalUsers > 0 ? (count / totalUsers * 100).toFixed(1) : 0;
-        const methodName = method === 'google_oauth' ? 'Google OAuth' :
-                          method === 'google_oauth_new' ? 'Google OAuth (New)' :
-                          method === 'traditional' ? 'Traditional Login' : method;
-        
-        const color = method === 'google_oauth' ? '#EA4335' :
-                     method === 'google_oauth_new' ? '#FBBC05' :
-                     method === 'traditional' ? '#4285F4' : '#34A853';
+        const percentage = totalMethods > 0 ? (count / totalMethods * 100).toFixed(1) : 0;
         
         html += `
             <div style="margin-bottom: 15px;">
                 <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
-                    <span>${methodName}</span>
+                    <span>${method}</span>
                     <span>${count} (${percentage}%)</span>
                 </div>
-                <div class="method-bar" style="width: ${percentage}%; background: ${color}"></div>
+                <div class="method-bar" style="width: ${percentage}%"></div>
             </div>
         `;
     });
     
     html += '</div>';
-    document.getElementById('loginMethodsContainer').innerHTML = html;
+    
+    // Add method descriptions
+    html += `
+        <div style="background: rgba(255, 255, 255, 0.05); border-radius: 10px; padding: 20px; margin-top: 20px;">
+            <h4 style="color: #4fc3f7; margin-bottom: 10px;">Detection Method Explanations:</h4>
+            <ul style="color: #aaa; line-height: 1.6;">
+                <li><strong>cookies</strong>: Google authentication cookies found in browser</li>
+                <li><strong>chrome_identity</strong>: Chrome browser with identity API detected</li>
+                <li><strong>google_services</strong>: User has access to Google services</li>
+                <li><strong>google_api</strong>: Google APIs available in browser</li>
+                <li><strong>browser_credentials</strong>: Browser has saved Google credentials</li>
+            </ul>
+        </div>
+    `;
+    
+    document.getElementById('methodsContainer').innerHTML = html;
+}
+
+function displayBrowserInfo() {
+    const visits = JSON.parse(localStorage.getItem('gahan_visits') || '[]');
+    const userHistory = JSON.parse(localStorage.getItem('gahan_user_history') || '[]');
+    
+    // Extract browser info
+    const browserStats = {};
+    const osStats = {};
+    let totalWithGoogle = 0;
+    let totalWithoutGoogle = 0;
+    
+    // Process visits
+    visits.forEach(visit => {
+        const browser = detectBrowser(visit.userAgent);
+        const os = detectOS(visit.userAgent);
+        
+        browserStats[browser] = (browserStats[browser] || 0) + 1;
+        osStats[os] = (osStats[os] || 0) + 1;
+    });
+    
+    // Process user history
+    userHistory.forEach(history => {
+        const browser = detectBrowser(history.userAgent);
+        const os = detectOS(history.userAgent);
+        
+        browserStats[browser] = (browserStats[browser] || 0) + 1;
+        osStats[os] = (osStats[os] || 0) + 1;
+        
+        if (history.googleAccountsDetected) {
+            totalWithGoogle++;
+        } else {
+            totalWithoutGoogle++;
+        }
+    });
+    
+    // Sort stats
+    const sortedBrowsers = Object.entries(browserStats).sort((a, b) => b[1] - a[1]);
+    const sortedOS = Object.entries(osStats).sort((a, b) => b[1] - a[1]);
+    
+    let html = `
+        <div class="stats-row">
+            <div class="stat-badge">
+                <strong>With Google Accounts:</strong> ${totalWithGoogle}
+            </div>
+            <div class="stat-badge">
+                <strong>Without Google Accounts:</strong> ${totalWithoutGoogle}
+            </div>
+        </div>
+        
+        <h4 style="color: #4fc3f7; margin: 20px 0 10px 0;">🌐 Browser Distribution</h4>
+        <table>
+            <thead>
+                <tr>
+                    <th>Browser</th>
+                    <th>Visitors</th>
+                    <th>Percentage</th>
+                </tr>
+            </thead>
+            <tbody>
+    `;
+    
+    const totalVisitors = visits.length + userHistory.length;
+    
+    sortedBrowsers.forEach(([browser, count]) => {
+        const percentage = totalVisitors > 0 ? ((count / totalVisitors) * 100).toFixed(1) : 0;
+        
+        html += `
+            <tr>
+                <td><span class="browser-badge">${browser}</span></td>
+                <td>${count}</td>
+                <td>${percentage}%</td>
+            </tr>
+        `;
+    });
+    
+    html += `
+            </tbody>
+        </table>
+        
+        <h4 style="color: #4fc3f7; margin: 30px 0 10px 0;">💻 Operating Systems</h4>
+        <table>
+            <thead>
+                <tr>
+                    <th>Operating System</th>
+                    <th>Visitors</th>
+                    <th>Percentage</th>
+                </tr>
+            </thead>
+            <tbody>
+    `;
+    
+    sortedOS.forEach(([os, count]) => {
+        const percentage = totalVisitors > 0 ? ((count / totalVisitors) * 100).toFixed(1) : 0;
+        
+        html += `
+            <tr>
+                <td>${os}</td>
+                <td>${count}</td>
+                <td>${percentage}%</td>
+            </tr>
+        `;
+    });
+    
+    html += '</tbody></table>';
+    
+    document.getElementById('browserContainer').innerHTML = html;
+}
+
+function detectOS(userAgent) {
+    if (!userAgent) return 'Unknown';
+    
+    if (userAgent.includes('Windows')) return 'Windows';
+    if (userAgent.includes('Mac')) return 'macOS';
+    if (userAgent.includes('Linux')) return 'Linux';
+    if (userAgent.includes('Android')) return 'Android';
+    if (userAgent.includes('iOS') || userAgent.includes('iPhone') || userAgent.includes('iPad')) return 'iOS';
+    
+    return 'Other';
 }
 
 function displayActivityTable() {
+    const visits = JSON.parse(localStorage.getItem('gahan_visits') || '[]');
     const userHistory = JSON.parse(localStorage.getItem('gahan_user_history') || '[]');
-    const googleLog = JSON.parse(localStorage.getItem('gahan_google_log') || '[]');
     
     const allData = [
-        ...googleLog.filter(log => log.type === 'google_oauth_login').map(log => ({
-            type: '🔐 Google OAuth',
-            timestamp: log.timestamp,
-            user: log.email,
-            details: `Login via Google OAuth${log.name ? ` (${log.name})` : ''}`,
-            browser: detectBrowser(log.userAgent),
-            email: log.email,
-            isGmail: log.email.includes('@gmail.com') || log.email.includes('@googlemail.com')
+        ...visits.map(v => ({
+            type: '🌐 Visit',
+            timestamp: v.timestamp,
+            user: 'Visitor',
+            details: 'Page visit',
+            browser: detectBrowser(v.userAgent),
+            hasGoogle: 'N/A'
         })),
         ...userHistory.filter(h => h.type === 'login').map(h => ({
-            type: '🔑 Login',
+            type: '🔐 Login',
             timestamp: h.timestamp,
-            user: h.email || h.username,
-            details: `${h.method || 'traditional'} login`,
+            user: h.username || 'Unknown',
+            details: `Logged in ${h.googleAccountsDetected ? '(Google detected)' : ''}`,
             browser: detectBrowser(h.userAgent),
-            email: h.email,
-            isGmail: h.email && (h.email.includes('@gmail.com') || h.email.includes('@googlemail.com'))
+            hasGoogle: h.googleAccountsDetected ? 'Yes' : 'No'
+        })),
+        ...userHistory.filter(h => h.type === 'google_account_detection').map(h => ({
+            type: '🔍 Google Scan',
+            timestamp: h.timestamp,
+            user: 'System',
+            details: `Detected ${h.accountsDetected || 0} Google account(s)`,
+            browser: detectBrowser(h.userAgent),
+            hasGoogle: 'Yes'
+        })),
+        ...userHistory.filter(h => h.type === 'content_access').map(h => ({
+            type: '📖 Content',
+            timestamp: h.timestamp,
+            user: h.username || 'Unknown',
+            details: `Accessed ${h.contentType}`,
+            browser: detectBrowser(h.userAgent),
+            hasGoogle: 'N/A'
         }))
     ];
     
@@ -971,10 +1077,10 @@ function displayActivityTable() {
             <tr>
                 <th>Time</th>
                 <th>Type</th>
-                <th>User/Email</th>
-                <th>Details</th>
+                <th>User</th>
+                <th>Activity</th>
                 <th>Browser</th>
-                <th>Gmail</th>
+                <th>Google Account</th>
             </tr>
         </thead>
         <tbody>
@@ -992,10 +1098,10 @@ function displayActivityTable() {
                     <small>${timeStr}</small>
                 </td>
                 <td>${item.type}</td>
-                <td><strong>${item.email || item.user}</strong></td>
+                <td>${item.user}</td>
                 <td>${item.details}</td>
-                <td><span class="browser-badge">${detectBrowser(item.browser)}</span></td>
-                <td>${item.isGmail ? '✅ Yes' : '❌ No'}</td>
+                <td><span class="browser-badge">${item.browser}</span></td>
+                <td>${item.hasGoogle}</td>
             </tr>
         `;
     });
@@ -1004,50 +1110,26 @@ function displayActivityTable() {
     document.getElementById('activityTable').innerHTML = html;
 }
 
-function detectBrowser(userAgent) {
-    if (!userAgent) return 'Unknown';
-    if (userAgent.includes('Chrome')) return 'Chrome';
-    if (userAgent.includes('Firefox')) return 'Firefox';
-    if (userAgent.includes('Safari')) return 'Safari';
-    if (userAgent.includes('Edge')) return 'Edge';
-    if (userAgent.includes('Opera')) return 'Opera';
-    return 'Other';
-}
-
 function updateExportData() {
     const totalVisitors = localStorage.getItem('gahan_total_visitors') || '0';
     const visits = JSON.parse(localStorage.getItem('gahan_visits') || '[]');
     const userHistory = JSON.parse(localStorage.getItem('gahan_user_history') || '[]');
-    const googleLog = JSON.parse(localStorage.getItem('gahan_google_log') || '[]');
-    const allUsers = getAllRealUsers();
+    const googleDetections = JSON.parse(localStorage.getItem('gahan_google_detections') || '[]');
     
     const exportData = {
         metadata: {
             export_time: new Date().toISOString(),
             total_visitors: parseInt(totalVisitors),
-            total_gmail_users: countUniqueRealGmails(allUsers),
-            total_google_oauth_logins: countGoogleOAuthLogins(googleLog, userHistory)
+            total_detections: googleDetections.length
         },
-        real_gmail_users: allUsers.filter(user => 
-            user.email && (user.email.includes('@gmail.com') || user.email.includes('@googlemail.com'))
-        ).map(user => ({
-            email: user.email,
-            name: user.name,
-            type: user.type,
-            method: user.method,
-            verified: user.verified,
-            timestamp: user.timestamp,
-            browser: detectBrowser(user.userAgent),
-            domain: user.domain
-        })),
-        google_oauth_logs: googleLog,
+        google_detections: googleDetections,
         user_activity: userHistory,
         page_visits: visits,
         statistics: {
-            unique_gmail_addresses: countUniqueRealGmails(allUsers),
-            unique_email_domains: countEmailDomains(allUsers),
-            google_oauth_users: allUsers.filter(u => u.method === 'google_oauth').length,
-            traditional_login_users: allUsers.filter(u => u.method === 'traditional').length
+            unique_google_sessions: countUniqueGoogleDetections(googleDetections, userHistory),
+            browsers_with_google: userHistory.filter(h => h.googleAccountsDetected).length,
+            total_detection_events: googleDetections.length + 
+                userHistory.filter(h => h.googleAccountsDetected).length
         }
     };
     
@@ -1056,87 +1138,134 @@ function updateExportData() {
 
 // ========== EXPORT FUNCTIONS ==========
 
-function exportRealGmailData() {
-    const allUsers = getAllRealUsers();
-    const realGmailUsers = allUsers.filter(user => 
-        user.email && (user.email.includes('@gmail.com') || user.email.includes('@googlemail.com'))
-    );
+function exportDetections() {
+    const googleDetections = JSON.parse(localStorage.getItem('gahan_google_detections') || '[]');
     
-    if (realGmailUsers.length === 0) {
-        alert('No real Gmail data to export');
+    if (googleDetections.length === 0) {
+        alert('No Google detection data to export');
         return;
     }
     
-    let csv = 'Email,Name,Type,Method,Verified,Timestamp,Browser,Domain\n';
+    let csv = 'Timestamp,Accounts Detected,Detection Methods,User Agent,Browser,OS\n';
     
-    realGmailUsers.forEach(user => {
-        csv += `"${user.email}","${user.name || ''}","${user.type}","${user.method}","${user.verified}","${user.timestamp}","${detectBrowser(user.userAgent)}","${user.domain || ''}"\n`;
+    googleDetections.forEach(detection => {
+        const methods = detection.detectionMethods ? 
+            detection.detectionMethods.join('; ') : 'unknown';
+        const browser = detectBrowser(detection.userAgent);
+        const os = detectOS(detection.userAgent);
+        
+        csv += `"${detection.timestamp}","${detection.accountsDetected || 0}","${methods}","${detection.userAgent || ''}","${browser}","${os}"\n`;
     });
     
-    downloadFile('real-gmail-users.csv', csv);
-    alert(`✅ Exported ${realGmailUsers.length} real Gmail user records`);
+    downloadFile('google-account-detections.csv', csv);
+    alert(`✅ Exported ${googleDetections.length} Google detection records`);
 }
 
-function exportRealGmailCSV() {
-    const allUsers = getAllRealUsers();
+function exportDetectionsCSV() {
+    const googleDetections = JSON.parse(localStorage.getItem('gahan_google_detections') || '[]');
+    const userHistory = JSON.parse(localStorage.getItem('gahan_user_history') || '[]');
     
-    if (allUsers.length === 0) {
-        alert('No user data to export');
+    // Combine all detection data
+    const allDetections = [
+        ...googleDetections.map(d => ({
+            type: 'background_detection',
+            timestamp: d.timestamp,
+            accounts: d.accountsDetected || 0,
+            methods: d.detectionMethods ? d.detectionMethods.join('; ') : '',
+            userAgent: d.userAgent || '',
+            browser: detectBrowser(d.userAgent),
+            os: detectOS(d.userAgent)
+        })),
+        ...userHistory
+            .filter(h => h.googleAccountsDetected || h.googleDetectionMethods)
+            .map(h => ({
+                type: 'user_action',
+                timestamp: h.timestamp,
+                accounts: h.googleAccountsDetected || 0,
+                methods: h.googleDetectionMethods ? h.googleDetectionMethods.join('; ') : '',
+                userAgent: h.userAgent || '',
+                browser: detectBrowser(h.userAgent),
+                os: detectOS(h.userAgent),
+                username: h.username || ''
+            }))
+    ];
+    
+    if (allDetections.length === 0) {
+        alert('No detection data to export');
         return;
     }
     
-    let csv = 'Email,Name,Type,Method,Verified,Timestamp,Browser,Domain,User Agent\n';
+    let csv = 'Type,Timestamp,Accounts,Methods,Username,Browser,OS,User Agent\n';
     
-    allUsers.forEach(user => {
-        csv += `"${user.email || ''}","${user.name || ''}","${user.type}","${user.method}","${user.verified}","${user.timestamp}","${detectBrowser(user.userAgent)}","${user.domain || ''}","${user.userAgent || ''}"\n`;
+    allDetections.forEach(detection => {
+        csv += `"${detection.type}","${detection.timestamp}","${detection.accounts}","${detection.methods}","${detection.username || ''}","${detection.browser}","${detection.os}","${detection.userAgent}"\n`;
     });
     
-    downloadFile('all-users-data.csv', csv);
-    alert(`✅ Exported ${allUsers.length} user records`);
+    downloadFile('all-google-detections.csv', csv);
+    alert(`✅ Exported ${allDetections.length} detection records`);
 }
 
 function exportFullJSON() {
-    updateExportData();
-    const jsonStr = document.getElementById('jsonData').value;
-    downloadFile('complete-analytics-data.json', jsonStr);
-    alert('✅ Complete analytics exported as JSON!');
+    const visits = JSON.parse(localStorage.getItem('gahan_visits') || '[]');
+    const userHistory = JSON.parse(localStorage.getItem('gahan_user_history') || '[]');
+    const googleDetections = JSON.parse(localStorage.getItem('gahan_google_detections') || '[]');
+    
+    const data = {
+        metadata: {
+            export_time: new Date().toISOString(),
+            version: '1.0',
+            description: 'Google Account Detection Analytics'
+        },
+        google_account_detections: googleDetections,
+        user_activity: userHistory,
+        page_visits: visits,
+        summary: {
+            total_visitors: localStorage.getItem('gahan_total_visitors') || '0',
+            google_detections_count: googleDetections.length,
+            users_with_google: userHistory.filter(h => h.googleAccountsDetected).length,
+            unique_browsers: countBrowserTypes(visits, userHistory)
+        }
+    };
+    
+    const jsonStr = JSON.stringify(data, null, 2);
+    downloadFile('google-analytics-full.json', jsonStr);
+    alert('✅ Full analytics exported as JSON!');
 }
 
 function exportActivity() {
+    const visits = JSON.parse(localStorage.getItem('gahan_visits') || '[]');
     const userHistory = JSON.parse(localStorage.getItem('gahan_user_history') || '[]');
-    const googleLog = JSON.parse(localStorage.getItem('gahan_google_log') || '[]');
     
-    let csv = 'Type,Timestamp,User,Activity,Browser,Email,Is Gmail,User Agent\n';
+    let csv = 'Type,Timestamp,User,Activity,Browser,Google Detected,User Agent\n';
     
+    // Combine all activity
     const allData = [
-        ...googleLog.filter(log => log.type === 'google_oauth_login').map(log => ({
-            type: 'GOOGLE_OAUTH',
-            timestamp: log.timestamp,
-            user: log.email,
-            activity: 'Google OAuth login',
-            browser: detectBrowser(log.userAgent),
-            email: log.email,
-            isGmail: log.email.includes('@gmail.com') || log.email.includes('@googlemail.com') ? 'Yes' : 'No',
-            userAgent: log.userAgent || ''
+        ...visits.map(v => ({
+            type: 'VISIT',
+            timestamp: v.timestamp,
+            user: 'Visitor',
+            activity: 'Page visit',
+            browser: detectBrowser(v.userAgent),
+            googleDetected: 'N/A',
+            userAgent: v.userAgent || ''
         })),
         ...userHistory.map(h => ({
             type: h.type.toUpperCase(),
             timestamp: h.timestamp,
-            user: h.email || h.username || 'Unknown',
+            user: h.username || 'Unknown',
             activity: h.contentType || h.method || 'N/A',
             browser: detectBrowser(h.userAgent),
-            email: h.email || '',
-            isGmail: h.email && (h.email.includes('@gmail.com') || h.email.includes('@googlemail.com')) ? 'Yes' : 'No',
+            googleDetected: h.googleAccountsDetected ? 'Yes' : 'No',
             userAgent: h.userAgent || ''
         }))
     ];
     
     allData.sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp))
            .forEach(item => {
-        csv += `"${item.type}","${item.timestamp}","${item.user}","${item.activity}","${item.browser}","${item.email}","${item.isGmail}","${item.userAgent}"\n`;
+        csv += `"${item.type}","${item.timestamp}","${item.user}","${item.activity}","${item.browser}","${item.googleDetected}","${item.userAgent}"\n`;
     });
     
-    downloadFile('activity-log.csv', csv);
+    downloadFile('google-detection-activity.csv', csv);
     alert(`✅ Exported ${allData.length} activity records`);
 }
 
@@ -1163,7 +1292,12 @@ function copyToClipboard() {
 
 function copyAllData() {
     updateExportData();
-    copyToClipboard();
+    const textarea = document.getElementById('jsonData');
+    textarea.select();
+    textarea.setSelectionRange(0, 99999);
+    navigator.clipboard.writeText(textarea.value).then(() => {
+        alert('📋 All data copied to clipboard!');
+    });
 }
 
 function refreshData() {
@@ -1175,12 +1309,11 @@ function clearData() {
     if (confirm('⚠️ WARNING: This will delete ALL analytics data!\n\nThis action cannot be undone.\n\nAre you sure?')) {
         localStorage.removeItem('gahan_visits');
         localStorage.removeItem('gahan_user_history');
-        localStorage.removeItem('gahan_google_log');
+        localStorage.removeItem('gahan_google_detections');
         localStorage.removeItem('gahan_total_visitors');
         localStorage.removeItem('gahan_user');
         localStorage.removeItem('gahan_last_access');
         localStorage.removeItem('gahan_last_access_time');
-        localStorage.removeItem('last_google_oauth_data');
         alert('🗑️ All data cleared!');
         location.reload();
     }
@@ -1192,6 +1325,7 @@ function logout() {
     location.reload();
 }
 
+// Auto-refresh every 30 seconds
 setInterval(() => {
     if (document.getElementById('analyticsScreen').style.display !== 'none') {
         loadAnalyticsData();
