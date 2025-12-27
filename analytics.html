@@ -1,0 +1,1336 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🔒 Visitor Analytics - Gahan's Website</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', 'Arial', sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #0f2027 0%, #203a43 50%, #2c5364 100%);
+            min-height: 100vh;
+            padding: 20px;
+            color: white;
+        }
+        
+        .password-screen {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+        
+        .password-box {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            padding: 40px;
+            border-radius: 15px;
+            text-align: center;
+            max-width: 400px;
+            width: 90%;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+        }
+        
+        .lock-icon {
+            font-size: 60px;
+            margin-bottom: 20px;
+            color: #4285F4;
+        }
+        
+        .analytics-screen {
+            display: none;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding: 30px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
+        }
+        
+        h1 {
+            color: #fff;
+            margin-bottom: 10px;
+            font-size: 2.5rem;
+        }
+        
+        .subtitle {
+            color: #aaa;
+            font-size: 18px;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+        
+        .stat-card {
+            background: linear-gradient(135deg, #4285F4, #34A853);
+            padding: 25px;
+            border-radius: 12px;
+            text-align: center;
+            transition: transform 0.3s;
+            cursor: pointer;
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .google-stat {
+            background: linear-gradient(135deg, #EA4335, #FBBC05);
+        }
+        
+        .browser-stat {
+            background: linear-gradient(135deg, #9C27B0, #673AB7);
+        }
+        
+        .stat-number {
+            font-size: 48px;
+            font-weight: bold;
+            margin: 15px 0;
+            font-family: 'Courier New', monospace;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.3);
+        }
+        
+        .stat-label {
+            font-size: 16px;
+            opacity: 0.9;
+        }
+        
+        .controls {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+        
+        .control-btn {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 12px 25px;
+            border-radius: 8px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transition: all 0.3s;
+        }
+        
+        .control-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+            border-color: #4285F4;
+        }
+        
+        .tab-buttons {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            padding-bottom: 10px;
+            flex-wrap: wrap;
+        }
+        
+        .tab-btn {
+            background: rgba(255, 255, 255, 0.05);
+            color: #aaa;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .tab-btn.active {
+            background: rgba(66, 133, 244, 0.3);
+            color: white;
+        }
+        
+        .tab-btn:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+        
+        .tab-content {
+            display: none;
+            animation: fadeIn 0.5s ease;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        
+        th {
+            background: rgba(66, 133, 244, 0.3);
+            padding: 15px;
+            text-align: left;
+            font-weight: bold;
+            color: white;
+        }
+        
+        td {
+            padding: 15px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            color: #ddd;
+        }
+        
+        tr:hover {
+            background: rgba(255, 255, 255, 0.05);
+        }
+        
+        .detection-badge {
+            background: #FBBC05;
+            color: #333;
+            padding: 3px 8px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: bold;
+            margin-right: 5px;
+        }
+        
+        .browser-badge {
+            background: #4285F4;
+            color: white;
+            padding: 3px 8px;
+            border-radius: 12px;
+            font-size: 11px;
+        }
+        
+        .google-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        .google-card {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            padding: 20px;
+            border-left: 4px solid #EA4335;
+            transition: transform 0.3s;
+        }
+        
+        .google-card:hover {
+            transform: translateY(-3px);
+            background: rgba(255, 255, 255, 0.08);
+        }
+        
+        .google-method {
+            font-size: 16px;
+            color: #4fc3f7;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .google-meta {
+            font-size: 14px;
+            color: #aaa;
+            margin-bottom: 5px;
+        }
+        
+        .export-section {
+            margin-top: 50px;
+            padding: 30px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+        }
+        
+        textarea {
+            width: 100%;
+            height: 200px;
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            padding: 15px;
+            color: white;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            margin-bottom: 20px;
+            resize: vertical;
+        }
+        
+        .error-message {
+            color: #ff6b6b;
+            text-align: center;
+            padding: 40px;
+            display: none;
+        }
+        
+        .back-btn {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            text-decoration: none;
+            z-index: 1000;
+        }
+        
+        .back-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+        
+        .stats-row {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .stat-badge {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 10px 15px;
+            border-radius: 8px;
+            font-size: 14px;
+        }
+        
+        .method-chart {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .method-bar {
+            height: 20px;
+            background: #4285F4;
+            border-radius: 10px;
+            margin-bottom: 10px;
+            transition: width 0.5s ease;
+        }
+        
+        @media (max-width: 768px) {
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .controls, .tab-buttons {
+                flex-direction: column;
+            }
+            
+            .control-btn, .tab-btn {
+                width: 100%;
+                justify-content: center;
+            }
+            
+            .google-list {
+                grid-template-columns: 1fr;
+            }
+            
+            table {
+                display: block;
+                overflow-x: auto;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<!-- Password Screen -->
+<div id="passwordScreen" class="password-screen">
+    <div class="password-box">
+        <div class="lock-icon">🔒</div>
+        <h2>Admin Analytics Access</h2>
+        <p style="color: #aaa; margin: 20px 0;">Enter password to view visitor analytics</p>
+        
+        <input type="password" id="loginPassword" placeholder="Enter admin password" style="
+            width: 100%;
+            padding: 15px;
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            background: rgba(0, 0, 0, 0.3);
+            color: white;
+            font-size: 16px;
+            margin-bottom: 20px;
+            outline: none;
+        " onkeypress="if(event.key === 'Enter') login()">
+        
+        <button onclick="login()" style="
+            background: #4285F4;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+            width: 100%;
+            margin-bottom: 15px;
+        ">
+            🔑 Login to Analytics
+        </button>
+        
+        <p id="loginError" style="color: #ff6b6b; margin-top: 15px; display: none;">
+            Incorrect password. Access denied.
+        </p>
+        
+        <p style="color: #aaa; font-size: 14px; margin-top: 20px;">
+            Use password: <strong>Gahan123</strong>
+        </p>
+    </div>
+</div>
+
+<!-- Analytics Screen -->
+<div id="analyticsScreen" class="analytics-screen">
+    <a href="index.html" class="back-btn">← Back to Site</a>
+    
+    <div class="container">
+        <header>
+            <h1>📊 Google Account Detection Analytics</h1>
+            <p class="subtitle">Shows users logged into Google accounts in their browser</p>
+        </header>
+        
+        <div class="stats-grid">
+            <div class="stat-card" onclick="showTab('overview')">
+                <div class="stat-label">Total Visitors</div>
+                <div class="stat-number" id="totalVisitors">0</div>
+            </div>
+            
+            <div class="stat-card google-stat" onclick="showTab('detections')">
+                <div class="stat-label">Google Accounts Detected</div>
+                <div class="stat-number" id="googleDetections">0</div>
+            </div>
+            
+            <div class="stat-card browser-stat" onclick="showTab('browsers')">
+                <div class="stat-label">Browser Types</div>
+                <div class="stat-number" id="browserTypes">0</div>
+            </div>
+            
+            <div class="stat-card" style="background: linear-gradient(135deg, #FF9800, #FF5722);" onclick="showTab('activity')">
+                <div class="stat-label">Detection Events</div>
+                <div class="stat-number" id="detectionEvents">0</div>
+            </div>
+        </div>
+        
+        <!-- Tab Navigation -->
+        <div class="tab-buttons">
+            <button class="tab-btn active" onclick="showTab('detections')">
+                🔍 Google Detections
+            </button>
+            <button class="tab-btn" onclick="showTab('methods')">
+                📊 Detection Methods
+            </button>
+            <button class="tab-btn" onclick="showTab('browsers')">
+                🌐 Browser Info
+            </button>
+            <button class="tab-btn" onclick="showTab('activity')">
+                📈 Activity Log
+            </button>
+            <button class="tab-btn" onclick="showTab('export')">
+                📥 Export Data
+            </button>
+        </div>
+        
+        <!-- Google Detections Tab -->
+        <div id="detectionsTab" class="tab-content active">
+            <div class="controls">
+                <button class="control-btn" onclick="refreshData()">
+                    🔄 Refresh
+                </button>
+                <button class="control-btn" onclick="exportDetections()">
+                    📋 Export Detections
+                </button>
+            </div>
+            
+            <h3 style="margin: 20px 0;">🔍 Google Account Detection History</h3>
+            <div id="detectionsContainer"></div>
+        </div>
+        
+        <!-- Detection Methods Tab -->
+        <div id="methodsTab" class="tab-content">
+            <div class="controls">
+                <button class="control-btn" onclick="refreshData()">
+                    🔄 Refresh
+                </button>
+            </div>
+            
+            <h3 style="margin: 20px 0;">📊 Detection Methods Used</h3>
+            <div id="methodsContainer"></div>
+        </div>
+        
+        <!-- Browser Info Tab -->
+        <div id="browsersTab" class="tab-content">
+            <div class="controls">
+                <button class="control-btn" onclick="refreshData()">
+                    🔄 Refresh
+                </button>
+            </div>
+            
+            <h3 style="margin: 20px 0;">🌐 Browser & Device Information</h3>
+            <div id="browserContainer"></div>
+        </div>
+        
+        <!-- Activity Log Tab -->
+        <div id="activityTab" class="tab-content">
+            <div class="controls">
+                <button class="control-btn" onclick="refreshData()">
+                    🔄 Refresh
+                </button>
+                <button class="control-btn" onclick="exportActivity()">
+                    📋 Export Activity
+                </button>
+            </div>
+            
+            <h3 style="margin: 20px 0;">📈 Complete Activity Log</h3>
+            <div id="activityTable"></div>
+        </div>
+        
+        <!-- Export Tab -->
+        <div id="exportTab" class="tab-content">
+            <h3 style="margin-bottom: 20px;">📥 Export Analytics Data</h3>
+            
+            <div class="controls">
+                <button class="control-btn" onclick="exportFullJSON()">
+                    📥 Export Full JSON
+                </button>
+                <button class="control-btn" onclick="exportDetectionsCSV()">
+                    📊 Export Detections CSV
+                </button>
+                <button class="control-btn" onclick="copyAllData()">
+                    📋 Copy All Data
+                </button>
+                <button class="control-btn" onclick="clearData()" style="background: rgba(255, 107, 107, 0.2);">
+                    🗑️ Clear All Data
+                </button>
+            </div>
+            
+            <textarea id="jsonData" placeholder="Data will appear here..." readonly></textarea>
+            
+            <button onclick="copyToClipboard()" class="control-btn" style="width: 100%; justify-content: center;">
+                📋 Copy to Clipboard
+            </button>
+        </div>
+    </div>
+</div>
+
+<div id="errorMessage" class="error-message">
+    <h2>⚠️ No Analytics Data Found</h2>
+    <p>Analytics data will appear here once users start accessing the website.</p>
+    <button onclick="location.reload()" style="
+        background: #4285F4;
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 5px;
+        cursor: pointer;
+        margin-top: 20px;
+    ">
+        Refresh
+    </button>
+</div>
+
+<script>
+// ========== PASSWORD PROTECTION ==========
+
+const ADMIN_PASSWORD = "Gahan123";
+
+function login() {
+    const password = document.getElementById('loginPassword').value;
+    const errorDiv = document.getElementById('loginError');
+    
+    if (password === ADMIN_PASSWORD) {
+        document.getElementById('passwordScreen').style.display = 'none';
+        document.getElementById('analyticsScreen').style.display = 'block';
+        loadAnalyticsData();
+        
+        sessionStorage.setItem('admin_logged_in', 'true');
+        sessionStorage.setItem('login_time', Date.now());
+        
+        console.log('✅ Admin login successful at:', new Date().toLocaleString());
+    } else {
+        errorDiv.style.display = 'block';
+        errorDiv.textContent = 'Access denied. Incorrect password.';
+        document.getElementById('loginPassword').value = '';
+        console.log('❌ Failed admin login attempt');
+    }
+}
+
+// Check if already logged in
+window.onload = function() {
+    const isLoggedIn = sessionStorage.getItem('admin_logged_in');
+    const loginTime = parseInt(sessionStorage.getItem('login_time') || '0');
+    const currentTime = Date.now();
+    const hourInMs = 60 * 60 * 1000;
+    
+    if (isLoggedIn && (currentTime - loginTime) < hourInMs) {
+        document.getElementById('passwordScreen').style.display = 'none';
+        document.getElementById('analyticsScreen').style.display = 'block';
+        loadAnalyticsData();
+    }
+};
+
+// ========== TAB MANAGEMENT ==========
+
+function showTab(tabName) {
+    // Hide all tabs
+    document.querySelectorAll('.tab-content').forEach(tab => {
+        tab.classList.remove('active');
+    });
+    
+    // Remove active class from all buttons
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+        btn.classList.remove('active');
+    });
+    
+    // Show selected tab
+    document.getElementById(tabName + 'Tab').classList.add('active');
+    
+    // Activate selected button
+    event.target.classList.add('active');
+    
+    // Refresh data for specific tab
+    if (tabName === 'detections') {
+        displayGoogleDetections();
+    } else if (tabName === 'methods') {
+        displayDetectionMethods();
+    } else if (tabName === 'browsers') {
+        displayBrowserInfo();
+    } else if (tabName === 'activity') {
+        displayActivityTable();
+    } else if (tabName === 'export') {
+        updateExportData();
+    }
+}
+
+// ========== ANALYTICS DATA FUNCTIONS ==========
+
+function loadAnalyticsData() {
+    // Get all data from localStorage
+    const totalVisitors = localStorage.getItem('gahan_total_visitors') || '0';
+    const visits = JSON.parse(localStorage.getItem('gahan_visits') || '[]');
+    const userHistory = JSON.parse(localStorage.getItem('gahan_user_history') || '[]');
+    const googleDetections = JSON.parse(localStorage.getItem('gahan_google_detections') || '[]');
+    
+    if (visits.length === 0 && userHistory.length === 0 && googleDetections.length === 0) {
+        document.getElementById('errorMessage').style.display = 'block';
+        document.getElementById('analyticsScreen').style.display = 'none';
+        return;
+    }
+    
+    // Update main stats
+    document.getElementById('totalVisitors').textContent = parseInt(totalVisitors).toLocaleString();
+    
+    // Count Google detections
+    const uniqueGoogleDetections = countUniqueGoogleDetections(googleDetections, userHistory);
+    document.getElementById('googleDetections').textContent = uniqueGoogleDetections;
+    
+    // Count browser types
+    const browserTypes = countBrowserTypes(visits, userHistory);
+    document.getElementById('browserTypes').textContent = browserTypes;
+    
+    // Count total detection events
+    const detectionEvents = googleDetections.length + 
+        userHistory.filter(h => h.googleAccountsDetected).length;
+    document.getElementById('detectionEvents').textContent = detectionEvents;
+    
+    // Load tab-specific data
+    displayGoogleDetections();
+    displayDetectionMethods();
+    displayBrowserInfo();
+    displayActivityTable();
+    updateExportData();
+}
+
+function countUniqueGoogleDetections(googleDetections, userHistory) {
+    const uniqueSessions = new Set();
+    
+    // Add from google detections
+    googleDetections.forEach(detection => {
+        const sessionKey = `${detection.timestamp.substring(0, 13)}-${detection.userAgent?.substring(0, 50)}`;
+        uniqueSessions.add(sessionKey);
+    });
+    
+    // Add from user history
+    userHistory.forEach(history => {
+        if (history.googleAccountsDetected || history.googleDetectionMethods) {
+            const sessionKey = `${history.timestamp.substring(0, 13)}-${history.userAgent?.substring(0, 50)}`;
+            uniqueSessions.add(sessionKey);
+        }
+    });
+    
+    return uniqueSessions.size;
+}
+
+function countBrowserTypes(visits, userHistory) {
+    const browsers = new Set();
+    
+    // Extract browser info from visits
+    visits.forEach(visit => {
+        const browser = detectBrowser(visit.userAgent);
+        if (browser) browsers.add(browser);
+    });
+    
+    // Extract browser info from user history
+    userHistory.forEach(history => {
+        const browser = detectBrowser(history.userAgent);
+        if (browser) browsers.add(browser);
+    });
+    
+    return browsers.size;
+}
+
+function detectBrowser(userAgent) {
+    if (!userAgent) return 'Unknown';
+    
+    if (userAgent.includes('Chrome')) return 'Chrome';
+    if (userAgent.includes('Firefox')) return 'Firefox';
+    if (userAgent.includes('Safari')) return 'Safari';
+    if (userAgent.includes('Edge')) return 'Edge';
+    if (userAgent.includes('Opera')) return 'Opera';
+    
+    return 'Other';
+}
+
+function displayGoogleDetections() {
+    const googleDetections = JSON.parse(localStorage.getItem('gahan_google_detections') || '[]');
+    const userHistory = JSON.parse(localStorage.getItem('gahan_user_history') || '[]');
+    
+    // Combine all detections
+    const allDetections = [
+        ...googleDetections.map(d => ({
+            ...d,
+            source: 'background_detection'
+        })),
+        ...userHistory
+            .filter(h => h.googleAccountsDetected || h.googleDetectionMethods)
+            .map(h => ({
+                type: h.type === 'login' ? 'login_with_google' : 'google_detection',
+                timestamp: h.timestamp,
+                accountsDetected: h.googleAccountsDetected || 0,
+                detectionMethods: h.googleDetectionMethods || [],
+                userAgent: h.userAgent,
+                username: h.username,
+                source: 'user_action'
+            }))
+    ];
+    
+    // Sort by timestamp
+    allDetections.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+    
+    if (allDetections.length === 0) {
+        document.getElementById('detectionsContainer').innerHTML = `
+            <div style="text-align: center; padding: 40px; color: #aaa;">
+                <div style="font-size: 60px; margin-bottom: 20px;">🔍</div>
+                <h3>No Google account detections yet</h3>
+                <p>Google account detection data will appear here when users visit the website</p>
+            </div>
+        `;
+        return;
+    }
+    
+    let html = `
+        <div class="stats-row">
+            <div class="stat-badge">
+                <strong>Total Detections:</strong> ${allDetections.length}
+            </div>
+            <div class="stat-badge">
+                <strong>Unique Sessions:</strong> ${countUniqueGoogleDetections(
+                    JSON.parse(localStorage.getItem('gahan_google_detections') || '[]'),
+                    JSON.parse(localStorage.getItem('gahan_user_history') || '[]')
+                )}
+            </div>
+        </div>
+        
+        <div class="google-list">
+    `;
+    
+    allDetections.slice(0, 50).forEach(detection => {
+        const time = new Date(detection.timestamp);
+        const timeStr = time.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+        const dateStr = time.toLocaleDateString();
+        
+        const accounts = detection.accountsDetected || detection.accountsDetected || 0;
+        const methods = detection.detectionMethods || 
+                       detection.detectionMethods || 
+                       ['unknown'];
+        
+        let methodBadges = '';
+        methods.forEach(method => {
+            methodBadges += `<span class="detection-badge">${method}</span>`;
+        });
+        
+        html += `
+            <div class="google-card">
+                <div class="google-method">
+                    <span>🔍</span>
+                    <span>${accounts} Google Account(s) Detected</span>
+                </div>
+                <div class="google-meta">
+                    <span>📅 ${dateStr} ${timeStr}</span>
+                </div>
+                <div class="google-meta">
+                    <span>👤 ${detection.username || 'Anonymous User'}</span>
+                </div>
+                <div class="google-meta">
+                    <span>Methods: ${methodBadges}</span>
+                </div>
+                <div class="google-meta">
+                    <span>🌐 ${detectBrowser(detection.userAgent) || 'Unknown Browser'}</span>
+                </div>
+                ${detection.source ? `<div class="google-meta"><small>Source: ${detection.source}</small></div>` : ''}
+            </div>
+        `;
+    });
+    
+    html += '</div>';
+    document.getElementById('detectionsContainer').innerHTML = html;
+}
+
+function displayDetectionMethods() {
+    const googleDetections = JSON.parse(localStorage.getItem('gahan_google_detections') || '[]');
+    const userHistory = JSON.parse(localStorage.getItem('gahan_user_history') || '[]');
+    
+    // Count methods
+    const methodCounts = {};
+    let totalMethods = 0;
+    
+    // Count from google detections
+    googleDetections.forEach(detection => {
+        if (detection.detectionMethods) {
+            detection.detectionMethods.forEach(method => {
+                methodCounts[method] = (methodCounts[method] || 0) + 1;
+                totalMethods++;
+            });
+        }
+    });
+    
+    // Count from user history
+    userHistory.forEach(history => {
+        if (history.googleDetectionMethods) {
+            history.googleDetectionMethods.forEach(method => {
+                methodCounts[method] = (methodCounts[method] || 0) + 1;
+                totalMethods++;
+            });
+        }
+    });
+    
+    // Sort by count
+    const sortedMethods = Object.entries(methodCounts)
+        .sort((a, b) => b[1] - a[1]);
+    
+    if (sortedMethods.length === 0) {
+        document.getElementById('methodsContainer').innerHTML = `
+            <div style="text-align: center; padding: 40px; color: #aaa;">
+                <div style="font-size: 60px; margin-bottom: 20px;">📊</div>
+                <h3>No detection methods recorded yet</h3>
+            </div>
+        `;
+        return;
+    }
+    
+    let html = `
+        <div class="stats-row">
+            <div class="stat-badge">
+                <strong>Total Methods Used:</strong> ${sortedMethods.length}
+            </div>
+            <div class="stat-badge">
+                <strong>Total Detections:</strong> ${totalMethods}
+            </div>
+        </div>
+        
+        <div class="method-chart">
+    `;
+    
+    sortedMethods.forEach(([method, count]) => {
+        const percentage = totalMethods > 0 ? (count / totalMethods * 100).toFixed(1) : 0;
+        
+        html += `
+            <div style="margin-bottom: 15px;">
+                <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
+                    <span>${method}</span>
+                    <span>${count} (${percentage}%)</span>
+                </div>
+                <div class="method-bar" style="width: ${percentage}%"></div>
+            </div>
+        `;
+    });
+    
+    html += '</div>';
+    
+    // Add method descriptions
+    html += `
+        <div style="background: rgba(255, 255, 255, 0.05); border-radius: 10px; padding: 20px; margin-top: 20px;">
+            <h4 style="color: #4fc3f7; margin-bottom: 10px;">Detection Method Explanations:</h4>
+            <ul style="color: #aaa; line-height: 1.6;">
+                <li><strong>cookies</strong>: Google authentication cookies found in browser</li>
+                <li><strong>chrome_identity</strong>: Chrome browser with identity API detected</li>
+                <li><strong>google_services</strong>: User has access to Google services</li>
+                <li><strong>google_api</strong>: Google APIs available in browser</li>
+                <li><strong>browser_credentials</strong>: Browser has saved Google credentials</li>
+            </ul>
+        </div>
+    `;
+    
+    document.getElementById('methodsContainer').innerHTML = html;
+}
+
+function displayBrowserInfo() {
+    const visits = JSON.parse(localStorage.getItem('gahan_visits') || '[]');
+    const userHistory = JSON.parse(localStorage.getItem('gahan_user_history') || '[]');
+    
+    // Extract browser info
+    const browserStats = {};
+    const osStats = {};
+    let totalWithGoogle = 0;
+    let totalWithoutGoogle = 0;
+    
+    // Process visits
+    visits.forEach(visit => {
+        const browser = detectBrowser(visit.userAgent);
+        const os = detectOS(visit.userAgent);
+        
+        browserStats[browser] = (browserStats[browser] || 0) + 1;
+        osStats[os] = (osStats[os] || 0) + 1;
+    });
+    
+    // Process user history
+    userHistory.forEach(history => {
+        const browser = detectBrowser(history.userAgent);
+        const os = detectOS(history.userAgent);
+        
+        browserStats[browser] = (browserStats[browser] || 0) + 1;
+        osStats[os] = (osStats[os] || 0) + 1;
+        
+        if (history.googleAccountsDetected) {
+            totalWithGoogle++;
+        } else {
+            totalWithoutGoogle++;
+        }
+    });
+    
+    // Sort stats
+    const sortedBrowsers = Object.entries(browserStats).sort((a, b) => b[1] - a[1]);
+    const sortedOS = Object.entries(osStats).sort((a, b) => b[1] - a[1]);
+    
+    let html = `
+        <div class="stats-row">
+            <div class="stat-badge">
+                <strong>With Google Accounts:</strong> ${totalWithGoogle}
+            </div>
+            <div class="stat-badge">
+                <strong>Without Google Accounts:</strong> ${totalWithoutGoogle}
+            </div>
+        </div>
+        
+        <h4 style="color: #4fc3f7; margin: 20px 0 10px 0;">🌐 Browser Distribution</h4>
+        <table>
+            <thead>
+                <tr>
+                    <th>Browser</th>
+                    <th>Visitors</th>
+                    <th>Percentage</th>
+                </tr>
+            </thead>
+            <tbody>
+    `;
+    
+    const totalVisitors = visits.length + userHistory.length;
+    
+    sortedBrowsers.forEach(([browser, count]) => {
+        const percentage = totalVisitors > 0 ? ((count / totalVisitors) * 100).toFixed(1) : 0;
+        
+        html += `
+            <tr>
+                <td><span class="browser-badge">${browser}</span></td>
+                <td>${count}</td>
+                <td>${percentage}%</td>
+            </tr>
+        `;
+    });
+    
+    html += `
+            </tbody>
+        </table>
+        
+        <h4 style="color: #4fc3f7; margin: 30px 0 10px 0;">💻 Operating Systems</h4>
+        <table>
+            <thead>
+                <tr>
+                    <th>Operating System</th>
+                    <th>Visitors</th>
+                    <th>Percentage</th>
+                </tr>
+            </thead>
+            <tbody>
+    `;
+    
+    sortedOS.forEach(([os, count]) => {
+        const percentage = totalVisitors > 0 ? ((count / totalVisitors) * 100).toFixed(1) : 0;
+        
+        html += `
+            <tr>
+                <td>${os}</td>
+                <td>${count}</td>
+                <td>${percentage}%</td>
+            </tr>
+        `;
+    });
+    
+    html += '</tbody></table>';
+    
+    document.getElementById('browserContainer').innerHTML = html;
+}
+
+function detectOS(userAgent) {
+    if (!userAgent) return 'Unknown';
+    
+    if (userAgent.includes('Windows')) return 'Windows';
+    if (userAgent.includes('Mac')) return 'macOS';
+    if (userAgent.includes('Linux')) return 'Linux';
+    if (userAgent.includes('Android')) return 'Android';
+    if (userAgent.includes('iOS') || userAgent.includes('iPhone') || userAgent.includes('iPad')) return 'iOS';
+    
+    return 'Other';
+}
+
+function displayActivityTable() {
+    const visits = JSON.parse(localStorage.getItem('gahan_visits') || '[]');
+    const userHistory = JSON.parse(localStorage.getItem('gahan_user_history') || '[]');
+    
+    const allData = [
+        ...visits.map(v => ({
+            type: '🌐 Visit',
+            timestamp: v.timestamp,
+            user: 'Visitor',
+            details: 'Page visit',
+            browser: detectBrowser(v.userAgent),
+            hasGoogle: 'N/A'
+        })),
+        ...userHistory.filter(h => h.type === 'login').map(h => ({
+            type: '🔐 Login',
+            timestamp: h.timestamp,
+            user: h.username || 'Unknown',
+            details: `Logged in ${h.googleAccountsDetected ? '(Google detected)' : ''}`,
+            browser: detectBrowser(h.userAgent),
+            hasGoogle: h.googleAccountsDetected ? 'Yes' : 'No'
+        })),
+        ...userHistory.filter(h => h.type === 'google_account_detection').map(h => ({
+            type: '🔍 Google Scan',
+            timestamp: h.timestamp,
+            user: 'System',
+            details: `Detected ${h.accountsDetected || 0} Google account(s)`,
+            browser: detectBrowser(h.userAgent),
+            hasGoogle: 'Yes'
+        })),
+        ...userHistory.filter(h => h.type === 'content_access').map(h => ({
+            type: '📖 Content',
+            timestamp: h.timestamp,
+            user: h.username || 'Unknown',
+            details: `Accessed ${h.contentType}`,
+            browser: detectBrowser(h.userAgent),
+            hasGoogle: 'N/A'
+        }))
+    ];
+    
+    allData.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+    
+    if (allData.length === 0) {
+        document.getElementById('activityTable').innerHTML = '<p style="text-align:center;color:#aaa;">No activity data yet</p>';
+        return;
+    }
+    
+    let html = '<table>';
+    html += `
+        <thead>
+            <tr>
+                <th>Time</th>
+                <th>Type</th>
+                <th>User</th>
+                <th>Activity</th>
+                <th>Browser</th>
+                <th>Google Account</th>
+            </tr>
+        </thead>
+        <tbody>
+    `;
+    
+    allData.slice(0, 100).forEach(item => {
+        const time = new Date(item.timestamp);
+        const timeStr = time.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+        const dateStr = time.toLocaleDateString();
+        
+        html += `
+            <tr>
+                <td class="timestamp">
+                    ${dateStr}<br>
+                    <small>${timeStr}</small>
+                </td>
+                <td>${item.type}</td>
+                <td>${item.user}</td>
+                <td>${item.details}</td>
+                <td><span class="browser-badge">${item.browser}</span></td>
+                <td>${item.hasGoogle}</td>
+            </tr>
+        `;
+    });
+    
+    html += '</tbody></table>';
+    document.getElementById('activityTable').innerHTML = html;
+}
+
+function updateExportData() {
+    const totalVisitors = localStorage.getItem('gahan_total_visitors') || '0';
+    const visits = JSON.parse(localStorage.getItem('gahan_visits') || '[]');
+    const userHistory = JSON.parse(localStorage.getItem('gahan_user_history') || '[]');
+    const googleDetections = JSON.parse(localStorage.getItem('gahan_google_detections') || '[]');
+    
+    const exportData = {
+        metadata: {
+            export_time: new Date().toISOString(),
+            total_visitors: parseInt(totalVisitors),
+            total_detections: googleDetections.length
+        },
+        google_detections: googleDetections,
+        user_activity: userHistory,
+        page_visits: visits,
+        statistics: {
+            unique_google_sessions: countUniqueGoogleDetections(googleDetections, userHistory),
+            browsers_with_google: userHistory.filter(h => h.googleAccountsDetected).length,
+            total_detection_events: googleDetections.length + 
+                userHistory.filter(h => h.googleAccountsDetected).length
+        }
+    };
+    
+    document.getElementById('jsonData').value = JSON.stringify(exportData, null, 2);
+}
+
+// ========== EXPORT FUNCTIONS ==========
+
+function exportDetections() {
+    const googleDetections = JSON.parse(localStorage.getItem('gahan_google_detections') || '[]');
+    
+    if (googleDetections.length === 0) {
+        alert('No Google detection data to export');
+        return;
+    }
+    
+    let csv = 'Timestamp,Accounts Detected,Detection Methods,User Agent,Browser,OS\n';
+    
+    googleDetections.forEach(detection => {
+        const methods = detection.detectionMethods ? 
+            detection.detectionMethods.join('; ') : 'unknown';
+        const browser = detectBrowser(detection.userAgent);
+        const os = detectOS(detection.userAgent);
+        
+        csv += `"${detection.timestamp}","${detection.accountsDetected || 0}","${methods}","${detection.userAgent || ''}","${browser}","${os}"\n`;
+    });
+    
+    downloadFile('google-account-detections.csv', csv);
+    alert(`✅ Exported ${googleDetections.length} Google detection records`);
+}
+
+function exportDetectionsCSV() {
+    const googleDetections = JSON.parse(localStorage.getItem('gahan_google_detections') || '[]');
+    const userHistory = JSON.parse(localStorage.getItem('gahan_user_history') || '[]');
+    
+    // Combine all detection data
+    const allDetections = [
+        ...googleDetections.map(d => ({
+            type: 'background_detection',
+            timestamp: d.timestamp,
+            accounts: d.accountsDetected || 0,
+            methods: d.detectionMethods ? d.detectionMethods.join('; ') : '',
+            userAgent: d.userAgent || '',
+            browser: detectBrowser(d.userAgent),
+            os: detectOS(d.userAgent)
+        })),
+        ...userHistory
+            .filter(h => h.googleAccountsDetected || h.googleDetectionMethods)
+            .map(h => ({
+                type: 'user_action',
+                timestamp: h.timestamp,
+                accounts: h.googleAccountsDetected || 0,
+                methods: h.googleDetectionMethods ? h.googleDetectionMethods.join('; ') : '',
+                userAgent: h.userAgent || '',
+                browser: detectBrowser(h.userAgent),
+                os: detectOS(h.userAgent),
+                username: h.username || ''
+            }))
+    ];
+    
+    if (allDetections.length === 0) {
+        alert('No detection data to export');
+        return;
+    }
+    
+    let csv = 'Type,Timestamp,Accounts,Methods,Username,Browser,OS,User Agent\n';
+    
+    allDetections.forEach(detection => {
+        csv += `"${detection.type}","${detection.timestamp}","${detection.accounts}","${detection.methods}","${detection.username || ''}","${detection.browser}","${detection.os}","${detection.userAgent}"\n`;
+    });
+    
+    downloadFile('all-google-detections.csv', csv);
+    alert(`✅ Exported ${allDetections.length} detection records`);
+}
+
+function exportFullJSON() {
+    const visits = JSON.parse(localStorage.getItem('gahan_visits') || '[]');
+    const userHistory = JSON.parse(localStorage.getItem('gahan_user_history') || '[]');
+    const googleDetections = JSON.parse(localStorage.getItem('gahan_google_detections') || '[]');
+    
+    const data = {
+        metadata: {
+            export_time: new Date().toISOString(),
+            version: '1.0',
+            description: 'Google Account Detection Analytics'
+        },
+        google_account_detections: googleDetections,
+        user_activity: userHistory,
+        page_visits: visits,
+        summary: {
+            total_visitors: localStorage.getItem('gahan_total_visitors') || '0',
+            google_detections_count: googleDetections.length,
+            users_with_google: userHistory.filter(h => h.googleAccountsDetected).length,
+            unique_browsers: countBrowserTypes(visits, userHistory)
+        }
+    };
+    
+    const jsonStr = JSON.stringify(data, null, 2);
+    downloadFile('google-analytics-full.json', jsonStr);
+    alert('✅ Full analytics exported as JSON!');
+}
+
+function exportActivity() {
+    const visits = JSON.parse(localStorage.getItem('gahan_visits') || '[]');
+    const userHistory = JSON.parse(localStorage.getItem('gahan_user_history') || '[]');
+    
+    let csv = 'Type,Timestamp,User,Activity,Browser,Google Detected,User Agent\n';
+    
+    // Combine all activity
+    const allData = [
+        ...visits.map(v => ({
+            type: 'VISIT',
+            timestamp: v.timestamp,
+            user: 'Visitor',
+            activity: 'Page visit',
+            browser: detectBrowser(v.userAgent),
+            googleDetected: 'N/A',
+            userAgent: v.userAgent || ''
+        })),
+        ...userHistory.map(h => ({
+            type: h.type.toUpperCase(),
+            timestamp: h.timestamp,
+            user: h.username || 'Unknown',
+            activity: h.contentType || h.method || 'N/A',
+            browser: detectBrowser(h.userAgent),
+            googleDetected: h.googleAccountsDetected ? 'Yes' : 'No',
+            userAgent: h.userAgent || ''
+        }))
+    ];
+    
+    allData.sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp))
+           .forEach(item => {
+        csv += `"${item.type}","${item.timestamp}","${item.user}","${item.activity}","${item.browser}","${item.googleDetected}","${item.userAgent}"\n`;
+    });
+    
+    downloadFile('google-detection-activity.csv', csv);
+    alert(`✅ Exported ${allData.length} activity records`);
+}
+
+function downloadFile(filename, content) {
+    const blob = new Blob([content], { type: 'text/plain' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+}
+
+function copyToClipboard() {
+    const textarea = document.getElementById('jsonData');
+    textarea.select();
+    textarea.setSelectionRange(0, 99999);
+    navigator.clipboard.writeText(textarea.value).then(() => {
+        alert('📋 Data copied to clipboard!');
+    });
+}
+
+function copyAllData() {
+    updateExportData();
+    const textarea = document.getElementById('jsonData');
+    textarea.select();
+    textarea.setSelectionRange(0, 99999);
+    navigator.clipboard.writeText(textarea.value).then(() => {
+        alert('📋 All data copied to clipboard!');
+    });
+}
+
+function refreshData() {
+    loadAnalyticsData();
+    alert('🔄 Data refreshed!');
+}
+
+function clearData() {
+    if (confirm('⚠️ WARNING: This will delete ALL analytics data!\n\nThis action cannot be undone.\n\nAre you sure?')) {
+        localStorage.removeItem('gahan_visits');
+        localStorage.removeItem('gahan_user_history');
+        localStorage.removeItem('gahan_google_detections');
+        localStorage.removeItem('gahan_total_visitors');
+        localStorage.removeItem('gahan_user');
+        localStorage.removeItem('gahan_last_access');
+        localStorage.removeItem('gahan_last_access_time');
+        alert('🗑️ All data cleared!');
+        location.reload();
+    }
+}
+
+function logout() {
+    sessionStorage.removeItem('admin_logged_in');
+    sessionStorage.removeItem('login_time');
+    location.reload();
+}
+
+// Auto-refresh every 30 seconds
+setInterval(() => {
+    if (document.getElementById('analyticsScreen').style.display !== 'none') {
+        loadAnalyticsData();
+    }
+}, 30000);
+</script>
+</body>
+</html>

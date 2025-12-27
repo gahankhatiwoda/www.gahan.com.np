@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Visitor Analytics - Gahan's Website</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Arial', sans-serif;
+        }
+        
+        body {
+            background: #f5f7fa;
+            padding: 20px;
+            color: #333;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+        
+        header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #e9ecef;
+        }
+        
+        h1 {
+            color: #1a2980;
+            margin-bottom: 10px;
+        }
+        
+        .subtitle {
+            color: #666;
+            font-size: 18px;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+        
+        .stat-card {
+            background: linear-gradient(135deg, #4285F4, #34A853);
+            color: white;
+            padding: 25px;
+            border-radius: 12px;
+            text-align: center;
+        }
+        
+        .stat-number {
+            font-size: 48px;
+            font-weight: bold;
+            margin: 15px 0;
+            font-family: 'Courier New', monospace;
+        }
+        
+        .stat-label {
+            font-size: 16px;
+            opacity: 0.9;
+        }
+        
+        .export-buttons {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+        
+        .export-btn {
+            background: #4285F4;
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .export-btn:hover {
+            background: #3367D6;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+        }
+        
+        th {
+            background: #1a2980;
+            color: white;
+            padding: 15px;
+            text-align: left;
+            font-weight: bold;
+        }
+        
+        td {
+            padding: 15px;
+            border-bottom: 1px solid #e9ecef;
+        }
+        
+        tr:hover {
+            background: #f8f9fa;
+        }
+        
+        .visitor-id {
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            color: #666;
+        }
+        
+        .timestamp {
+            color: #666;
+            font-size: 14px;
+        }
+        
+        .action-badge {
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+        
+        .badge-login { background: #d4edda; color: #155724; }
+        .badge-view { background: #cce5ff; color: #004085; }
+        .badge-logout { background: #f8d7da; color: #721c24; }
+        
+        .no-data {
+            text-align: center;
+            padding: 40px;
+            color: #666;
+        }
+        
+        .back-btn {
+            display: inline-block;
+            margin-top: 30px;
+            color: #4285F4;
+            text-decoration: none;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .back-btn:hover {
+            text-decoration: underline;
+        }
+        
+        .search-box {
+            margin-bottom: 20px;
+        }
+        
+        .search-input {
+            width: 100%;
+            padding: 12px 20px;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            font-size: 16px;
+        }
+        
+        .search-input:focus {
+            outline: none;
+            border-color: #4285F4;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>📊 Visitor Analytics Dashboard</h1>
+            <p class="subtitle">Gahan's 100-Days Challenge - Real-time Visitor Tracking</p>
+        </header>
+        
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-label">Total Visitors</div>
+                <div class="stat-number" id="totalVisitors">0000</div>
+            </div>
+            
+            <div class="stat-card" style="background: linear-gradient(135deg, #FF9800, #FF5722);">
+                <div class="stat-label">Active Sessions</div>
+                <div class="stat-number" id="activeSessions">0</div>
+            </div>
+            
+            <div class="stat-card" style="background: linear-gradient(135deg, #9C27B0, #673AB7);">
+                <div class="stat-label">Today's Visitors</div>
+                <div class="stat-number" id="todayVisitors">0</div>
+            </div>
+            
+            <div class="stat-card" style="background: linear-gradient(135deg, #2196F3, #03A9F4);">
+                <div class="stat-label">Content Views</div>
+                <div class="stat-number" id="contentViews">0</div>
+            </div>
+        </div>
+        
+        <div class="export-buttons">
+            <button class="export-btn" onclick="exportData('json')">
+                📥 Export as JSON
+            </button>
+            <button class="export-btn" onclick="exportData('csv')">
+                📊 Export as CSV
+            </button>
+            <button class="export-btn" onclick="clearData()">
+                🗑️ Clear All Data
+            </button>
+            <button class="export-btn" onclick="refreshData()">
+                🔄 Refresh Data
+            </button>
+        </div>
+        
+        <div class="search-box">
+            <input type="text" class="search-input" placeholder="🔍 Search visitors by ID or action..." 
+                   onkeyup="filterTable(this.value)">
+        </div>
+        
+        <div id="visitorTable"></div>
+        
+        <a href="index.html" class="back-btn">
+            ← Back to Main Website
+        </a>
+    </div>
+    
+    <script>
+    // ========== VISITOR ANALYTICS SYSTEM ==========
+    
+    // Initialize
+    window.onload = function() {
+        loadVisitorData();
+        updateStats();
+        
+        // Auto-refresh every 30 seconds
+        setInterval(loadVisitorData, 30000);
+    };
+    
+    // Load visitor data
+    function loadVisitorData() {
+        // Get data from localStorage
+        const totalVisitors = localStorage.getItem('gahan_total_visitors') || '1000';
+        const history = JSON.parse(localStorage.getItem('gahan_history') || '[]');
+        const visits = JSON.parse(localStorage.getItem('gahan_visits') || '[]');
+        
+        // Update stats
+        document.getElementById('totalVisitors').textContent = 
+            parseInt(totalVisitors).toString().padStart(4, '0');
+        
+        // Calculate active sessions (accessed within last 2 hours)
+        const activeSessions = history.filter(item => {
+            const itemTime = new Date(item.timestamp);
+            const now = new Date();
+            const hoursDiff = (now - itemTime) / (1000 * 60 * 60);
+            return hoursDiff < 2 && item.action !== 'logout';
+        }).length;
+        
+        document.getElementById('activeSessions').textContent = activeSessions;
+        
+        // Calculate today's visitors
+        const today = new Date().toDateString();
+        const todayVisitors = visits.filter(visit => {
+            return new Date(visit.timestamp).toDateString() === today;
+        }).length;
+        
+        document.getElementById('todayVisitors').textContent = todayVisitors;
+        
+        // Calculate content views
+        const contentViews = history.filter(item => 
+            item.action.startsWith('view_')
+        ).length;
+        
+        document.getElementById('contentViews').textContent = contentViews;
+        
+        // Display visitor table
+        displayVisitorTable(history);
+    }
+    
+    // Display visitor table
+    function displayVisitorTable(history) {
+        if (history.length === 0) {
+            document.getElementById('visitorTable').innerHTML = `
+                <div class="no-data">
+                    <h3>No visitor data yet</h3>
+                    <p>Visitor data will appear here when users access the website</p>
+                </div>
+            `;
+            return;
+        }
+        
+        // Sort by timestamp (newest first)
+        history.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+        
+        let html = '<table>';
+        html += `
+            <thead>
+                <tr>
+                    <th>Time</th>
+                    <th>Visitor ID</th>
+                    <th>Action</th>
+                    <th>Page</th>
+                </tr>
+            </thead>
+            <tbody>
+        `;
+        
+        history.forEach(item => {
+            const time = new Date(item.timestamp);
+            const timeStr = time.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+            const dateStr = time.toLocaleDateString();
+            
+            let actionClass = '';
+            if (item.action === 'login') actionClass = 'badge-login';
+            else if (item.action.startsWith('view_')) actionClass = 'badge-view';
+            else if (item.action === 'logout') actionClass = 'badge-logout';
+            
+            html += `
+                <tr>
+                    <td class="timestamp">
+                        ${dateStr}<br>
+                        <small>${timeStr}</small>
+                    </td>
+                    <td class="visitor-id">${item.visitorId || 'Unknown'}</td>
+                    <td>
+                        <span class="action-badge ${actionClass}">
+                            ${getActionLabel(item.action)}
+                        </span>
+                    </td>
+                    <td>${item.page || 'N/A'}</td>
+                </tr>
+            `;
+        });
+        
+        html += '</tbody></table>';
+        document.getElementById('visitorTable').innerHTML = html;
+    }
+    
+    // Get readable action label
+    function getActionLabel(action) {
+        const labels = {
+            'login': '🔓 Login',
+            'logout': '🚪 Logout',
+            'view_odd': '📚 Viewed Odd Sets',
+            'view_even': '📖 Viewed Even Sets',
+            'view_obj': '✅ Viewed Objective Sets',
+            'access_granted': '✅ Access Granted'
+        };
+        
+        return labels[action] || action;
+    }
+    
+    // Filter table
+    function filterTable(searchTerm) {
+        const rows = document.querySelectorAll('#visitorTable tbody tr');
+        
+        rows.forEach(row => {
+            const text = row.textContent.toLowerCase();
+            if (text.includes(searchTerm.toLowerCase())) {
+                row.style.display = '';
+            } else {
+                row.style.display = 'none';
+            }
+        });
+    }
+    
+    // Export data
+    function exportData(format) {
+        const history = JSON.parse(localStorage.getItem('gahan_history') || '[]');
+        const visits = JSON.parse(localStorage.getItem('gahan_visits') || '[]');
+        
+        const data = {
+            history: history,
+            visits: visits,
+            totalVisitors: localStorage.getItem('gahan_total_visitors'),
+            exportTime: new Date().toISOString()
+        };
+        
+        if (format === 'json') {
+            const jsonStr = JSON.stringify(data, null, 2);
+            downloadFile('visitor-data.json', jsonStr);
+        } else if (format === 'csv') {
+            let csv = 'Time,Visitor ID,Action,Page\n';
+            history.forEach(item => {
+                csv += `"${item.timestamp}","${item.visitorId}","${item.action}","${item.page}"\n`;
+            });
+            downloadFile('visitor-data.csv', csv);
+        }
+        
+        alert(`Data exported as ${format.toUpperCase()}!`);
+    }
+    
+    // Download file
+    function downloadFile(filename, content) {
+        const blob = new Blob([content], { type: 'text/plain' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = filename;
+        a.click();
+        URL.revokeObjectURL(url);
+    }
+    
+    // Clear data
+    function clearData() {
+        if (confirm('Are you sure you want to clear ALL visitor data? This cannot be undone.')) {
+            localStorage.removeItem('gahan_history');
+            localStorage.removeItem('gahan_visits');
+            localStorage.removeItem('gahan_total_visitors');
+            localStorage.removeItem('gahan_access_count');
+            
+            alert('All visitor data has been cleared!');
+            loadVisitorData();
+        }
+    }
+    
+    // Refresh data
+    function refreshData() {
+        loadVisitorData();
+        alert('Data refreshed!');
+    }
+    
+    // Update stats
+    function updateStats() {
+        loadVisitorData();
+    }
+    </script>
+</body>
+</html>

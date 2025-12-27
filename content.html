@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GAHAN KHATIWODA OFFICIAL - 100 Days Challenge</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Arial', sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #1a2980 0%, #26d0ce 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            color: #333;
+        }
+        
+        .visitor-counter {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: rgba(0, 0, 0, 0.9);
+            color: white;
+            padding: 15px 20px;
+            border-radius: 12px;
+            text-align: center;
+            font-family: 'Courier New', monospace;
+            border: 2px solid #00ff00;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.5);
+            z-index: 1000;
+        }
+        
+        .counter-number {
+            font-size: 32px;
+            color: #00ff00;
+            font-weight: bold;
+            text-shadow: 0 0 10px #00ff00;
+        }
+        
+        .main-container {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            max-width: 800px;
+            width: 100%;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.3);
+            text-align: center;
+            margin-top: 20px;
+        }
+        
+        .logo {
+            font-size: 60px;
+            color: #EA4335;
+            margin-bottom: 20px;
+        }
+        
+        h1 {
+            color: #1a2980;
+            margin-bottom: 10px;
+            font-size: 2.5rem;
+        }
+        
+        h2 {
+            color: #26d0ce;
+            margin-bottom: 30px;
+            font-weight: 300;
+        }
+        
+        .description {
+            color: #666;
+            margin-bottom: 40px;
+            line-height: 1.6;
+            font-size: 18px;
+        }
+        
+        .login-btn {
+            background: linear-gradient(90deg, #4285F4, #34A853);
+            color: white;
+            border: none;
+            padding: 20px 50px;
+            font-size: 20px;
+            font-weight: bold;
+            border-radius: 50px;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 15px;
+            margin: 20px 0;
+            transition: all 0.3s;
+            box-shadow: 0 10px 25px rgba(66, 133, 244, 0.3);
+        }
+        
+        .login-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 30px rgba(66, 133, 244, 0.4);
+        }
+        
+        .btn-icon {
+            background: white;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #4285F4;
+            font-weight: bold;
+            font-size: 24px;
+        }
+        
+        .features {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            margin: 40px 0;
+        }
+        
+        .feature {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            border: 2px solid #e9ecef;
+        }
+        
+        .feature-icon {
+            font-size: 30px;
+            margin-bottom: 10px;
+        }
+        
+        .success-screen {
+            display: none;
+        }
+        
+        .success-icon {
+            font-size: 80px;
+            color: #34A853;
+            margin-bottom: 20px;
+        }
+        
+        .visitor-id {
+            background: #e8f0fe;
+            padding: 15px;
+            border-radius: 10px;
+            margin: 25px 0;
+            font-family: 'Courier New', monospace;
+            word-break: break-all;
+        }
+        
+        .content-buttons {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin: 30px 0;
+            flex-wrap: wrap;
+        }
+        
+        .content-btn {
+            padding: 18px 30px;
+            border: none;
+            border-radius: 10px;
+            font-size: 17px;
+            font-weight: bold;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            min-width: 200px;
+            justify-content: center;
+        }
+        
+        .odd-btn { background: #FF9800; color: white; }
+        .even-btn { background: #2196F3; color: white; }
+        .obj-btn { background: #9C27B0; color: white; }
+        
+        .admin-link {
+            margin-top: 30px;
+            color: #666;
+        }
+        
+        .admin-link a {
+            color: #4285F4;
+            text-decoration: none;
+            font-weight: bold;
+        }
+        
+        footer {
+            color: white;
+            margin-top: 40px;
+            text-align: center;
+            opacity: 0.8;
+        }
+        
+        @media (max-width: 768px) {
+            .features {
+                grid-template-columns: 1fr;
+            }
+            
+            .content-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .content-btn {
+                width: 100%;
+                max-width: 300px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="visitor-counter">
+    <div style="font-size: 12px; color: #ccc;">LIVE VISITORS</div>
+    <div class="counter-number" id="counterNumber">0000</div>
+</div>
+
+<div class="main-container">
+    <!-- Login Screen -->
+    <div id="loginScreen">
+        <div class="logo">G</div>
+        <h1>GAHAN KHATIWODA</h1>
+        <h2>100-DAYS COMPUTER SCIENCE CHALLENGE</h2>
+        
+        <p class="description">
+            Complete SEE 2082 Question Bank with Odd Days, Even Days, 
+            and Objective Practice Sets. Instant access, no registration required.
+        </p>
+        
+        <button class="login-btn" onclick="grantAccess()">
+            <div class="btn-icon">G</div>
+            Click to Access All Content
+        </button>
+        
+        <div class="features">
+            <div class="feature">
+                <div class="feature-icon">📚</div>
+                <h3>Odd Days Sets</h3>
+                <p>Comprehensive question bank</p>
+            </div>
+            <div class="feature">
+                <div class="feature-icon">📖</div>
+                <h3>Even Days Sets</h3>
+                <p>Advanced practice questions</p>
+            </div>
+            <div class="feature">
+                <div class="feature-icon">✅</div>
+                <h3>Objective Sets</h3>
+                <p>MCQ and quick review</p>
+            </div>
+        </div>
+        
+        <p class="admin-link">
+            Admin: <a href="visitor.html" target="_blank">View Visitor Analytics</a>
+        </p>
+    </div>
+    
+    <!-- Success Screen -->
+    <div class="success-screen" id="successScreen">
+        <div class="success-icon">✅</div>
+        <h1>Access Granted!</h1>
+        <p>Welcome to Gahan's 100-Days Challenge</p>
+        
+        <div class="visitor-id" id="visitorIdDisplay">
+            Loading your unique ID...
+        </div>
+        
+        <p>Your progress is automatically saved. Choose content to begin:</p>
+        
+        <div class="content-buttons">
+            <button class="content-btn odd-btn" onclick="goToContent('odd')">
+                📚 ODD DAYS SETS
+            </button>
+            <button class="content-btn even-btn" onclick="goToContent('even')">
+                📖 EVEN DAYS SETS
+            </button>
+            <button class="content-btn obj-btn" onclick="goToContent('obj')">
+                ✅ OBJECTIVE SETS
+            </button>
+        </div>
+        
+        <button onclick="logout()" style="
+            background: #EA4335;
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 8px;
+            cursor: pointer;
+            margin-top: 20px;
+        ">
+            Logout / New Session
+        </button>
+    </div>
+</div>
+
+<footer>
+    © 2023 Gahan Khatiwoda Official • SEE 2082 Computer Science • All Rights Reserved
+</footer>
+
+<script>
+// ========== VISITOR TRACKING SYSTEM ==========
+
+// Initialize
+window.onload = function() {
+    updateVisitorCounter();
+    checkExistingSession();
+    
+    // Log initial visit
+    logVisit();
+};
+
+// Generate unique visitor ID
+function generateVisitorId() {
+    const timestamp = Date.now().toString(36);
+    const random = Math.random().toString(36).substr(2, 8);
+    const browserKey = navigator.userAgent.substring(0, 15).replace(/\s+/g, '_');
+    return `visitor_${browserKey}_${timestamp}_${random}`;
+}
+
+// Grant access
+function grantAccess() {
+    const button = document.querySelector('.login-btn');
+    button.innerHTML = '<div class="btn-icon">⏳</div> Granting Access...';
+    button.disabled = true;
+    
+    setTimeout(() => {
+        const visitorId = generateVisitorId();
+        const accessTime = new Date().toISOString();
+        
+        // Save visitor data
+        localStorage.setItem('gahan_visitor_id', visitorId);
+        localStorage.setItem('gahan_access_time', accessTime);
+        localStorage.setItem('gahan_access_count', 
+            parseInt(localStorage.getItem('gahan_access_count') || '0') + 1);
+        
+        // Update total visitors
+        let totalVisitors = parseInt(localStorage.getItem('gahan_total_visitors') || '1000');
+        totalVisitors++;
+        localStorage.setItem('gahan_total_visitors', totalVisitors);
+        
+        // Update counter
+        updateVisitorCounter();
+        
+        // Show success screen
+        showSuccessScreen(visitorId, accessTime);
+        
+        // Log to console (You can see this)
+        logVisitorData(visitorId, 'access_granted');
+        
+        // Log to visitor history
+        logToHistory(visitorId, 'login');
+    }, 1000);
+}
+
+// Show success screen
+function showSuccessScreen(visitorId, accessTime) {
+    document.getElementById('loginScreen').style.display = 'none';
+    document.getElementById('successScreen').style.display = 'block';
+    
+    const formattedTime = new Date(accessTime).toLocaleString('en-US', {
+        hour: '2-digit',
+        minute: '2-digit',
+        month: 'short',
+        day: 'numeric'
+    });
+    
+    document.getElementById('visitorIdDisplay').innerHTML = `
+        <strong>Visitor ID:</strong><br>
+        <span style="color: #1a2980; font-size: 14px;">${visitorId}</span><br>
+        <small>Access: ${formattedTime}</small>
+    `;
+}
+
+// Check existing session
+function checkExistingSession() {
+    const visitorId = localStorage.getItem('gahan_visitor_id');
+    if (visitorId) {
+        const accessTime = localStorage.getItem('gahan_access_time');
+        const lastAccess = new Date(accessTime);
+        const now = new Date();
+        const hoursDiff = (now - lastAccess) / (1000 * 60 * 60);
+        
+        // If accessed within last 24 hours, show success screen
+        if (hoursDiff < 24) {
+            showSuccessScreen(visitorId, accessTime);
+        }
+    }
+}
+
+// Go to content
+function goToContent(contentType) {
+    const visitorId = localStorage.getItem('gahan_visitor_id');
+    
+    // Log content access
+    logToHistory(visitorId, `view_${contentType}`);
+    
+    // Save last accessed
+    localStorage.setItem('gahan_last_access', contentType);
+    localStorage.setItem('gahan_last_access_time', new Date().toISOString());
+    
+    // Show loading
+    document.getElementById('successScreen').innerHTML = `
+        <div style="padding: 40px; text-align: center;">
+            <div style="font-size: 60px; color: #4285F4;">⏳</div>
+            <h2 style="color: #1a2980; margin: 20px 0;">Loading ${contentType.toUpperCase()} SETS</h2>
+            <p>Please wait...</p>
+        </div>
+    `;
+    
+    // Redirect
+    setTimeout(() => {
+        // Create simple content pages if they don't exist
+        if (contentType === 'odd') window.location.href = 'odd.html';
+        else if (contentType === 'even') window.location.href = 'even.html';
+        else if (contentType === 'obj') window.location.href = 'obj.html';
+        else window.location.href = 'content.html';
+    }, 1500);
+}
+
+// Logout
+function logout() {
+    const visitorId = localStorage.getItem('gahan_visitor_id');
+    logToHistory(visitorId, 'logout');
+    
+    localStorage.removeItem('gahan_visitor_id');
+    localStorage.removeItem('gahan_access_time');
+    location.reload();
+}
+
+// Update visitor counter
+function updateVisitorCounter() {
+    let count = localStorage.getItem('gahan_total_visitors') || 1000;
+    document.getElementById('counterNumber').textContent = 
+        parseInt(count).toString().padStart(4, '0');
+}
+
+// Log visit data
+function logVisit() {
+    const data = {
+        timestamp: new Date().toISOString(),
+        url: window.location.href,
+        userAgent: navigator.userAgent,
+        referrer: document.referrer || 'direct'
+    };
+    
+    console.log('🌐 New Visit:', data);
+    
+    // Save to visit history
+    let visits = JSON.parse(localStorage.getItem('gahan_visits') || '[]');
+    visits.push(data);
+    localStorage.setItem('gahan_visits', JSON.stringify(visits));
+}
+
+// Log visitor data to console
+function logVisitorData(visitorId, action) {
+    console.log(`👤 ${action.toUpperCase()}:`);
+    console.log('🆔 ID:', visitorId);
+    console.log('🕐 Time:', new Date().toLocaleString());
+    console.log('🌐 Page:', window.location.href);
+    console.log('========================');
+}
+
+// Log to history
+function logToHistory(visitorId, action) {
+    const history = JSON.parse(localStorage.getItem('gahan_history') || '[]');
+    history.push({
+        visitorId: visitorId,
+        action: action,
+        timestamp: new Date().toISOString(),
+        page: window.location.href
+    });
+    localStorage.setItem('gahan_history', JSON.stringify(history));
+}
+</script>
+</body>
+</html>
