@@ -192,28 +192,6 @@
             text-align: center;
         }
         
-        .google-btn {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            background: white;
-            color: #444;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-            padding: 12px 24px;
-            font-size: 14px;
-            font-weight: 500;
-            cursor: pointer;
-            transition: all 0.3s;
-            width: 100%;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        }
-        
-        .google-btn:hover {
-            background: #f8f8f8;
-            box-shadow: 0 3px 8px rgba(0,0,0,0.15);
-        }
-        
         .divider {
             display: flex;
             align-items: center;
@@ -417,10 +395,10 @@
     <div id="loginScreen">
         <div class="logo">G</div>
         <h1>GAHAN KHATIWODA</h1>
-        <h2>100-DAYS-CHALLENGE-COMPUTER SCIENCE</h2>
+        <h2>100-Days-Challenge - Computer Science</h2>
         
         <p class="description">
-            Complete Subjective and Objective Practice Sets for Computer Science-SEE 2082
+            Complete Subjective and Objective Practice Sets for SEE 2082
         </p>
         
         <div class="login-form">
@@ -451,13 +429,12 @@
             <div class="google-section">
                 <!-- Google Sign-In Button -->
                 <div id="g_id_onload"
-					data-client_id="789365890180-30fpjid0955op8rldf1js02br0t7jql3.apps.googleusercontent.com"
+                    data-client_id="789365890180-30fpjid0955op8rldf1js02br0t7jql3.apps.googleusercontent.com"
                     data-context="signin"
                     data-ux_mode="popup"
                     data-callback="handleCredentialResponse"
                     data-auto_prompt="false">
                 </div>
-
                 <div class="g_id_signin"
                     data-type="standard"
                     data-shape="rectangular"
@@ -467,12 +444,12 @@
                     data-logo_alignment="left"
                     data-width="100%">
                 </div>
-					<p style="font-size: 12px; color: #666; margin-top: 15px; text-align: center;">
-						By signing in with Google, you agree to our 
-					<a href="privacy.html" target="_blank" style="color: #4285F4;">Privacy Policy</a>.<br>
-						We only access your name, email, and profile picture.
-					</p>
-				
+                
+                <p style="font-size: 12px; color: #666; margin-top: 15px; text-align: center;">
+                    By signing in with Google, you agree to our 
+                    <a href="privacy.html" target="_blank" style="color: #4285F4;">Privacy Policy</a>.<br>
+                    We only access your name, email, and profile picture.
+                </p>
             </div>
             
             <!-- Google User Info -->
@@ -535,8 +512,9 @@
     <div class="success-screen" id="successScreen">
         <div class="success-icon">✅</div>
         <h3>Login Successful!</h3>
-		<h1>Welcome to</h1>
-        <h1>GAHAN'S 100-Days-Challenge</h1>        
+        <h1>Welcome to</h1>
+        <h1>GAHAN'S 100-Days-Challenge</h1>
+        
         <div class="user-info" id="userInfoDisplay">
             Loading user information...
         </div>
@@ -545,10 +523,10 @@
         
         <div class="content-buttons">
             <button class="content-btn odd-btn" onclick="goToContent('odd')">
-                📚 ODD DAYS SETS
+                📚 ODD-DAYS SETS
             </button>
             <button class="content-btn even-btn" onclick="goToContent('even')">
-                📖 EVEN DAYS SETS
+                📖 EVEN-DAYS SETS
             </button>
             <button class="content-btn obj-btn" onclick="goToContent('obj')">
                 ✅ OBJECTIVE SETS
@@ -608,7 +586,6 @@
 
 <script>
 // ========== USER CREDENTIALS SYSTEM ==========
-
 const VALID_USERS = [
     { username: "gahan", password: "gahan", email: "gahan.com.np@gmail.com" },
     { username: "admin", password: "admin", email: "gahan.com.np@gmail.com" },
@@ -618,27 +595,37 @@ const VALID_USERS = [
 
 const ADMIN_PASSWORD = "Gahan123";
 
-// ========== GOOGLE OAUTH ==========
-
+// ========== GOOGLE OAUTH + SHEET INTEGRATION ==========
 let googleUserData = null;
 
-// Handle Google Sign-In response
+// Google Sheet Web App URL (Replace with your actual deployed URL)
+const SHEET_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbwU5tNFqhP13hmbDyw0kHSMPjoGHSmJ04wtnvR6Eq_aUY1tD3zlaEoyZACeC-z1gp7d/exec"; // <-- यहाँ आफ्नो Apps Script URL राख्नुहोस्
 
-function handleCredentialResponse(response) 
-{
-        if (!response || !response.credential) 
-	{
+// Send data to Google Sheet
+function sendToGoogleSheet(data) {
+    fetch(SHEET_WEB_APP_URL, {
+        method: "POST",
+        mode: "no-cors", // Important for client-side fetch to Google Apps Script
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data)
+    })
+    .then(() => console.log("Data sent to Google Sheet"))
+    .catch(error => console.error("Sheet error:", error));
+}
+
+// ========== GOOGLE SIGN-IN HANDLING ==========
+function handleCredentialResponse(response) {
+    if (!response || !response.credential) {
         console.error("Google Sign-In failed:", response);
         alert("Google Sign-In failed. Please try again.");
         return;
     }
-	console.log("✅ Google Sign-In Successful!");
     
-    // Decode the JWT token
+    console.log("✅ Google Sign-In Successful!");
+    
     const token = response.credential;
     const payload = JSON.parse(atob(token.split('.')[1]));
     
-    // Extract user information
     googleUserData = {
         email: payload.email,
         name: payload.name,
@@ -652,16 +639,13 @@ function handleCredentialResponse(response)
     
     console.log("📧 Google User:", googleUserData);
     
-    // Show Google user info
     document.getElementById('googleUserInfo').style.display = 'block';
     document.getElementById('googleAvatar').src = googleUserData.picture;
     document.getElementById('googleName').textContent = googleUserData.name;
     document.getElementById('googleEmail').textContent = googleUserData.email;
     
-    // Hide Google sign-in button
     document.querySelector('.g_id_signin').style.display = 'none';
     
-    // Auto-login after 1 second
     setTimeout(() => {
         loginWithGoogle();
     }, 1000);
@@ -674,95 +658,60 @@ function loginWithGoogle() {
     }
     
     const googleEmail = googleUserData.email;
-    
-    // Check if this Gmail exists in our database
     const user = VALID_USERS.find(u => u.email === googleEmail);
     
-    if (user) {
-        // Show loading
-        const button = document.querySelector('.login-btn');
-        const originalHTML = button.innerHTML;
-        button.innerHTML = '<div class="btn-icon">✓</div> Logging in with Google...';
-        button.disabled = true;
+    const isNewUser = !user;
+    const finalUser = user || {
+        username: googleEmail.split('@')[0],
+        email: googleEmail
+    };
+    
+    // Show loading
+    const button = document.querySelector('.login-btn');
+    const originalHTML = button.innerHTML;
+    button.innerHTML = '<div class="btn-icon">✓</div> Logging in...';
+    button.disabled = true;
+    
+    setTimeout(() => {
+        const sessionId = (isNewUser ? 'google_new_' : 'google_') + Date.now() + '_' + Math.random().toString(36).substr(2, 8);
+        const loginTime = new Date().toISOString();
         
-        setTimeout(() => {
-            const sessionId = 'google_' + Date.now() + '_' + Math.random().toString(36).substr(2, 8);
-            const loginTime = new Date().toISOString();
-            
-            localStorage.setItem('current_username', user.username);
-            
-            // Save user session
-            localStorage.setItem('gahan_user', JSON.stringify({
-                username: user.username,
-                email: user.email,
-                sessionId: sessionId,
-                loginTime: loginTime,
-                userAgent: navigator.userAgent,
-                loginMethod: 'google_oauth',
-                googleUserData: googleUserData
-            }));
-            
-            // Save to analytics
-            logGoogleLogin(googleUserData);
-            
-            updateVisitorCounter();
-            logUserLogin(user.username, user.email, 'google_oauth');
-            showSuccessScreen(user.username, user.email, loginTime);
-            
-            // Reset button
-            button.innerHTML = originalHTML;
-            button.disabled = false;
-            
-        }, 1000);
-    } else {
-        // Auto-create account for new Google user
-        const newUsername = googleEmail.split('@')[0];
-        const newPassword = Math.random().toString(36).substr(2, 10);
+        localStorage.setItem('current_username', finalUser.username);
         
-        // Add to VALID_USERS
-        VALID_USERS.push({
-            username: newUsername,
-            password: newPassword,
-            email: googleEmail
+        localStorage.setItem('gahan_user', JSON.stringify({
+            username: finalUser.username,
+            email: finalUser.email,
+            sessionId: sessionId,
+            loginTime: loginTime,
+            userAgent: navigator.userAgent,
+            loginMethod: isNewUser ? 'google_oauth_new' : 'google_oauth',
+            googleUserData: googleUserData,
+            autoCreated: isNewUser
+        }));
+        
+        // Save to Google Sheet
+        sendToGoogleSheet({
+            username: finalUser.username,
+            email: finalUser.email,
+            method: isNewUser ? 'google_oauth_new' : 'google_oauth',
+            timestamp: loginTime,
+            contentType: ""
         });
         
-        // Show loading
-        const button = document.querySelector('.login-btn');
-        const originalHTML = button.innerHTML;
-        button.innerHTML = '<div class="btn-icon">✓</div> Creating account...';
-        button.disabled = true;
+        // Local analytics
+        logGoogleLogin(googleUserData);
+        updateVisitorCounter();
+        logUserLogin(finalUser.username, finalUser.email, isNewUser ? 'google_oauth_new' : 'google_oauth');
+        showSuccessScreen(finalUser.username, finalUser.email, loginTime);
         
-        setTimeout(() => {
-            const sessionId = 'google_new_' + Date.now() + '_' + Math.random().toString(36).substr(2, 8);
-            const loginTime = new Date().toISOString();
-            
-            localStorage.setItem('current_username', newUsername);
-            
-            localStorage.setItem('gahan_user', JSON.stringify({
-                username: newUsername,
-                email: googleEmail,
-                sessionId: sessionId,
-                loginTime: loginTime,
-                userAgent: navigator.userAgent,
-                loginMethod: 'google_oauth_new',
-                googleUserData: googleUserData,
-                autoCreated: true
-            }));
-            
-            // Save to analytics
-            logGoogleLogin(googleUserData);
-            
-            updateVisitorCounter();
-            logUserLogin(newUsername, googleEmail, 'google_oauth_new');
-            showSuccessScreen(newUsername, googleEmail, loginTime);
-            
-            button.innerHTML = originalHTML;
-            button.disabled = false;
-            
-            alert(`✅ Welcome! Your account has been created:\n\nUsername: ${newUsername}\nEmail: ${googleEmail}\n\nYou can now access all content.`);
-            
-        }, 1000);
-    }
+        if (isNewUser) {
+            alert(`✅ Welcome! Your account has been created:\n\nUsername: ${finalUser.username}\nEmail: ${finalUser.email}\n\nYou can now access all content.`);
+        }
+        
+        button.innerHTML = originalHTML;
+        button.disabled = false;
+        
+    }, 1000);
 }
 
 function googleLogout() {
@@ -770,7 +719,6 @@ function googleLogout() {
     document.getElementById('googleUserInfo').style.display = 'none';
     document.querySelector('.g_id_signin').style.display = 'block';
     
-    // Revoke Google token
     if (typeof google !== 'undefined' && google.accounts) {
         google.accounts.id.revoke(localStorage.getItem('google_token'), done => {
             console.log('Google token revoked');
@@ -788,12 +736,10 @@ function logGoogleLogin(userData) {
         userAgent: navigator.userAgent
     };
     
-    // Save to analytics
     let history = JSON.parse(localStorage.getItem('gahan_user_history') || '[]');
     history.push(log);
     localStorage.setItem('gahan_user_history', JSON.stringify(history));
     
-    // Save to Google log
     let googleLog = JSON.parse(localStorage.getItem('gahan_google_log') || '[]');
     googleLog.push(log);
     localStorage.setItem('gahan_google_log', JSON.stringify(googleLog));
@@ -801,37 +747,7 @@ function logGoogleLogin(userData) {
     console.log('📊 Google Login Logged:', log);
 }
 
-// ========== ANALYTICS MODAL ==========
-
-function showAnalyticsModal() {
-    document.getElementById('analyticsModal').style.display = 'flex';
-    document.getElementById('analyticsPassword').focus();
-    document.getElementById('analyticsError').style.display = 'none';
-}
-
-function hideAnalyticsModal() {
-    document.getElementById('analyticsModal').style.display = 'none';
-    document.getElementById('analyticsPassword').value = '';
-}
-
-function checkAnalyticsPassword() {
-    const password = document.getElementById('analyticsPassword').value;
-    const errorDiv = document.getElementById('analyticsError');
-    
-    if (password === ADMIN_PASSWORD) {
-        hideAnalyticsModal();
-        window.open('analytics.html', '_blank');
-        console.log('✅ Analytics accessed');
-    } else {
-        errorDiv.style.display = 'block';
-        document.getElementById('analyticsPassword').value = '';
-        document.getElementById('analyticsPassword').focus();
-        console.log('❌ Failed analytics access attempt');
-    }
-}
-
-// ========== USER LOGIN ==========
-
+// ========== TRADITIONAL LOGIN ==========
 function loginUser() {
     const username = document.getElementById('username').value.trim();
     const password = document.getElementById('password').value;
@@ -870,6 +786,15 @@ function loginUser() {
                 loginMethod: 'traditional'
             }));
             
+            // Save to Google Sheet
+            sendToGoogleSheet({
+                username: user.username,
+                email: user.email,
+                method: 'traditional',
+                timestamp: loginTime,
+                contentType: ""
+            });
+            
             updateVisitorCounter();
             logUserLogin(user.username, user.email, 'traditional');
             showSuccessScreen(user.username, user.email, loginTime);
@@ -883,10 +808,10 @@ function loginUser() {
         errorDiv.style.display = 'block';
         document.getElementById('password').value = '';
         document.getElementById('password').focus();
-        console.log('❌ Failed login attempt with:', username);
     }
 }
 
+// ========== OTHER FUNCTIONS (unchanged) ==========
 function showSuccessScreen(username, email, loginTime) {
     document.getElementById('loginScreen').style.display = 'none';
     document.getElementById('successScreen').style.display = 'block';
@@ -899,9 +824,7 @@ function showSuccessScreen(username, email, loginTime) {
     });
     
     const userData = JSON.parse(localStorage.getItem('gahan_user') || '{}');
-    const loginMethod = userData.loginMethod === 'google_oauth' || userData.loginMethod === 'google_oauth_new' 
-        ? 'Google OAuth' 
-        : 'Traditional';
+    const loginMethod = userData.loginMethod?.includes('google') ? 'Google OAuth' : 'Traditional';
     
     document.getElementById('userInfoDisplay').innerHTML = `
         <strong>Welcome, ${username}!</strong><br>
@@ -930,6 +853,15 @@ function checkExistingSession() {
 function goToContent(contentType) {
     const userData = JSON.parse(localStorage.getItem('gahan_user') || '{}');
     
+    // Log content access to Google Sheet
+    sendToGoogleSheet({
+        username: userData.username || 'Unknown',
+        email: userData.email || '',
+        method: userData.loginMethod || 'unknown',
+        timestamp: new Date().toISOString(),
+        contentType: contentType
+    });
+    
     logContentAccess(userData.username, contentType);
     
     localStorage.setItem('gahan_last_access', contentType);
@@ -953,7 +885,7 @@ function goToContent(contentType) {
 function logout() {
     const userData = JSON.parse(localStorage.getItem('gahan_user') || '{}');
     
-    if (userData.loginMethod === 'google_oauth' || userData.loginMethod === 'google_oauth_new') {
+    if (userData.loginMethod?.includes('google')) {
         googleLogout();
     }
     
@@ -965,20 +897,19 @@ function logout() {
 }
 
 function updateVisitorCounter() {
-    let count = localStorage.getItem('gahan_total_visitors') || 1000;
-    count = parseInt(count) + 1;
+    let count = parseInt(localStorage.getItem('gahan_total_visitors') || '1000');
+    count += 1;
     localStorage.setItem('gahan_total_visitors', count);
-    
-    document.getElementById('counterNumber').textContent = 
-        parseInt(count).toString().padStart(4, '0');
+    document.getElementById('counterNumber').textContent = count.toString().padStart(4, '0');
 }
 
+// ========== LOGGING FUNCTIONS (local + Sheet) ==========
 function logUserLogin(username, email, method) {
     const logData = {
         type: 'login',
-        username: username,
-        email: email,
-        method: method,
+        username,
+        email,
+        method,
         timestamp: new Date().toISOString(),
         userAgent: navigator.userAgent
     };
@@ -986,25 +917,30 @@ function logUserLogin(username, email, method) {
     let history = JSON.parse(localStorage.getItem('gahan_user_history') || '[]');
     history.push(logData);
     localStorage.setItem('gahan_user_history', JSON.stringify(history));
+    
+    // Also send to Google Sheet
+    sendToGoogleSheet(logData);
 }
 
 function logUserLogout(username) {
     const logData = {
         type: 'logout',
-        username: username,
+        username,
         timestamp: new Date().toISOString()
     };
     
     let history = JSON.parse(localStorage.getItem('gahan_user_history') || '[]');
     history.push(logData);
     localStorage.setItem('gahan_user_history', JSON.stringify(history));
+    
+    sendToGoogleSheet(logData);
 }
 
 function logContentAccess(username, contentType) {
     const logData = {
         type: 'content_access',
-        username: username,
-        contentType: contentType,
+        username,
+        contentType,
         timestamp: new Date().toISOString(),
         page: window.location.href
     };
@@ -1012,10 +948,13 @@ function logContentAccess(username, contentType) {
     let history = JSON.parse(localStorage.getItem('gahan_user_history') || '[]');
     history.push(logData);
     localStorage.setItem('gahan_user_history', JSON.stringify(history));
+    
+    sendToGoogleSheet(logData);
 }
 
 function logVisit() {
     const data = {
+        type: 'visit',
         timestamp: new Date().toISOString(),
         url: window.location.href,
         userAgent: navigator.userAgent,
@@ -1025,14 +964,14 @@ function logVisit() {
     let visits = JSON.parse(localStorage.getItem('gahan_visits') || '[]');
     visits.push(data);
     localStorage.setItem('gahan_visits', JSON.stringify(visits));
+    
+    sendToGoogleSheet(data);
 }
 
 // ========== INITIALIZATION ==========
-
 window.onload = function() {
     updateVisitorCounter();
     checkExistingSession();
-    
     logVisit();
     
     document.getElementById('username').focus();
@@ -1054,5 +993,6 @@ function addUser(newUsername, newPassword, newEmail) {
     console.log('✅ User added:', newUsername);
 }
 </script>
+
 </body>
 </html>
