@@ -667,25 +667,42 @@ function loginWithGoogle() {
     const user = VALID_USERS.find(u => u.email === googleEmail);
     
     if (user) {
-        // Gmail is in VALID_USERS, allow login
-        // ...your existing login code...
-    } else {
-        // ❌ REMOVE AUTO-CREATION ❌
-        // Show error message instead
-        document.getElementById('errorMessage').textContent = 
-            `❌ Google account "${googleEmail}" is not registered. ` +
-            `Please contact administrator or use traditional login.`;
-        document.getElementById('errorMessage').style.display = 'block';
-        
-        // Optionally, logout from Google
-        googleLogout();
-        
-        // Reset button
+        // Show loading
         const button = document.querySelector('.login-btn');
-        button.innerHTML = '<div class="btn-icon">🔐</div> Login to Access Content';
-        button.disabled = false;
-    }
-} else {
+        const originalHTML = button.innerHTML;
+        button.innerHTML = '<div class="btn-icon">✓</div> Logging in with Google...';
+        button.disabled = true;
+        
+        setTimeout(() => {
+            const sessionId = 'google_' + Date.now() + '_' + Math.random().toString(36).substr(2, 8);
+            const loginTime = new Date().toISOString();
+            
+            localStorage.setItem('current_username', user.username);
+            
+            // Save user session
+            localStorage.setItem('gahan_user', JSON.stringify({
+                username: user.username,
+                email: user.email,
+                sessionId: sessionId,
+                loginTime: loginTime,
+                userAgent: navigator.userAgent,
+                loginMethod: 'google_oauth',
+                googleUserData: googleUserData
+            }));
+            
+            // Save to analytics
+            logGoogleLogin(googleUserData);
+            
+            updateVisitorCounter();
+            logUserLogin(user.username, user.email, 'google_oauth');
+            showSuccessScreen(user.username, user.email, loginTime);
+            
+            // Reset button
+            button.innerHTML = originalHTML;
+            button.disabled = false;
+            
+        }, 1000);
+    } else {
         // Auto-create account for new Google user
         const newUsername = googleEmail.split('@')[0];
         const newPassword = Math.random().toString(36).substr(2, 10);
