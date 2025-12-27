@@ -1,0 +1,998 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GAHAN KHATIWODA OFFICIAL - 100-Days-Challenge</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Arial', sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #1a2980 0%, #26d0ce 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            color: #333;
+        }
+        
+        /* Analytics Button */
+        .analytics-btn {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 12px 20px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s;
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            text-decoration: none;
+        }
+        
+        .analytics-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+        
+        .visitor-counter {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: rgba(0, 0, 0, 0.9);
+            color: white;
+            padding: 15px 20px;
+            border-radius: 12px;
+            text-align: center;
+            font-family: 'Courier New', monospace;
+            border: 2px solid #00ff00;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.5);
+            z-index: 1000;
+        }
+        
+        .counter-number {
+            font-size: 32px;
+            color: #00ff00;
+            font-weight: bold;
+            text-shadow: 0 0 10px #00ff00;
+        }
+        
+        .main-container {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            max-width: 800px;
+            width: 100%;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.3);
+            text-align: center;
+            margin-top: 20px;
+        }
+        
+        .logo {
+            font-size: 60px;
+            color: #EA4335;
+            margin-bottom: 20px;
+        }
+        
+        h1 {
+            color: #1a2980;
+            margin-bottom: 10px;
+            font-size: 2.5rem;
+        }
+        
+        h2 {
+            color: #26d0ce;
+            margin-bottom: 30px;
+            font-weight: 300;
+        }
+        
+        .description {
+            color: #666;
+            margin-bottom: 40px;
+            line-height: 1.6;
+            font-size: 18px;
+        }
+        
+        /* Login Form Styles */
+        .login-form {
+            background: #f8f9fa;
+            padding: 30px;
+            border-radius: 15px;
+            margin: 20px 0;
+            text-align: left;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #555;
+            font-weight: bold;
+        }
+        
+        .form-group input {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+        
+        .form-group input:focus {
+            outline: none;
+            border-color: #4285F4;
+        }
+        
+        .login-btn {
+            background: linear-gradient(90deg, #4285F4, #34A853);
+            color: white;
+            border: none;
+            padding: 20px 50px;
+            font-size: 20px;
+            font-weight: bold;
+            border-radius: 50px;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 15px;
+            margin: 20px 0;
+            transition: all 0.3s;
+            box-shadow: 0 10px 25px rgba(66, 133, 244, 0.3);
+            width: 100%;
+            justify-content: center;
+        }
+        
+        .login-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 30px rgba(66, 133, 244, 0.4);
+        }
+        
+        .btn-icon {
+            background: white;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #4285F4;
+            font-weight: bold;
+            font-size: 24px;
+        }
+        
+        .error-message {
+            color: #EA4335;
+            margin-top: 15px;
+            text-align: center;
+            display: none;
+        }
+        
+        /* Google OAuth Section */
+        .google-section {
+            margin: 25px 0;
+            text-align: center;
+        }
+        
+        .divider {
+            display: flex;
+            align-items: center;
+            margin: 20px 0;
+            color: #666;
+            font-size: 14px;
+        }
+        
+        .divider::before,
+        .divider::after {
+            content: "";
+            flex: 1;
+            border-bottom: 1px solid #ddd;
+        }
+        
+        .divider span {
+            padding: 0 15px;
+        }
+        
+        .features {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            margin: 40px 0;
+        }
+        
+        .feature {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            border: 2px solid #e9ecef;
+        }
+        
+        .feature-icon {
+            font-size: 30px;
+            margin-bottom: 10px;
+        }
+        
+        .success-screen {
+            display: none;
+        }
+        
+        .success-icon {
+            font-size: 80px;
+            color: #34A853;
+            margin-bottom: 20px;
+        }
+        
+        .user-info {
+            background: #e8f0fe;
+            padding: 15px;
+            border-radius: 10px;
+            margin: 25px 0;
+            font-family: 'Courier New', monospace;
+        }
+        
+        .content-buttons {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin: 30px 0;
+            flex-wrap: wrap;
+        }
+        
+        .content-btn {
+            padding: 18px 30px;
+            border: none;
+            border-radius: 10px;
+            font-size: 17px;
+            font-weight: bold;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            min-width: 200px;
+            justify-content: center;
+        }
+        
+        .odd-btn { background: #FF9800; color: white; }
+        .even-btn { background: #2196F3; color: white; }
+        .obj-btn { background: #9C27B0; color: white; }
+        
+        footer {
+            color: white;
+            margin-top: 40px;
+            text-align: center;
+            opacity: 0.8;
+        }
+        
+        /* Google User Info */
+        .google-user-info {
+            background: #e8f0fe;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+            text-align: center;
+            display: none;
+        }
+        
+        .google-avatar {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            margin: 0 auto 15px;
+            display: block;
+            border: 3px solid #4285F4;
+        }
+        
+        /* Analytics Modal */
+        .analytics-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.8);
+            z-index: 2000;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .modal-content {
+            background: white;
+            padding: 40px;
+            border-radius: 15px;
+            max-width: 500px;
+            width: 90%;
+            text-align: center;
+        }
+        
+        .modal-icon {
+            font-size: 60px;
+            color: #4285F4;
+            margin-bottom: 20px;
+        }
+        
+        .modal-input {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+            margin: 20px 0;
+            text-align: center;
+        }
+        
+        .modal-btn {
+            background: #4285F4;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+            width: 100%;
+            margin: 10px 0;
+        }
+        
+        @media (max-width: 768px) {
+            .features {
+                grid-template-columns: 1fr;
+            }
+            
+            .content-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .content-btn {
+                width: 100%;
+                max-width: 300px;
+            }
+            
+            .analytics-btn, .visitor-counter {
+                padding: 10px 15px;
+                font-size: 12px;
+            }
+        }
+    </style>
+    
+    <!-- Google OAuth Library -->
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
+</head>
+<body>
+
+<!-- Analytics Button -->
+<a href="#" class="analytics-btn" onclick="showAnalyticsModal()">
+    <span style="font-size: 18px;">🔒</span>
+    Analytics
+</a>
+
+<!-- Visitor Counter -->
+<div class="visitor-counter">
+    <div style="font-size: 12px; color: #ccc;">GAHAN'S LIVE VISITORS</div>
+    <div class="counter-number" id="counterNumber">0000</div>
+</div>
+
+<div class="main-container">
+    <!-- Login Screen -->
+    <div id="loginScreen">
+        <div class="logo">G</div>
+        <h1>GAHAN KHATIWODA</h1>
+        <h2>100-Days-Challenge - Computer Science</h2>
+        
+        <p class="description">
+            Complete Subjective and Objective Practice Sets for SEE 2082
+        </p>
+        
+        <div class="login-form">
+            <div class="form-group">
+                <label for="username">Username / Email</label>
+                <input type="text" id="username" placeholder="Enter your username or email">
+            </div>
+            
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input type="password" id="password" placeholder="Enter your password">
+            </div>
+            
+            <button class="login-btn" onclick="loginUser()">
+                <div class="btn-icon">🔐</div>
+                Login to Access Content
+            </button>
+            
+            <div id="errorMessage" class="error-message">
+                ❌ Invalid username or password. Please try again.
+            </div>
+            
+            <!-- Google OAuth Section -->
+            <div class="divider">
+                <span>Or continue with Google</span>
+            </div>
+            
+            <div class="google-section">
+                <!-- Google Sign-In Button -->
+                <div id="g_id_onload"
+                    data-client_id="789365890180-30fpjid0955op8rldf1js02br0t7jql3.apps.googleusercontent.com"
+                    data-context="signin"
+                    data-ux_mode="popup"
+                    data-callback="handleCredentialResponse"
+                    data-auto_prompt="false">
+                </div>
+                <div class="g_id_signin"
+                    data-type="standard"
+                    data-shape="rectangular"
+                    data-theme="outline"
+                    data-text="signin_with"
+                    data-size="large"
+                    data-logo_alignment="left"
+                    data-width="100%">
+                </div>
+                
+                <p style="font-size: 12px; color: #666; margin-top: 15px; text-align: center;">
+                    By signing in with Google, you agree to our 
+                    <a href="privacy.html" target="_blank" style="color: #4285F4;">Privacy Policy</a>.<br>
+                    We only access your name, email, and profile picture.
+                </p>
+            </div>
+            
+            <!-- Google User Info -->
+            <div id="googleUserInfo" class="google-user-info">
+                <img id="googleAvatar" class="google-avatar" src="" alt="Profile">
+                <h3 id="googleName" style="color: #1a2980;"></h3>
+                <p id="googleEmail" style="color: #666; font-family: 'Courier New';"></p>
+                <button onclick="loginWithGoogle()" style="
+                    background: #34A853;
+                    color: white;
+                    border: none;
+                    padding: 12px 24px;
+                    border-radius: 8px;
+                    cursor: pointer;
+                    margin-top: 15px;
+                    font-size: 16px;
+                ">
+                    ✅ Continue with this Google Account
+                </button>
+                <button onclick="googleLogout()" style="
+                    background: #EA4335;
+                    color: white;
+                    border: none;
+                    padding: 8px 16px;
+                    border-radius: 5px;
+                    cursor: pointer;
+                    margin-top: 10px;
+                    font-size: 14px;
+                ">
+                    🔄 Use different account
+                </button>
+            </div>
+            
+            <div style="text-align: center; margin-top: 20px; color: #666; font-size: 14px;">
+                <p>Don't have account? Contact admin for credentials.</p>
+                <p>Default: Username: <strong>gahan</strong> | Password: <strong>gahan</strong></p>
+            </div>
+        </div>
+        
+        <div class="features">
+            <div class="feature">
+                <div class="feature-icon">📚</div>
+                <h3>Odd Days Sets</h3>
+                <p>Comprehensive question bank</p>
+            </div>
+            <div class="feature">
+                <div class="feature-icon">📖</div>
+                <h3>Even Days Sets</h3>
+                <p>Advanced practice questions</p>
+            </div>
+            <div class="feature">
+                <div class="feature-icon">✅</div>
+                <h3>Objective Sets</h3>
+                <p>MCQ and quick review</p>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Success Screen -->
+    <div class="success-screen" id="successScreen">
+        <div class="success-icon">✅</div>
+        <h3>Login Successful!</h3>
+        <h1>Welcome to</h1>
+        <h1>GAHAN'S 100-Days-Challenge</h1>
+        
+        <div class="user-info" id="userInfoDisplay">
+            Loading user information...
+        </div>
+        
+        <p>Your progress is automatically saved. Choose content to begin:</p>
+        
+        <div class="content-buttons">
+            <button class="content-btn odd-btn" onclick="goToContent('odd')">
+                📚 ODD-DAYS SETS
+            </button>
+            <button class="content-btn even-btn" onclick="goToContent('even')">
+                📖 EVEN-DAYS SETS
+            </button>
+            <button class="content-btn obj-btn" onclick="goToContent('obj')">
+                ✅ OBJECTIVE SETS
+            </button>
+        </div>
+        
+        <button onclick="logout()" style="
+            background: #EA4335;
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 8px;
+            cursor: pointer;
+            margin-top: 20px;
+        ">
+            Logout
+        </button>
+    </div>
+</div>
+
+<footer>
+    © 2023 Gahan Khatiwoda Official • SEE 2082 Computer Science • All Rights Reserved
+</footer>
+
+<!-- Analytics Modal -->
+<div id="analyticsModal" class="analytics-modal">
+    <div class="modal-content">
+        <div class="modal-icon">🔒</div>
+        <h2 style="color: #1a2980;">Admin Analytics Access</h2>
+        <p style="color: #666; margin-bottom: 20px;">Enter admin password to view visitor analytics</p>
+        
+        <input type="password" id="analyticsPassword" class="modal-input" placeholder="Enter admin password" 
+               onkeypress="if(event.key === 'Enter') checkAnalyticsPassword()">
+        
+        <button class="modal-btn" onclick="checkAnalyticsPassword()">
+            Access Analytics
+        </button>
+        
+        <button onclick="hideAnalyticsModal()" style="
+            background: transparent;
+            color: #666;
+            border: 1px solid #ddd;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 10px;
+            width: 100%;
+        ">
+            Cancel
+        </button>
+        
+        <p id="analyticsError" style="color: #EA4335; margin-top: 15px; display: none;">
+            ❌ Incorrect password. Access denied.
+        </p>
+    </div>
+</div>
+
+<script>
+// ========== USER CREDENTIALS SYSTEM ==========
+const VALID_USERS = [
+    { username: "gahan", password: "gahan", email: "gahan.com.np@gmail.com" },
+    { username: "admin", password: "admin", email: "gahan.com.np@gmail.com" },
+    // Add more traditional students here as needed
+    // Example: { username: "student1", password: "pass123", email: "student1@gmail.com" }
+];
+
+const ADMIN_PASSWORD = "Gahan123";
+
+// ========== GOOGLE OAUTH + SHEET INTEGRATION ==========
+let googleUserData = null;
+
+// Google Sheet Web App URL (Replace with your actual deployed URL)
+const SHEET_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbwU5tNFqhP13hmbDyw0kHSMPjoGHSmJ04wtnvR6Eq_aUY1tD3zlaEoyZACeC-z1gp7d/exec"; // <-- यहाँ आफ्नो Apps Script URL राख्नुहोस्
+
+// Send data to Google Sheet
+function sendToGoogleSheet(data) {
+    fetch(SHEET_WEB_APP_URL, {
+        method: "POST",
+        mode: "no-cors", // Important for client-side fetch to Google Apps Script
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data)
+    })
+    .then(() => console.log("Data sent to Google Sheet"))
+    .catch(error => console.error("Sheet error:", error));
+}
+
+// ========== GOOGLE SIGN-IN HANDLING ==========
+function handleCredentialResponse(response) {
+    if (!response || !response.credential) {
+        console.error("Google Sign-In failed:", response);
+        alert("Google Sign-In failed. Please try again.");
+        return;
+    }
+    
+    console.log("✅ Google Sign-In Successful!");
+    
+    const token = response.credential;
+    const payload = JSON.parse(atob(token.split('.')[1]));
+    
+    googleUserData = {
+        email: payload.email,
+        name: payload.name,
+        picture: payload.picture,
+        given_name: payload.given_name,
+        family_name: payload.family_name,
+        email_verified: payload.email_verified,
+        token: token,
+        timestamp: new Date().toISOString()
+    };
+    
+    console.log("📧 Google User:", googleUserData);
+    
+    document.getElementById('googleUserInfo').style.display = 'block';
+    document.getElementById('googleAvatar').src = googleUserData.picture;
+    document.getElementById('googleName').textContent = googleUserData.name;
+    document.getElementById('googleEmail').textContent = googleUserData.email;
+    
+    document.querySelector('.g_id_signin').style.display = 'none';
+    
+    setTimeout(() => {
+        loginWithGoogle();
+    }, 1000);
+}
+
+function loginWithGoogle() {
+    if (!googleUserData) {
+        alert("Please sign in with Google first");
+        return;
+    }
+    
+    const googleEmail = googleUserData.email;
+    const user = VALID_USERS.find(u => u.email === googleEmail);
+    
+    const isNewUser = !user;
+    const finalUser = user || {
+        username: googleEmail.split('@')[0],
+        email: googleEmail
+    };
+    
+    // Show loading
+    const button = document.querySelector('.login-btn');
+    const originalHTML = button.innerHTML;
+    button.innerHTML = '<div class="btn-icon">✓</div> Logging in...';
+    button.disabled = true;
+    
+    setTimeout(() => {
+        const sessionId = (isNewUser ? 'google_new_' : 'google_') + Date.now() + '_' + Math.random().toString(36).substr(2, 8);
+        const loginTime = new Date().toISOString();
+        
+        localStorage.setItem('current_username', finalUser.username);
+        
+        localStorage.setItem('gahan_user', JSON.stringify({
+            username: finalUser.username,
+            email: finalUser.email,
+            sessionId: sessionId,
+            loginTime: loginTime,
+            userAgent: navigator.userAgent,
+            loginMethod: isNewUser ? 'google_oauth_new' : 'google_oauth',
+            googleUserData: googleUserData,
+            autoCreated: isNewUser
+        }));
+        
+        // Save to Google Sheet
+        sendToGoogleSheet({
+            username: finalUser.username,
+            email: finalUser.email,
+            method: isNewUser ? 'google_oauth_new' : 'google_oauth',
+            timestamp: loginTime,
+            contentType: ""
+        });
+        
+        // Local analytics
+        logGoogleLogin(googleUserData);
+        updateVisitorCounter();
+        logUserLogin(finalUser.username, finalUser.email, isNewUser ? 'google_oauth_new' : 'google_oauth');
+        showSuccessScreen(finalUser.username, finalUser.email, loginTime);
+        
+        if (isNewUser) {
+            alert(`✅ Welcome! Your account has been created:\n\nUsername: ${finalUser.username}\nEmail: ${finalUser.email}\n\nYou can now access all content.`);
+        }
+        
+        button.innerHTML = originalHTML;
+        button.disabled = false;
+        
+    }, 1000);
+}
+
+function googleLogout() {
+    googleUserData = null;
+    document.getElementById('googleUserInfo').style.display = 'none';
+    document.querySelector('.g_id_signin').style.display = 'block';
+    
+    if (typeof google !== 'undefined' && google.accounts) {
+        google.accounts.id.revoke(localStorage.getItem('google_token'), done => {
+            console.log('Google token revoked');
+        });
+    }
+}
+
+function logGoogleLogin(userData) {
+    const log = {
+        type: 'google_oauth_login',
+        timestamp: new Date().toISOString(),
+        email: userData.email,
+        name: userData.name,
+        email_verified: userData.email_verified,
+        userAgent: navigator.userAgent
+    };
+    
+    let history = JSON.parse(localStorage.getItem('gahan_user_history') || '[]');
+    history.push(log);
+    localStorage.setItem('gahan_user_history', JSON.stringify(history));
+    
+    let googleLog = JSON.parse(localStorage.getItem('gahan_google_log') || '[]');
+    googleLog.push(log);
+    localStorage.setItem('gahan_google_log', JSON.stringify(googleLog));
+    
+    console.log('📊 Google Login Logged:', log);
+}
+
+// ========== TRADITIONAL LOGIN ==========
+function loginUser() {
+    const username = document.getElementById('username').value.trim();
+    const password = document.getElementById('password').value;
+    const errorDiv = document.getElementById('errorMessage');
+    
+    errorDiv.style.display = 'none';
+    
+    if (!username || !password) {
+        errorDiv.textContent = "❌ Please enter both username and password";
+        errorDiv.style.display = 'block';
+        return;
+    }
+    
+    const user = VALID_USERS.find(u => 
+        (u.username === username || u.email === username) && u.password === password
+    );
+    
+    if (user) {
+        const button = document.querySelector('.login-btn');
+        const originalHTML = button.innerHTML;
+        button.innerHTML = '<div class="btn-icon">✓</div> Logging in...';
+        button.disabled = true;
+        
+        setTimeout(() => {
+            const sessionId = 'session_' + Date.now() + '_' + Math.random().toString(36).substr(2, 8);
+            const loginTime = new Date().toISOString();
+            
+            localStorage.setItem('current_username', user.username);
+            
+            localStorage.setItem('gahan_user', JSON.stringify({
+                username: user.username,
+                email: user.email,
+                sessionId: sessionId,
+                loginTime: loginTime,
+                userAgent: navigator.userAgent,
+                loginMethod: 'traditional'
+            }));
+            
+            // Save to Google Sheet
+            sendToGoogleSheet({
+                username: user.username,
+                email: user.email,
+                method: 'traditional',
+                timestamp: loginTime,
+                contentType: ""
+            });
+            
+            updateVisitorCounter();
+            logUserLogin(user.username, user.email, 'traditional');
+            showSuccessScreen(user.username, user.email, loginTime);
+            
+            button.innerHTML = originalHTML;
+            button.disabled = false;
+            
+        }, 1000);
+    } else {
+        errorDiv.textContent = "❌ Invalid username or password. Please try again.";
+        errorDiv.style.display = 'block';
+        document.getElementById('password').value = '';
+        document.getElementById('password').focus();
+    }
+}
+
+// ========== OTHER FUNCTIONS (unchanged) ==========
+function showSuccessScreen(username, email, loginTime) {
+    document.getElementById('loginScreen').style.display = 'none';
+    document.getElementById('successScreen').style.display = 'block';
+    
+    const formattedTime = new Date(loginTime).toLocaleString('en-US', {
+        hour: '2-digit',
+        minute: '2-digit',
+        month: 'short',
+        day: 'numeric'
+    });
+    
+    const userData = JSON.parse(localStorage.getItem('gahan_user') || '{}');
+    const loginMethod = userData.loginMethod?.includes('google') ? 'Google OAuth' : 'Traditional';
+    
+    document.getElementById('userInfoDisplay').innerHTML = `
+        <strong>Welcome, ${username}!</strong><br>
+        <span style="color: #1a2980;">Email: ${email}</span><br>
+        <small>Logged in via: ${loginMethod}</small><br>
+        <small>Time: ${formattedTime}</small>
+    `;
+}
+
+function checkExistingSession() {
+    const userData = localStorage.getItem('gahan_user');
+    if (userData) {
+        const user = JSON.parse(userData);
+        const loginTime = new Date(user.loginTime);
+        const now = new Date();
+        const hoursDiff = (now - loginTime) / (1000 * 60 * 60);
+        
+        if (hoursDiff < 24) {
+            showSuccessScreen(user.username, user.email, user.loginTime);
+        } else {
+            localStorage.removeItem('gahan_user');
+        }
+    }
+}
+
+function goToContent(contentType) {
+    const userData = JSON.parse(localStorage.getItem('gahan_user') || '{}');
+    
+    // Log content access to Google Sheet
+    sendToGoogleSheet({
+        username: userData.username || 'Unknown',
+        email: userData.email || '',
+        method: userData.loginMethod || 'unknown',
+        timestamp: new Date().toISOString(),
+        contentType: contentType
+    });
+    
+    logContentAccess(userData.username, contentType);
+    
+    localStorage.setItem('gahan_last_access', contentType);
+    localStorage.setItem('gahan_last_access_time', new Date().toISOString());
+    
+    document.getElementById('successScreen').innerHTML = `
+        <div style="padding: 40px; text-align: center;">
+            <div style="font-size: 60px; color: #4285F4;">⏳</div>
+            <h2 style="color: #1a2980; margin: 20px 0;">Loading ${contentType.toUpperCase()} SETS</h2>
+            <p>Please wait...</p>
+        </div>
+    `;
+    
+    setTimeout(() => {
+        if (contentType === 'odd') window.location.href = 'odd.html';
+        else if (contentType === 'even') window.location.href = 'even.html';
+        else if (contentType === 'obj') window.location.href = 'obj.html';
+    }, 1500);
+}
+
+function logout() {
+    const userData = JSON.parse(localStorage.getItem('gahan_user') || '{}');
+    
+    if (userData.loginMethod?.includes('google')) {
+        googleLogout();
+    }
+    
+    logUserLogout(userData.username);
+    
+    localStorage.removeItem('gahan_user');
+    localStorage.removeItem('current_username');
+    location.reload();
+}
+
+function updateVisitorCounter() {
+    let count = parseInt(localStorage.getItem('gahan_total_visitors') || '1000');
+    count += 1;
+    localStorage.setItem('gahan_total_visitors', count);
+    document.getElementById('counterNumber').textContent = count.toString().padStart(4, '0');
+}
+
+// ========== LOGGING FUNCTIONS (local + Sheet) ==========
+function logUserLogin(username, email, method) {
+    const logData = {
+        type: 'login',
+        username,
+        email,
+        method,
+        timestamp: new Date().toISOString(),
+        userAgent: navigator.userAgent
+    };
+    
+    let history = JSON.parse(localStorage.getItem('gahan_user_history') || '[]');
+    history.push(logData);
+    localStorage.setItem('gahan_user_history', JSON.stringify(history));
+    
+    // Also send to Google Sheet
+    sendToGoogleSheet(logData);
+}
+
+function logUserLogout(username) {
+    const logData = {
+        type: 'logout',
+        username,
+        timestamp: new Date().toISOString()
+    };
+    
+    let history = JSON.parse(localStorage.getItem('gahan_user_history') || '[]');
+    history.push(logData);
+    localStorage.setItem('gahan_user_history', JSON.stringify(history));
+    
+    sendToGoogleSheet(logData);
+}
+
+function logContentAccess(username, contentType) {
+    const logData = {
+        type: 'content_access',
+        username,
+        contentType,
+        timestamp: new Date().toISOString(),
+        page: window.location.href
+    };
+    
+    let history = JSON.parse(localStorage.getItem('gahan_user_history') || '[]');
+    history.push(logData);
+    localStorage.setItem('gahan_user_history', JSON.stringify(history));
+    
+    sendToGoogleSheet(logData);
+}
+
+function logVisit() {
+    const data = {
+        type: 'visit',
+        timestamp: new Date().toISOString(),
+        url: window.location.href,
+        userAgent: navigator.userAgent,
+        referrer: document.referrer || 'direct'
+    };
+    
+    let visits = JSON.parse(localStorage.getItem('gahan_visits') || '[]');
+    visits.push(data);
+    localStorage.setItem('gahan_visits', JSON.stringify(visits));
+    
+    sendToGoogleSheet(data);
+}
+
+// ========== INITIALIZATION ==========
+window.onload = function() {
+    updateVisitorCounter();
+    checkExistingSession();
+    logVisit();
+    
+    document.getElementById('username').focus();
+    
+    document.getElementById('password').addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+            loginUser();
+        }
+    });
+};
+
+// Utility function
+function addUser(newUsername, newPassword, newEmail) {
+    VALID_USERS.push({
+        username: newUsername,
+        password: newPassword,
+        email: newEmail
+    });
+    console.log('✅ User added:', newUsername);
+}
+</script>
+
+</body>
+</html>
