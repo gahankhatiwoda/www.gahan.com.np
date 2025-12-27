@@ -451,7 +451,7 @@
             <div class="google-section">
                 <!-- Google Sign-In Button -->
                 <div id="g_id_onload"
-                    data-client_id="789365890180-30fpjid0955op8rldf1js02br0t7jql3.apps.googleusercontent.com"
+					data-client_id="789365890180-30fpjid0955op8rldf1js02br0t7jql3.apps.googleusercontent.com"
                     data-context="signin"
                     data-ux_mode="popup"
                     data-callback="handleCredentialResponse"
@@ -467,6 +467,12 @@
                     data-logo_alignment="left"
                     data-width="100%">
                 </div>
+					<p style="font-size: 12px; color: #666; margin-top: 15px; text-align: center;">
+						By signing in with Google, you agree to our 
+					<a href="privacy.html" target="_blank" style="color: #4285F4;">Privacy Policy</a>.<br>
+						We only access your name, email, and profile picture.
+					</p>
+				
             </div>
             
             <!-- Google User Info -->
@@ -528,7 +534,7 @@
     <!-- Success Screen -->
     <div class="success-screen" id="successScreen">
         <div class="success-icon">✅</div>
-        <h1>Login Successful!</h1>
+        <h3>Login Successful!</h3>
         <p>Welcome to Gahan's 100-Days Challenge</p>
         
         <div class="user-info" id="userInfoDisplay">
@@ -604,12 +610,10 @@
 // ========== USER CREDENTIALS SYSTEM ==========
 
 const VALID_USERS = [
-    { username: "student", password: "banshagopal", email: "no_gmail@gmail.com" },
-    { username: "gahan", password: "gahan", email: "no_gmail@gmail.com" },
-    { username: "admin", password: "admin", email: "no_gmail@gmail.com" }
-	//{ username: "student", password: "banshagopal", email: "gahan.com.np@gmail.com" },
-   // { username: "gahan", password: "gahan", email: "gahan.com.np@gmail.com" },
-    //{ username: "admin", password: "admin", email: "gahan.com.np@gmail.com" }
+    { username: "gahan", password: "gahan", email: "gahan.com.np@gmail.com" },
+    { username: "admin", password: "admin", email: "gahan.com.np@gmail.com" },
+    // Add more traditional students here as needed
+    // Example: { username: "student1", password: "pass123", email: "student1@gmail.com" }
 ];
 
 const ADMIN_PASSWORD = "Gahan123";
@@ -619,8 +623,16 @@ const ADMIN_PASSWORD = "Gahan123";
 let googleUserData = null;
 
 // Handle Google Sign-In response
-function handleCredentialResponse(response) {
-    console.log("✅ Google Sign-In Successful!");
+
+function handleCredentialResponse(response) 
+{
+        if (!response || !response.credential) 
+	{
+        console.error("Google Sign-In failed:", response);
+        alert("Google Sign-In failed. Please try again.");
+        return;
+    }
+	console.log("✅ Google Sign-In Successful!");
     
     // Decode the JWT token
     const token = response.credential;
