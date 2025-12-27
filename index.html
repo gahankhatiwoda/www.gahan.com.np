@@ -408,7 +408,7 @@
 
 <!-- Visitor Counter -->
 <div class="visitor-counter">
-    <div style="font-size: 12px; color: #ccc;">LIVE VISITORS</div>
+    <div style="font-size: 12px; color: #ccc;">GAHAN'S LIVE VISITORS</div>
     <div class="counter-number" id="counterNumber">0000</div>
 </div>
 
@@ -604,12 +604,11 @@
 // ========== USER CREDENTIALS SYSTEM ==========
 
 const VALID_USERS = [
-    { username: "student", password: "banshagopal", email: "youremail@gmail.com" },
-    { username: "gahan", password: "gahan", email: "youremail@gmail.com" },
-    { username: "admin", password: "admin", email: "youremail@gmail.com" }
-	//{ username: "student", password: "banshagopal", email: "gahan.com.np@gmail.com" },
-   // { username: "gahan", password: "gahan", email: "gahan.com.np@gmail.com" },
-    //{ username: "admin", password: "admin", email: "gahan.com.np@gmail.com" }
+    { username: "student", password: "banshagopal", email: "student@gmail.com" },
+    { username: "gahan", password: "gahan", email: "gahan.com.np@gmail.com" },
+    { username: "admin", password: "admin", email: "admin@gmail.com" }
+    // Add more users here as needed
+    // Format: { username: "username", password: "password", email: "email@gmail.com" }
 ];
 
 const ADMIN_PASSWORD = "Gahan123";
@@ -649,113 +648,204 @@ function handleCredentialResponse(response) {
     // Hide Google sign-in button
     document.querySelector('.g_id_signin').style.display = 'none';
     
-    // Auto-login after 1 second
-    setTimeout(() => {
-        loginWithGoogle();
-    }, 1000);
+    // Check if this Gmail is allowed
+    checkGoogleEmailAccess(googleUserData.email);
 }
 
-function loginWithGoogle() {
+function checkGoogleEmailAccess(googleEmail) {
+    // Check if this Gmail exists in our ALLOWED users list
+    const user = VALID_USERS.find(u => u.email === googleEmail);
+    
+    if (user) {
+        // This Gmail is allowed - proceed with login
+        setTimeout(() => {
+            loginWithGoogle(user);
+        }, 1000);
+    } else {
+        // This Gmail is NOT allowed - show error
+        document.getElementById('googleUserInfo').innerHTML = `
+            <div style="text-align: center; padding: 20px;">
+                <div style="font-size: 40px; color: #EA4335;">🚫</div>
+                <h3 style="color: #1a2980;">Access Denied</h3>
+                <p style="color: #666;">The Gmail account <strong>${googleEmail}</strong> is not authorized to access this content.</p>
+                <p style="color: #666; font-size: 14px; margin-top: 10px;">Only pre-approved Gmail accounts can access this system.</p>
+                
+                <button onclick="googleLogout()" style="
+                    background: #EA4335;
+                    color: white;
+                    border: none;
+                    padding: 12px 24px;
+                    border-radius: 8px;
+                    cursor: pointer;
+                    margin-top: 20px;
+                    font-size: 16px;
+                ">
+                    🔄 Try Different Account
+                </button>
+            </div>
+        `;
+        
+        // Log failed attempt
+        logFailedAccess(googleEmail, 'google_oauth');
+    }
+}
+
+function loginWithGoogle(user) {
     if (!googleUserData) {
         alert("Please sign in with Google first");
         return;
     }
     
-    const googleEmail = googleUserData.email;
+    // Show loading
+    const button = document.querySelector('.login-btn');
+    const originalHTML = button.innerHTML;
+    button.innerHTML = '<div class="btn-icon">✓</div> Logging in with Google...';
+    button.disabled = true;
     
-    // Check if this Gmail exists in our database
-    const user = VALID_USERS.find(u => u.email === googleEmail);
+    setTimeout(() => {
+        const sessionId = 'google_' + Date.now() + '_' + Math.random().toString(36).substr(2, 8);
+        const loginTime = new Date().toISOString();
+        
+        localStorage.setItem('current_username', user.username);
+        
+        // Save user session
+        localStorage.setItem('gahan_user', JSON.stringify({
+            username: user.username,
+            email: user.email,
+            sessionId: sessionId,
+            loginTime: loginTime,
+            userAgent: navigator.userAgent,
+            loginMethod: 'google_oauth',
+            googleUserData: googleUserData
+        }));
+        
+        // Save to analytics
+        logGoogleLogin(googleUserData);
+        
+        updateVisitorCounter();
+        logUserLogin(user.username, user.email, 'google_oauth');
+        showSuccessScreen(user.username, user.email, loginTime);
+        
+        // Reset button
+        button.innerHTML = originalHTML;
+        button.disabled = false;
+        
+    }, 1000);
+}
+
+// ========== TRADITIONAL LOGIN (Updated) ==========
+
+function loginUser() {
+    const username = document.getElementById('username').value.trim();
+    const password = document.getElementById('password').value;
+    const errorDiv = document.getElementById('errorMessage');
+    
+    errorDiv.style.display = 'none';
+    
+    if (!username || !password) {
+        errorDiv.textContent = "❌ Please enter both username and password";
+        errorDiv.style.display = 'block';
+        return;
+    }
+    
+    // Check if this user exists in our ALLOWED users list
+    const user = VALID_USERS.find(u => 
+        (u.username === username || u.email === username) && u.password === password
+    );
     
     if (user) {
-        // Show loading
+        // User is allowed - proceed with login
         const button = document.querySelector('.login-btn');
         const originalHTML = button.innerHTML;
-        button.innerHTML = '<div class="btn-icon">✓</div> Logging in with Google...';
+        button.innerHTML = '<div class="btn-icon">✓</div> Logging in...';
         button.disabled = true;
         
         setTimeout(() => {
-            const sessionId = 'google_' + Date.now() + '_' + Math.random().toString(36).substr(2, 8);
+            const sessionId = 'session_' + Date.now() + '_' + Math.random().toString(36).substr(2, 8);
             const loginTime = new Date().toISOString();
             
             localStorage.setItem('current_username', user.username);
             
-            // Save user session
             localStorage.setItem('gahan_user', JSON.stringify({
                 username: user.username,
                 email: user.email,
                 sessionId: sessionId,
                 loginTime: loginTime,
                 userAgent: navigator.userAgent,
-                loginMethod: 'google_oauth',
-                googleUserData: googleUserData
+                loginMethod: 'traditional'
             }));
             
-            // Save to analytics
-            logGoogleLogin(googleUserData);
-            
             updateVisitorCounter();
-            logUserLogin(user.username, user.email, 'google_oauth');
+            logUserLogin(user.username, user.email, 'traditional');
             showSuccessScreen(user.username, user.email, loginTime);
             
-            // Reset button
             button.innerHTML = originalHTML;
             button.disabled = false;
             
         }, 1000);
     } else {
-        // Auto-create account for new Google user
-        const newUsername = googleEmail.split('@')[0];
-        const newPassword = Math.random().toString(36).substr(2, 10);
+        // User is NOT allowed - show error
+        errorDiv.textContent = "❌ Access Denied. Invalid username/password or account not authorized.";
+        errorDiv.style.display = 'block';
+        document.getElementById('password').value = '';
+        document.getElementById('password').focus();
         
-        // Add to VALID_USERS
-        VALID_USERS.push({
-            username: newUsername,
-            password: newPassword,
-            email: googleEmail
-        });
-        
-        // Show loading
-        const button = document.querySelector('.login-btn');
-        const originalHTML = button.innerHTML;
-        button.innerHTML = '<div class="btn-icon">✓</div> Creating account...';
-        button.disabled = true;
-        
-        setTimeout(() => {
-            const sessionId = 'google_new_' + Date.now() + '_' + Math.random().toString(36).substr(2, 8);
-            const loginTime = new Date().toISOString();
-            
-            localStorage.setItem('current_username', newUsername);
-            
-            localStorage.setItem('gahan_user', JSON.stringify({
-                username: newUsername,
-                email: googleEmail,
-                sessionId: sessionId,
-                loginTime: loginTime,
-                userAgent: navigator.userAgent,
-                loginMethod: 'google_oauth_new',
-                googleUserData: googleUserData,
-                autoCreated: true
-            }));
-            
-            // Save to analytics
-            logGoogleLogin(googleUserData);
-            
-            updateVisitorCounter();
-            logUserLogin(newUsername, googleEmail, 'google_oauth_new');
-            showSuccessScreen(newUsername, googleEmail, loginTime);
-            
-            button.innerHTML = originalHTML;
-            button.disabled = false;
-            
-            alert(`✅ Welcome! Your account has been created:\n\nUsername: ${newUsername}\nEmail: ${googleEmail}\n\nYou can now access all content.`);
-            
-        }, 1000);
+        // Log failed attempt
+        logFailedAccess(username, 'traditional');
     }
+}
+
+// ========== HELPER FUNCTIONS ==========
+
+function logFailedAccess(identifier, method) {
+    const logData = {
+        type: 'failed_access',
+        identifier: identifier,
+        method: method,
+        timestamp: new Date().toISOString(),
+        userAgent: navigator.userAgent,
+        ip: 'local' // In production, you'd get this from server
+    };
+    
+    let securityLog = JSON.parse(localStorage.getItem('gahan_security_log') || '[]');
+    securityLog.push(logData);
+    localStorage.setItem('gahan_security_log', JSON.stringify(securityLog));
+    
+    console.log('🚫 Failed access attempt:', identifier, 'via', method);
 }
 
 function googleLogout() {
     googleUserData = null;
     document.getElementById('googleUserInfo').style.display = 'none';
+    document.getElementById('googleUserInfo').innerHTML = `
+        <img id="googleAvatar" class="google-avatar" src="" alt="Profile">
+        <h3 id="googleName" style="color: #1a2980;"></h3>
+        <p id="googleEmail" style="color: #666; font-family: 'Courier New';"></p>
+        <button onclick="loginWithGoogle()" style="
+            background: #34A853;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            margin-top: 15px;
+            font-size: 16px;
+        ">
+            ✅ Continue with this Google Account
+        </button>
+        <button onclick="googleLogout()" style="
+            background: #EA4335;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 10px;
+            font-size: 14px;
+        ">
+            🔄 Use different account
+        </button>
+    `;
     document.querySelector('.g_id_signin').style.display = 'block';
     
     // Revoke Google token
@@ -818,62 +908,7 @@ function checkAnalyticsPassword() {
     }
 }
 
-// ========== USER LOGIN ==========
-
-function loginUser() {
-    const username = document.getElementById('username').value.trim();
-    const password = document.getElementById('password').value;
-    const errorDiv = document.getElementById('errorMessage');
-    
-    errorDiv.style.display = 'none';
-    
-    if (!username || !password) {
-        errorDiv.textContent = "❌ Please enter both username and password";
-        errorDiv.style.display = 'block';
-        return;
-    }
-    
-    const user = VALID_USERS.find(u => 
-        (u.username === username || u.email === username) && u.password === password
-    );
-    
-    if (user) {
-        const button = document.querySelector('.login-btn');
-        const originalHTML = button.innerHTML;
-        button.innerHTML = '<div class="btn-icon">✓</div> Logging in...';
-        button.disabled = true;
-        
-        setTimeout(() => {
-            const sessionId = 'session_' + Date.now() + '_' + Math.random().toString(36).substr(2, 8);
-            const loginTime = new Date().toISOString();
-            
-            localStorage.setItem('current_username', user.username);
-            
-            localStorage.setItem('gahan_user', JSON.stringify({
-                username: user.username,
-                email: user.email,
-                sessionId: sessionId,
-                loginTime: loginTime,
-                userAgent: navigator.userAgent,
-                loginMethod: 'traditional'
-            }));
-            
-            updateVisitorCounter();
-            logUserLogin(user.username, user.email, 'traditional');
-            showSuccessScreen(user.username, user.email, loginTime);
-            
-            button.innerHTML = originalHTML;
-            button.disabled = false;
-            
-        }, 1000);
-    } else {
-        errorDiv.textContent = "❌ Invalid username or password. Please try again.";
-        errorDiv.style.display = 'block';
-        document.getElementById('password').value = '';
-        document.getElementById('password').focus();
-        console.log('❌ Failed login attempt with:', username);
-    }
-}
+// ========== SUCCESS SCREEN ==========
 
 function showSuccessScreen(username, email, loginTime) {
     document.getElementById('loginScreen').style.display = 'none';
@@ -887,9 +922,7 @@ function showSuccessScreen(username, email, loginTime) {
     });
     
     const userData = JSON.parse(localStorage.getItem('gahan_user') || '{}');
-    const loginMethod = userData.loginMethod === 'google_oauth' || userData.loginMethod === 'google_oauth_new' 
-        ? 'Google OAuth' 
-        : 'Traditional';
+    const loginMethod = userData.loginMethod === 'google_oauth' ? 'Google OAuth' : 'Traditional';
     
     document.getElementById('userInfoDisplay').innerHTML = `
         <strong>Welcome, ${username}!</strong><br>
@@ -941,7 +974,7 @@ function goToContent(contentType) {
 function logout() {
     const userData = JSON.parse(localStorage.getItem('gahan_user') || '{}');
     
-    if (userData.loginMethod === 'google_oauth' || userData.loginMethod === 'google_oauth_new') {
+    if (userData.loginMethod === 'google_oauth') {
         googleLogout();
     }
     
@@ -1032,15 +1065,23 @@ window.onload = function() {
     });
 };
 
-// Utility function
-function addUser(newUsername, newPassword, newEmail) {
+// Utility function to add new authorized users
+function addAuthorizedUser(newUsername, newPassword, newEmail) {
     VALID_USERS.push({
         username: newUsername,
         password: newPassword,
         email: newEmail
     });
-    console.log('✅ User added:', newUsername);
+    console.log('✅ Authorized user added:', newUsername);
 }
-</script>
+
+// Display current authorized users (for admin reference)
+function showAuthorizedUsers() {
+    console.log('📋 Currently Authorized Users:');
+    VALID_USERS.forEach(user => {
+        console.log(`- ${user.username} (${user.email})`);
+    });
+    return VALID_USERS;
+}
 </body>
 </html>
