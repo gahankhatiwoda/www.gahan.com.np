@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Objective Sets - Gahan's Challenge</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
+        
+        body {
+            background: #f5f7fa;
+            color: #333;
+        }
+        
+        .header {
+            background: linear-gradient(90deg, #9C27B0, #BA68C8);
+            color: white;
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .nav {
+            display: flex;
+            gap: 15px;
+        }
+        
+        .nav a {
+            color: white;
+            text-decoration: none;
+            padding: 8px 15px;
+            border-radius: 5px;
+            transition: background 0.3s;
+        }
+        
+        .nav a:hover {
+            background: rgba(255,255,255,0.1);
+        }
+        
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 30px;
+        }
+        
+        h1 {
+            color: #9C27B0;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+        
+        .mcq-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+        }
+        
+        .mcq-card {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+            border-left: 5px solid #9C27B0;
+        }
+        
+        .mcq-question {
+            font-weight: bold;
+            margin-bottom: 15px;
+        }
+        
+        .mcq-options {
+            margin-left: 10px;
+        }
+        
+        .mcq-option {
+            padding: 5px 0;
+        }
+        
+        .mcq-answer {
+            background: #d4edda;
+            padding: 10px;
+            border-radius: 5px;
+            margin-top: 10px;
+            font-weight: bold;
+            color: #155724;
+            display: none;
+        }
+        
+        .show-mcq {
+            background: #9C27B0;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 10px;
+            font-size: 14px;
+        }
+        
+        .back-btn {
+            background: #666;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 30px;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h2>✅ Objective Question Sets</h2>
+        <div class="nav">
+            <a href="index.html">Home</a>
+            <a href="odd.html">Odd Sets</a>
+            <a href="even.html">Even Sets</a>
+        </div>
+    </div>
+    
+    <div class="container">
+        <h1>SEE 2082 - Objective Questions (MCQs)</h1>
+        
+        <div class="mcq-grid">
+            <!-- MCQ 1 -->
+            <div class="mcq-card">
+                <div class="mcq-question">1. Full form of CPU is:</div>
+                <div class="mcq-options">
+                    <div class="mcq-option">A) Central Processing Unit</div>
+                    <div class="mcq-option">B) Computer Processing Unit</div>
+                    <div class="mcq-option">C) Central Program Unit</div>
+                    <div class="mcq-option">D) Control Processing Unit</div>
+                </div>
+                <button class="show-mcq" onclick="showMCQAnswer(1)">Show Answer</button>
+                <div class="mcq-answer" id="mcq1">✓ Answer: A) Central Processing Unit</div>
+            </div>
+            
+            <!-- MCQ 2 -->
+            <div class="mcq-card">
+                <div class="mcq-question">2. Which is a volatile memory?</div>
+                <div class="mcq-options">
+                    <div class="mcq-option">A) ROM</div>
+                    <div class="mcq-option">B) Hard Disk</div>
+                    <div class="mcq-option">C) RAM</div>
+                    <div class="mcq-option">D) CD-ROM</div>
+                </div>
+                <button class="show-mcq" onclick="showMCQAnswer(2)">Show Answer</button>
+                <div class="mcq-answer" id="mcq2">✓ Answer: C) RAM</div>
+            </div>
+            
+            <!-- MCQ 3 -->
+            <div class="mcq-card">
+                <div class="mcq-question">3. HTML stands for:</div>
+                <div class="mcq-options">
+                    <div class="mcq-option">A) Hyper Text Markup Language</div>
+                    <div class="mcq-option">B) High Text Markup Language</div>
+                    <div class="mcq-option">C) Hyper Tool Markup Language</div>
+                    <div class="mcq-option">D) None of above</div>
+                </div>
+                <button class="show-mcq" onclick="showMCQAnswer(3)">Show Answer</button>
+                <div class="mcq-answer" id="mcq3">✓ Answer: A) Hyper Text Markup Language</div>
+            </div>
+            
+            <!-- MCQ 4 -->
+            <div class="mcq-card">
+                <div class="mcq-question">4. Binary equivalent of decimal 10 is:</div>
+                <div class="mcq-options">
+                    <div class="mcq-option">A) 1010</div>
+                    <div class="mcq-option">B) 1001</div>
+                    <div class="mcq-option">C) 1100</div>
+                    <div class="mcq-option">D) 1011</div>
+                </div>
+                <button class="show-mcq" onclick="showMCQAnswer(4)">Show Answer</button>
+                <div class="mcq-answer" id="mcq4">✓ Answer: A) 1010</div>
+            </div>
+            
+            <!-- MCQ 5 -->
+            <div class="mcq-card">
+                <div class="mcq-question">5. Which is not a programming language?</div>
+                <div class="mcq-options">
+                    <div class="mcq-option">A) Python</div>
+                    <div class="mcq-option">B) Java</div>
+                    <div class="mcq-option">C) MySQL</div>
+                    <div class="mcq-option">D) C++</div>
+                </div>
+                <button class="show-mcq" onclick="showMCQAnswer(5)">Show Answer</button>
+                <div class="mcq-answer" id="mcq5">✓ Answer: C) MySQL (It's a database)</div>
+            </div>
+            
+            <!-- MCQ 6 -->
+            <div class="mcq-card">
+                <div class="mcq-question">6. Which device is used for input?</div>
+                <div class="mcq-options">
+                    <div class="mcq-option">A) Monitor</div>
+                    <div class="mcq-option">B) Printer</div>
+                    <div class="mcq-option">C) Keyboard</div>
+                    <div class="mcq-option">D) Speaker</div>
+                </div>
+                <button class="show-mcq" onclick="showMCQAnswer(6)">Show Answer</button>
+                <div class="mcq-answer" id="mcq6">✓ Answer: C) Keyboard</div>
+            </div>
+        </div>
+        
+        <button class="back-btn" onclick="window.location.href='index.html'">← Back to Home</button>
+    </div>
+    
+    <script>
+    function showMCQAnswer(num) {
+        const answer = document.getElementById('mcq' + num);
+        answer.style.display = 'block';
+        
+        // Log MCQ view
+        const visitorId = localStorage.getItem('visitor_id') || 'anonymous';
+        console.log(`✅ ${visitorId} viewed MCQ ${num} on obj.html`);
+    }
+    
+    // Track page view
+    console.log('✅ Objective page accessed by:', localStorage.getItem('visitor_id') || 'new');
+    console.log('🕐 Time:', new Date().toLocaleString());
+    </script>
+</body>
+</html>

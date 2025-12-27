@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Odd Days Sets - Gahan's Challenge</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
+        
+        body {
+            background: #f5f7fa;
+            color: #333;
+        }
+        
+        .header {
+            background: linear-gradient(90deg, #1a2980, #26d0ce);
+            color: white;
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .nav {
+            display: flex;
+            gap: 15px;
+        }
+        
+        .nav a {
+            color: white;
+            text-decoration: none;
+            padding: 8px 15px;
+            border-radius: 5px;
+            transition: background 0.3s;
+        }
+        
+        .nav a:hover {
+            background: rgba(255,255,255,0.1);
+        }
+        
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 30px;
+        }
+        
+        h1 {
+            color: #1a2980;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+        
+        .question-set {
+            background: white;
+            border-radius: 10px;
+            padding: 25px;
+            margin-bottom: 25px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+        }
+        
+        .question {
+            margin-bottom: 20px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .question:last-child {
+            border-bottom: none;
+        }
+        
+        .question-number {
+            background: #4285F4;
+            color: white;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 10px;
+            font-weight: bold;
+        }
+        
+        .options {
+            margin-left: 40px;
+            margin-top: 10px;
+        }
+        
+        .option {
+            padding: 8px 0;
+        }
+        
+        .answer {
+            background: #d4edda;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 15px;
+            display: none;
+        }
+        
+        .show-answer {
+            background: #28a745;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+        
+        .back-btn {
+            background: #666;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 30px;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h2>📚 Odd Days Question Sets</h2>
+        <div class="nav">
+            <a href="index.html">Home</a>
+            <a href="even.html">Even Sets</a>
+            <a href="obj.html">Objective</a>
+        </div>
+    </div>
+    
+    <div class="container">
+        <h1>SEE 2082 - Computer Science (Odd Days)</h1>
+        
+        <!-- Set 1 -->
+        <div class="question-set">
+            <h3 style="color: #1a2980;">Set 1: Programming Fundamentals</h3>
+            
+            <div class="question">
+                <span class="question-number">1</span>
+                <strong>What is the output of following C program?</strong><br>
+                <pre style="background: #f8f9fa; padding: 15px; border-radius: 5px; margin: 10px 0;">
+#include &lt;stdio.h&gt;
+int main() {
+    int x = 5;
+    printf("%d", x++ * ++x);
+    return 0;
+}</pre>
+                <div class="options">
+                    <div class="option">A) 25</div>
+                    <div class="option">B) 30</div>
+                    <div class="option">C) 36</div>
+                    <div class="option">D) Undefined behavior</div>
+                </div>
+                <button class="show-answer" onclick="showAnswer(1)">Show Answer</button>
+                <div class="answer" id="answer1">
+                    <strong>Answer: D) Undefined behavior</strong><br>
+                    <strong>Explanation:</strong> The expression x++ * ++x has undefined behavior because x is modified multiple times between sequence points.
+                </div>
+            </div>
+            
+            <div class="question">
+                <span class="question-number">2</span>
+                <strong>Which data structure uses LIFO principle?</strong>
+                <div class="options">
+                    <div class="option">A) Queue</div>
+                    <div class="option">B) Stack</div>
+                    <div class="option">C) Linked List</div>
+                    <div class="option">D) Tree</div>
+                </div>
+                <button class="show-answer" onclick="showAnswer(2)">Show Answer</button>
+                <div class="answer" id="answer2">
+                    <strong>Answer: B) Stack</strong><br>
+                    Stack follows Last-In-First-Out (LIFO) principle.
+                </div>
+            </div>
+        </div>
+        
+        <!-- Set 2 -->
+        <div class="question-set">
+            <h3 style="color: #1a2980;">Set 2: Database Management</h3>
+            
+            <div class="question">
+                <span class="question-number">3</span>
+                <strong>What is the full form of SQL?</strong>
+                <div class="options">
+                    <div class="option">A) Structured Query Language</div>
+                    <div class="option">B) Simple Query Language</div>
+                    <div class="option">C) Standard Query Language</div>
+                    <div class="option">D) System Query Language</div>
+                </div>
+                <button class="show-answer" onclick="showAnswer(3)">Show Answer</button>
+                <div class="answer" id="answer3">
+                    <strong>Answer: A) Structured Query Language</strong><br>
+                    SQL stands for Structured Query Language used for managing relational databases.
+                </div>
+            </div>
+            
+            <div class="question">
+                <span class="question-number">4</span>
+                <strong>Which SQL command is used to remove a table?</strong>
+                <div class="options">
+                    <div class="option">A) DELETE</div>
+                    <div class="option">B) DROP</div>
+                    <div class="option">C) REMOVE</div>
+                    <div class="option">D) TRUNCATE</div>
+                </div>
+                <button class="show-answer" onclick="showAnswer(4)">Show Answer</button>
+                <div class="answer" id="answer4">
+                    <strong>Answer: B) DROP</strong><br>
+                    DROP TABLE command removes the table structure and data permanently.
+                </div>
+            </div>
+        </div>
+        
+        <!-- Set 3 -->
+        <div class="question-set">
+            <h3 style="color: #1a2980;">Set 3: Networking</h3>
+            
+            <div class="question">
+                <span class="question-number">5</span>
+                <strong>What does HTTP stand for?</strong>
+                <div class="options">
+                    <div class="option">A) Hyper Text Transfer Protocol</div>
+                    <div class="option">B) High Text Transfer Process</div>
+                    <div class="option">C) Hyper Transfer Text Protocol</div>
+                    <div class="option">D) High Transfer Text Process</div>
+                </div>
+                <button class="show-answer" onclick="showAnswer(5)">Show Answer</button>
+                <div class="answer" id="answer5">
+                    <strong>Answer: A) Hyper Text Transfer Protocol</strong><br>
+                    HTTP is the foundation of data communication for the World Wide Web.
+                </div>
+            </div>
+        </div>
+        
+        <button class="back-btn" onclick="window.location.href='index.html'">← Back to Home</button>
+    </div>
+    
+    <script>
+    function showAnswer(num) {
+        const answer = document.getElementById('answer' + num);
+        answer.style.display = 'block';
+        
+        // Log question view
+        const visitorId = localStorage.getItem('visitor_id') || 'anonymous';
+        console.log(`📝 ${visitorId} viewed answer for question ${num} on odd.html`);
+    }
+    
+    // Track page view
+    console.log('📚 Odd page accessed by:', localStorage.getItem('visitor_id') || 'new');
+    console.log('🕐 Time:', new Date().toLocaleString());
+    </script>
+</body>
+</html>
