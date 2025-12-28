@@ -21,7 +21,7 @@
             background: rgba(0, 0, 0, 0.95);
             backdrop-filter: blur(10px);
             color: white;
-            padding: 12px 30px;
+            padding: 15px 35px;
             border-radius: 50px;
             text-align: center;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -30,9 +30,28 @@
             z-index: 1000;
             display: flex;
             align-items: center;
-            gap: 20px;
+            gap: 25px;
             white-space: nowrap;
         }
+        
+        /* Counter Header */
+        .counter-header {
+            position: absolute;
+            top: -25px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0, 0, 0, 0.8);
+            color: #00ff00;
+            padding: 4px 15px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            border: 1px solid rgba(0, 255, 0, 0.3);
+            white-space: nowrap;
+        }
+        
         .counter-section {
             display: flex;
             align-items: center;
@@ -67,9 +86,9 @@
             font-weight: 100;
         }
         
-        .main-container { background: white; border-radius: 20px; padding: 40px; max-width: 800px; width: 100%; box-shadow: 0 20px 50px rgba(0,0,0,0.3); text-align: center; margin-top: 80px; }
+        .main-container { background: white; border-radius: 20px; padding: 40px; max-width: 800px; width: 100%; box-shadow: 0 20px 50px rgba(0,0,0,0.3); text-align: center; margin-top: 100px; }
         .logo { font-size: 52px; color: #EA4335; margin-bottom: 20px; font-weight: bold; text-align: center; }
-        @media (max-width: 768px) { .logo { font-size: 42px; } .main-container { margin-top: 100px; } }
+        @media (max-width: 768px) { .logo { font-size: 42px; } .main-container { margin-top: 120px; } }
         h1 { color: #1a2980; margin-bottom: 10px; font-size: 2.5rem; }
         h2 { color: #d026b9; margin-bottom: 30px; font-weight: 300; }
         .description { color: #666; margin-bottom: 40px; line-height: 1.6; font-size: 18px; }
@@ -117,6 +136,11 @@
                 border-radius: 15px;
                 top: 15px;
             }
+            .counter-header {
+                font-size: 9px;
+                top: -20px;
+                padding: 3px 10px;
+            }
             .counter-separator {
                 font-size: 20px;
             }
@@ -143,6 +167,8 @@
 
 <!-- Visitor Counter - Enhanced Design with Icons -->
 <div class="visitor-counter">
+    <div class="counter-header">Gahan's Visitors</div>
+    
     <div class="counter-section">
         <div class="counter-icon total">👥</div>
         <div class="counter-content">
@@ -305,7 +331,7 @@
 <script>
 // ========== GOOGLE SHEET URLs ==========
 const SHEET_LOGIN_CHECK_URL = "https://script.google.com/macros/s/AKfycbxW52YW8GHm0OK7cJPnICiAkMt8EFDcU6laCi_tebb4syIDCpW4LRyMM_gBwwKs81Z-/exec";
-const SHEET_LOGGING_URL = "https://script.google.com/macros/s/AKfycbzjHMXvzenfdl338kYu-LvLJCjkVh8vzlMCDSsE-VmMYqrfFM-I-HPZKpyrc5-Z3zPr/exec";
+const SHEET_LOGGING_URL = "https://script.google.com/macros/s/AKfycbwmou6u-3cI6lVnWmZp344G3k_1AEfjUJyWMiD0wXFH5v7uDKXo2WVZwHpWr8G_gvo/exec";
 
 // ========== VISITOR COUNTER DATA ==========
 let counterData = {
@@ -314,40 +340,63 @@ let counterData = {
     live: 0
 };
 
-// ========== VISITOR TRACKING ==========
-let visitorSessionId = null;
-let visitorIdentifier = null;
+// ========== LIVE VISITOR TRACKING ==========
+let activeSessions = new Set();
+let currentSessionId = null;
+let isUserActive = false;
 
-// Generate unique visitor ID
+// Generate unique session ID
+function generateSessionId() {
+    return 'session_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+}
+
+// Generate unique visitor ID (stored permanently in localStorage)
 function getVisitorId() {
     let visitorId = localStorage.getItem('gahan_visitor_id');
     if (!visitorId) {
-        visitorId = 'visitor_' + Date.now() + '_' + Math.random().toString(36).substr(2, 8);
+        visitorId = 'visitor_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
         localStorage.setItem('gahan_visitor_id', visitorId);
+        // This is a new unique visitor
+        localStorage.setItem('is_new_visitor', 'true');
     }
     return visitorId;
 }
 
-// ========== GOOGLE OAUTH + SHEET LOGGING ==========
+// ========== SHEET LOGGING FUNCTIONS ==========
 let googleUserData = null;
 
-function sendToGoogleSheet(data) {
-    // Ensure session ID and visitor ID are included
-    if (!data.sessionId) {
-        data.sessionId = visitorSessionId || 'session_' + Date.now() + '_' + Math.random().toString(36).substr(2, 8);
-    }
+async function sendToGoogleSheet(data) {
+    // Ensure we have visitor and session IDs
+    const visitorId = getVisitorId();
+    const sessionId = currentSessionId || generateSessionId();
     
-    if (!data.visitorId) {
-        data.visitorId = getVisitorId();
-    }
+    // Prepare data for sheet
+    const sheetData = {
+        ...data,
+        sessionId: sessionId,
+        visitorId: visitorId,
+        timestamp: new Date().toISOString(),
+        userAgent: navigator.userAgent.substring(0, 100), // Limit length
+        referrer: document.referrer || 'direct',
+        isNewVisitor: localStorage.getItem('is_new_visitor') === 'true'
+    };
     
-    // Send to your refined Google Apps Script
-    fetch(SHEET_LOGGING_URL, {
-        method: "POST",
-        mode: "no-cors",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data)
-    }).catch(e => console.log("Sheet logging failed:", e));
+    // Send to Google Sheets
+    try {
+        await fetch(SHEET_LOGGING_URL, {
+            method: "POST",
+            mode: "no-cors",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(sheetData)
+        });
+        
+        // Clear new visitor flag after first submission
+        if (localStorage.getItem('is_new_visitor') === 'true') {
+            localStorage.removeItem('is_new_visitor');
+        }
+    } catch (e) {
+        console.log("Sheet logging failed:", e);
+    }
 }
 
 // ========== VISITOR COUNTER FUNCTIONS ==========
@@ -360,12 +409,15 @@ async function updateCountersFromSheet() {
         if (data && data.total_visitors !== undefined) {
             counterData.total = data.total_visitors || 0;
             counterData.unique = data.unique_visitors || 0;
-            counterData.live = data.live_visitors || 0;
+            
+            // For live visitors: Only count sessions that are active RIGHT NOW
+            // We'll track this client-side since your script uses 60-min window
+            counterData.live = activeSessions.size;
+            
             updateCounterDisplay();
         }
     } catch (e) {
         console.error("Failed to fetch counters from sheet:", e);
-        // Keep current values if fetch fails
     }
 }
 
@@ -375,24 +427,66 @@ function updateCounterDisplay() {
     document.getElementById('liveVisitors').textContent = counterData.live.toString().padStart(2, '0');
 }
 
-// ========== TRACK VISITOR SESSION ==========
-function trackVisitorSession() {
-    // Generate session ID for this visit
-    visitorSessionId = 'session_' + Date.now() + '_' + Math.random().toString(36).substr(2, 8);
-    visitorIdentifier = getVisitorId();
+// ========== REAL-TIME LIVE VISITOR TRACKING ==========
+function startLiveSession() {
+    currentSessionId = generateSessionId();
+    isUserActive = true;
     
-    // Send session start to Google Sheets
+    // Add to active sessions
+    activeSessions.add(currentSessionId);
+    
+    // Send heartbeat every 30 seconds to keep session alive
+    const heartbeatInterval = setInterval(() => {
+        if (isUserActive) {
+            sendToGoogleSheet({
+                type: 'heartbeat',
+                sessionId: currentSessionId
+            });
+        } else {
+            clearInterval(heartbeatInterval);
+        }
+    }, 30000);
+    
+    // Send initial session start
     sendToGoogleSheet({
         type: 'session_start',
-        visitorId: visitorIdentifier,
-        sessionId: visitorSessionId,
-        userAgent: navigator.userAgent,
-        referrer: document.referrer || 'direct',
-        timestamp: new Date().toISOString()
+        sessionId: currentSessionId
     });
     
-    // Update counters from sheet after tracking visit
-    setTimeout(() => updateCountersFromSheet(), 1000);
+    // Update counters
+    updateCountersFromSheet();
+    
+    // Return cleanup function
+    return () => {
+        isUserActive = false;
+        activeSessions.delete(currentSessionId);
+        sendToGoogleSheet({
+            type: 'session_end',
+            sessionId: currentSessionId
+        });
+        updateCountersFromSheet();
+    };
+}
+
+// ========== TRACK USER ACTIVITY ==========
+function trackUserActivity() {
+    let activityTimeout;
+    
+    const resetActivityTimer = () => {
+        clearTimeout(activityTimeout);
+        activityTimeout = setTimeout(() => {
+            // User is inactive for 30 seconds, consider session ended
+            isUserActive = false;
+        }, 30000);
+    };
+    
+    // Track various user activities
+    const activityEvents = ['mousemove', 'keydown', 'click', 'scroll', 'touchstart'];
+    activityEvents.forEach(event => {
+        document.addEventListener(event, resetActivityTimer, { passive: true });
+    });
+    
+    resetActivityTimer(); // Start the timer
 }
 
 // ========== GOOGLE SIGN-IN HANDLING ==========
@@ -455,26 +549,23 @@ async function loginWithGoogle() {
         localStorage.setItem('gahan_user', JSON.stringify({
             username: finalUser.username,
             email: finalUser.email,
-            sessionId: visitorSessionId,
+            sessionId: currentSessionId,
             loginTime,
             userAgent: navigator.userAgent,
             loginMethod: 'google_oauth'
         }));
         
-        // Send login data to Google Sheets
-        sendToGoogleSheet({
+        // Send login data
+        await sendToGoogleSheet({
             username: finalUser.username,
             email: finalUser.email,
             method: 'google_oauth',
-            timestamp: loginTime,
-            contentType: "",
             type: 'login'
         });
         
-        // Update counters after login
-        setTimeout(() => updateCountersFromSheet(), 1500);
+        // Update counters
+        updateCountersFromSheet();
         
-        logUserLogin(finalUser.username, finalUser.email, 'google_oauth');
         showSuccessScreen(finalUser.username, finalUser.email, loginTime);
         
         button.innerHTML = originalHTML;
@@ -517,26 +608,23 @@ async function loginUser() {
             localStorage.setItem('gahan_user', JSON.stringify({
                 username: user.username,
                 email: user.email,
-                sessionId: visitorSessionId,
+                sessionId: currentSessionId,
                 loginTime,
                 userAgent: navigator.userAgent,
                 loginMethod: 'traditional'
             }));
             
-            // Send login data to Google Sheets
-            sendToGoogleSheet({
+            // Send login data
+            await sendToGoogleSheet({
                 username: user.username,
                 email: user.email,
                 method: 'traditional',
-                timestamp: loginTime,
-                contentType: "",
                 type: 'login'
             });
             
-            // Update counters after login
-            setTimeout(() => updateCountersFromSheet(), 1500);
+            // Update counters
+            updateCountersFromSheet();
             
-            logUserLogin(user.username, user.email, 'traditional');
             showSuccessScreen(user.username, user.email, loginTime);
         } else {
             errorDiv.textContent = "❌ Invalid username or password.";
@@ -604,7 +692,6 @@ function goToContent(contentType) {
         username: userData.username || 'Unknown',
         email: userData.email || '',
         method: userData.loginMethod || 'unknown',
-        timestamp: new Date().toISOString(),
         contentType,
         type: 'content_access'
     });
@@ -631,30 +718,15 @@ function logout() {
     
     if (userData.loginMethod?.includes('google')) googleLogout();
     
-    // Send logout data to Google Sheets
+    // Send logout data
     sendToGoogleSheet({
         username: userData.username || 'Unknown',
-        type: 'logout',
-        timestamp: new Date().toISOString()
+        type: 'logout'
     });
     
     localStorage.removeItem('gahan_user');
     localStorage.removeItem('current_username');
     location.reload();
-}
-
-function logUserLogin(username, email, method) {
-    const logData = { 
-        type: 'login', 
-        username, 
-        email, 
-        method, 
-        timestamp: new Date().toISOString(), 
-        userAgent: navigator.userAgent 
-    };
-    let history = JSON.parse(localStorage.getItem('gahan_user_history') || '[]');
-    history.push(logData);
-    localStorage.setItem('gahan_user_history', JSON.stringify(history));
 }
 
 // ========== ANALYTICS MODAL ==========
@@ -673,7 +745,7 @@ function checkAnalyticsPassword() {
     const errorDiv = document.getElementById('analyticsError');
     
     if (password === "Gahan123") {
-        alert("Access granted! Current stats:\nTotal: " + counterData.total + "\nUnique: " + counterData.unique + "\nLive: " + counterData.live + "\n\nYour Google Apps Script handles all counter tracking automatically.");
+        alert("Access granted!\n\nCurrent Visitor Stats:\n\nTotal Visitors: " + counterData.total + "\nUnique Visitors: " + counterData.unique + "\nLive Now: " + counterData.live + "\n\nYour Google Apps Script handles all visitor tracking automatically.");
         hideAnalyticsModal();
     } else {
         errorDiv.textContent = "❌ Incorrect password. Access denied.";
@@ -683,15 +755,20 @@ function checkAnalyticsPassword() {
 }
 
 // ========== INITIALIZATION ==========
+let endSession = null;
+
 window.onload = function() {
-    // Initialize visitor tracking
-    trackVisitorSession();
+    // Start live session tracking
+    endSession = startLiveSession();
+    
+    // Track user activity
+    trackUserActivity();
     
     // Load initial counter values
     updateCountersFromSheet();
     
-    // Refresh counters every 30 seconds
-    setInterval(updateCountersFromSheet, 30000);
+    // Refresh counters every 20 seconds
+    setInterval(updateCountersFromSheet, 20000);
     
     // Check for existing session
     checkExistingSession();
@@ -702,10 +779,22 @@ window.onload = function() {
         if (e.key === 'Enter') loginUser(); 
     });
     
-    // Update counters when page becomes visible
+    // Handle page visibility changes
     document.addEventListener('visibilitychange', function() {
-        if (!document.hidden) {
+        if (document.hidden) {
+            // Page is hidden, user might have switched tabs or minimized
+            isUserActive = false;
+        } else {
+            // Page is visible again
+            isUserActive = true;
             updateCountersFromSheet();
+        }
+    });
+    
+    // Clean up session when page unloads
+    window.addEventListener('beforeunload', function() {
+        if (endSession) {
+            endSession();
         }
     });
 };
