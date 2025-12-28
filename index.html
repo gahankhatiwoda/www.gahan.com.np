@@ -26,7 +26,14 @@
             overflow-x: hidden;
         }
         
-        /* Loading Overlay */
+        /* ========== DYNAMIC SPACING VARIABLES ========== */
+        :root {
+            --nav-height: 60px;
+            --dashboard-height: 80px;
+            --total-top-space: calc(var(--nav-height) + var(--dashboard-height) + 30px);
+        }
+        
+        /* ========== LOADING OVERLAY ========== */
         .loading-overlay {
             position: fixed;
             top: 0;
@@ -56,7 +63,7 @@
             100% { transform: rotate(360deg); }
         }
         
-        /* Toast Notifications */
+        /* ========== TOAST NOTIFICATIONS ========== */
         .toast-container {
             position: fixed;
             top: 20px;
@@ -87,15 +94,16 @@
         .toast.warning { border-left-color: var(--warning); }
         .toast.info { border-left-color: var(--primary); }
         
-        /* Top Navigation */
+        /* ========== TOP NAVIGATION ========== */
         .top-nav {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
+            height: var(--nav-height);
             background: rgba(255,255,255,0.95);
             backdrop-filter: blur(10px);
-            padding: 15px 30px;
+            padding: 0 30px;
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -110,7 +118,7 @@
         }
         
         .logo {
-            font-size: 24px;
+            font-size: 22px;
             font-weight: bold;
             background: linear-gradient(90deg, var(--primary), var(--secondary));
             -webkit-background-clip: text;
@@ -147,54 +155,42 @@
             border-color: var(--primary);
         }
         
-        /* Enhanced Visitor Counter */
-        .visitor-counter {
+        /* ========== VISITOR DASHBOARD ========== */
+        .visitor-dashboard {
             position: fixed;
-            top: 80px;
-            left: 50%;
-            transform: translateX(-50%);
+            top: var(--nav-height);
+            left: 0;
+            width: 100%;
+            height: var(--dashboard-height);
             background: rgba(0, 0, 0, 0.9);
             backdrop-filter: blur(20px);
             color: white;
-            padding: 20px 40px;
-            border-radius: 20px;
-            text-align: center;
-            border: 2px solid rgba(0, 255, 0, 0.3);
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
             z-index: 999;
+            border-bottom: 2px solid rgba(0, 255, 0, 0.3);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+        }
+        
+        .dashboard-content {
             display: flex;
             align-items: center;
-            gap: 30px;
-            white-space: nowrap;
-            min-width: 600px;
+            gap: 40px;
+            max-width: 900px;
+            width: 90%;
+            justify-content: center;
         }
         
-        .counter-header {
-            position: absolute;
-            top: -15px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: var(--dark);
-            color: #00ff00;
-            padding: 6px 20px;
-            border-radius: 20px;
-            font-size: 12px;
-            font-weight: bold;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            border: 1px solid rgba(0, 255, 0, 0.3);
-            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
-        }
-        
-        .counter-item {
+        .dashboard-item {
             display: flex;
             align-items: center;
-            gap: 12px;
-            flex: 1;
+            gap: 15px;
+            text-align: left;
         }
         
-        .counter-icon {
-            font-size: 24px;
+        .dashboard-icon {
+            font-size: 28px;
             width: 50px;
             height: 50px;
             border-radius: 50%;
@@ -202,53 +198,47 @@
             align-items: center;
             justify-content: center;
             background: rgba(255,255,255,0.1);
+            flex-shrink: 0;
         }
         
-        .counter-content {
+        .dashboard-text {
             display: flex;
             flex-direction: column;
-            align-items: flex-start;
-            flex: 1;
         }
         
-        .counter-value {
+        .dashboard-value {
             font-size: 28px;
             font-weight: bold;
             font-family: 'Courier New', monospace;
-            min-width: 60px;
+            line-height: 1;
+            min-width: 70px;
         }
         
-        .counter-label {
+        .dashboard-label {
             font-size: 12px;
             color: #aaa;
             text-transform: uppercase;
             letter-spacing: 1px;
-            margin-top: 2px;
+            margin-top: 4px;
         }
         
-        .counter-trend {
+        .dashboard-trend {
             font-size: 11px;
-            margin-top: 3px;
+            margin-top: 2px;
         }
         
         .trend-up { color: #00ff00; }
         .trend-down { color: #ff4444; }
         
-        .counter-separator {
-            color: rgba(255, 255, 255, 0.2);
-            font-size: 30px;
-            font-weight: 100;
-        }
-        
-        /* Main Container */
+        /* ========== MAIN CONTAINER ========== */
         .main-container {
             background: white;
             border-radius: 25px;
-            padding: 50px;
+            padding: 40px;
             max-width: 900px;
             width: 90%;
             box-shadow: 0 25px 60px rgba(0,0,0,0.3);
-            margin: 200px auto 50px;
+            margin: var(--total-top-space) auto 50px;
             position: relative;
         }
         
@@ -271,7 +261,7 @@
             font-weight: 300;
         }
         
-        /* Login Form */
+        /* ========== LOGIN FORM ========== */
         .login-form {
             background: var(--light);
             padding: 40px;
@@ -420,7 +410,7 @@
             font-size: 14px;
         }
         
-        /* Features Grid */
+        /* ========== FEATURES GRID ========== */
         .features-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
@@ -457,7 +447,7 @@
             color: var(--dark);
         }
         
-        /* Success Screen */
+        /* ========== SUCCESS SCREEN ========== */
         .success-screen {
             display: none;
             text-align: center;
@@ -522,7 +512,7 @@
         .content-card.even { border-top: 5px solid #2196F3; }
         .content-card.obj { border-top: 5px solid #9C27B0; }
         
-        /* Analytics Modal */
+        /* ========== ANALYTICS MODAL ========== */
         .analytics-modal {
             display: none;
             position: fixed;
@@ -597,13 +587,7 @@
             letter-spacing: 1px;
         }
         
-        .chart-container {
-            height: 200px;
-            margin: 30px 0;
-            position: relative;
-        }
-        
-        /* Privacy Modal */
+        /* ========== PRIVACY MODAL ========== */
         .privacy-modal {
             display: none;
             position: fixed;
@@ -627,28 +611,40 @@
             overflow-y: auto;
         }
         
-        /* Responsive Design */
+        /* ========== RESPONSIVE DESIGN ========== */
         @media (max-width: 768px) {
-            .visitor-counter {
-                min-width: 90%;
-                padding: 15px 20px;
-                gap: 15px;
+            :root {
+                --nav-height: 55px;
+                --dashboard-height: 100px;
+            }
+            
+            .dashboard-content {
+                gap: 20px;
                 flex-wrap: wrap;
-                justify-content: center;
+                justify-content: space-around;
+                padding: 10px;
             }
             
-            .counter-item {
-                flex: 0 0 calc(33.333% - 20px);
+            .dashboard-item {
+                flex: 0 0 calc(33.333% - 10px);
                 justify-content: center;
+                gap: 10px;
             }
             
-            .counter-separator {
-                display: none;
+            .dashboard-icon {
+                width: 40px;
+                height: 40px;
+                font-size: 22px;
+            }
+            
+            .dashboard-value {
+                font-size: 22px;
+                min-width: 60px;
             }
             
             .main-container {
-                padding: 30px;
-                margin-top: 160px;
+                padding: 25px;
+                margin-top: calc(var(--total-top-space) + 10px);
             }
             
             .section-title {
@@ -656,7 +652,7 @@
             }
             
             .top-nav {
-                padding: 12px 20px;
+                padding: 0 20px;
             }
             
             .nav-btn span {
@@ -669,27 +665,29 @@
         }
         
         @media (max-width: 480px) {
-            .visitor-counter {
-                top: 70px;
-                flex-direction: column;
-                gap: 10px;
+            :root {
+                --dashboard-height: 120px;
             }
             
-            .counter-item {
-                flex: 0 0 100%;
-                justify-content: flex-start;
+            .dashboard-item {
+                flex: 0 0 calc(50% - 10px);
             }
             
-            .counter-separator {
-                display: block;
-                width: 80%;
-                height: 1px;
-                background: rgba(255,255,255,0.2);
-                margin: 10px 0;
+            .main-container {
+                padding: 20px;
+                margin-top: calc(var(--total-top-space) + 20px);
+            }
+            
+            .dashboard-content {
+                gap: 15px;
+            }
+            
+            .dashboard-value {
+                font-size: 20px;
             }
         }
         
-        /* Animations */
+        /* ========== ANIMATIONS ========== */
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(20px); }
             to { opacity: 1; transform: translateY(0); }
@@ -699,7 +697,7 @@
             animation: fadeIn 0.5s ease forwards;
         }
         
-        /* Scrollbar Styling */
+        /* ========== SCROLLBAR STYLING ========== */
         ::-webkit-scrollbar {
             width: 8px;
         }
@@ -735,7 +733,7 @@
 <div class="top-nav">
     <div class="logo-container">
         <div class="logo">GAHAN KHATIWODA</div>
-        <div style="color: var(--gray); font-size: 14px;">Enhanced Visitor Tracking</div>
+        <div style="color: var(--gray); font-size: 12px;">Enhanced Visitor Tracking</div>
     </div>
     
     <div class="nav-controls">
@@ -754,44 +752,40 @@
     </div>
 </div>
 
-<!-- Enhanced Visitor Counter -->
-<div class="visitor-counter">
-    <div class="counter-header">Gahan's Visitors</div>
-    
-    <div class="counter-item">
-        <div class="counter-icon" style="color: #00ff00;">
-            <i class="fas fa-users"></i>
+<!-- Visitor Dashboard -->
+<div class="visitor-dashboard">
+    <div class="dashboard-content">
+        <div class="dashboard-item">
+            <div class="dashboard-icon" style="color: #00ff00;">
+                <i class="fas fa-users"></i>
+            </div>
+            <div class="dashboard-text">
+                <div class="dashboard-value" id="totalVisitors">0000</div>
+                <div class="dashboard-label">Total Visitors</div>
+                <div class="dashboard-trend trend-up" id="totalTrend">+0 today</div>
+            </div>
         </div>
-        <div class="counter-content">
-            <div class="counter-value" id="totalVisitors">0000</div>
-            <div class="counter-label">Total Visitors</div>
-            <div class="counter-trend trend-up" id="totalTrend">+12 today</div>
+        
+        <div class="dashboard-item">
+            <div class="dashboard-icon" style="color: #4285F4;">
+                <i class="fas fa-user-check"></i>
+            </div>
+            <div class="dashboard-text">
+                <div class="dashboard-value" id="uniqueVisitors">0000</div>
+                <div class="dashboard-label">Unique Visitors</div>
+                <div class="dashboard-trend" id="uniqueTrend">Returning: 0%</div>
+            </div>
         </div>
-    </div>
-    
-    <div class="counter-separator">|</div>
-    
-    <div class="counter-item">
-        <div class="counter-icon" style="color: #4285F4;">
-            <i class="fas fa-user-check"></i>
-        </div>
-        <div class="counter-content">
-            <div class="counter-value" id="uniqueVisitors">0000</div>
-            <div class="counter-label">Unique Visitors</div>
-            <div class="counter-trend" id="uniqueTrend">Returning: 68%</div>
-        </div>
-    </div>
-    
-    <div class="counter-separator">|</div>
-    
-    <div class="counter-item">
-        <div class="counter-icon" style="color: #EA4335;">
-            <i class="fas fa-circle"></i>
-        </div>
-        <div class="counter-content">
-            <div class="counter-value" id="liveVisitors">00</div>
-            <div class="counter-label">Live Now</div>
-            <div class="counter-trend" id="liveActivity">Active in last 5 min</div>
+        
+        <div class="dashboard-item">
+            <div class="dashboard-icon" style="color: #EA4335;">
+                <i class="fas fa-circle"></i>
+            </div>
+            <div class="dashboard-text">
+                <div class="dashboard-value" id="liveVisitors">00</div>
+                <div class="dashboard-label">Live Now</div>
+                <div class="dashboard-trend" id="liveActivity">Active now</div>
+            </div>
         </div>
     </div>
 </div>
@@ -1086,22 +1080,6 @@
                     <div class="stat-label">Pages/Session</div>
                 </div>
             </div>
-            
-            <div style="margin: 30px 0;">
-                <h4 style="color: var(--dark); margin-bottom: 15px;">
-                    <i class="fas fa-chart-line"></i> Today's Traffic
-                </h4>
-                <div class="chart-container" id="hourlyChart">
-                    <!-- Chart will be rendered here -->
-                    <div style="display: flex; height: 100%; align-items: flex-end; gap: 10px;">
-                        <div style="flex: 1; background: var(--primary); border-radius: 5px;"></div>
-                        <div style="flex: 1; background: var(--primary); height: 60%; border-radius: 5px;"></div>
-                        <div style="flex: 1; background: var(--primary); height: 80%; border-radius: 5px;"></div>
-                        <div style="flex: 1; background: var(--primary); height: 100%; border-radius: 5px;"></div>
-                        <div style="flex: 1; background: var(--primary); height: 70%; border-radius: 5px;"></div>
-                    </div>
-                </div>
-            </div>
         </div>
         
         <!-- Real-Time Tab -->
@@ -1110,7 +1088,6 @@
                 <i class="fas fa-users"></i> Live Visitors
             </h4>
             <div id="liveVisitorsList" style="max-height: 300px; overflow-y: auto;">
-                <!-- Live visitors will be listed here -->
                 <div style="text-align: center; padding: 40px; color: var(--gray);">
                     <i class="fas fa-sync fa-spin" style="font-size: 30px; margin-bottom: 15px;"></i>
                     <p>Loading real-time data...</p>
@@ -1124,7 +1101,10 @@
                 <i class="fas fa-map-marker-alt"></i> Visitor Locations
             </h4>
             <div id="countryList" style="max-height: 300px; overflow-y: auto;">
-                <!-- Country list will be here -->
+                <div style="text-align: center; padding: 40px; color: var(--gray);">
+                    <i class="fas fa-globe-americas" style="font-size: 30px; margin-bottom: 15px;"></i>
+                    <p>Geographic data loading...</p>
+                </div>
             </div>
         </div>
         
@@ -1134,7 +1114,10 @@
                 <i class="fas fa-laptop"></i> Device Distribution
             </h4>
             <div id="deviceStats">
-                <!-- Device stats will be here -->
+                <div style="text-align: center; padding: 40px; color: var(--gray);">
+                    <i class="fas fa-mobile-alt" style="font-size: 30px; margin-bottom: 15px;"></i>
+                    <p>Device statistics loading...</p>
+                </div>
             </div>
         </div>
         
@@ -1222,7 +1205,7 @@
 
 // Configuration
 const CONFIG = {
-    SHEET_URL: "https://script.google.com/macros/s/AKfycbwU7zYkNU0j4Pq3IqmyJGri17dHPCr2UspqrGCRECuZBdNaVp4iZSjLKvKlnwNu-Flu/exec",
+    SHEET_URL: "https://script.google.com/macros/s/AKfycbyLSzGLCQ_SDzBDYGLcEWBk7kMs1DEUznin7wsuMo9wrggAdynA02us-I0YGKKbI921/exec",
     LOGIN_CHECK_URL: "https://script.google.com/macros/s/AKfycbxW52YW8GHm0OK7cJPnICiAkMt8EFDcU6laCi_tebb4syIDCpW4LRyMM_gBwwKs81Z-/exec",
     REFRESH_INTERVAL: 30000, // 30 seconds
     HEARTBEAT_INTERVAL: 120000, // 2 minutes
@@ -1257,25 +1240,36 @@ const AppState = {
     }
 };
 
-// DOM Elements Cache
-const Elements = {
-    loading: document.getElementById('loadingOverlay'),
-    loadingProgress: document.getElementById('loadingProgress'),
-    toastContainer: document.getElementById('toastContainer'),
-    totalVisitors: document.getElementById('totalVisitors'),
-    uniqueVisitors: document.getElementById('uniqueVisitors'),
-    liveVisitors: document.getElementById('liveVisitors'),
-    totalTrend: document.getElementById('totalTrend'),
-    uniqueTrend: document.getElementById('uniqueTrend'),
-    liveActivity: document.getElementById('liveActivity'),
-    loginScreen: document.getElementById('loginScreen'),
-    successScreen: document.getElementById('successScreen'),
-    loginBtn: document.getElementById('loginBtn'),
-    errorMessage: document.getElementById('errorMessage'),
-    errorText: document.getElementById('errorText'),
-    analyticsModal: document.getElementById('analyticsModal'),
-    privacyModal: document.getElementById('privacyModal')
-};
+// ======================================================================
+// DYNAMIC SPACING MANAGEMENT
+// ======================================================================
+
+function updateDynamicSpacing() {
+    const nav = document.querySelector('.top-nav');
+    const dashboard = document.querySelector('.visitor-dashboard');
+    const main = document.querySelector('.main-container');
+    
+    if (nav && dashboard && main) {
+        // Get actual heights
+        const navHeight = nav.offsetHeight;
+        const dashboardHeight = dashboard.offsetHeight;
+        
+        // Calculate total space needed
+        const totalTopSpace = navHeight + dashboardHeight + 30; // 30px extra spacing
+        
+        // Update CSS variable
+        document.documentElement.style.setProperty('--total-top-space', totalTopSpace + 'px');
+        
+        // Update main container margin
+        main.style.marginTop = totalTopSpace + 'px';
+        
+        console.log('Dynamic spacing updated:', {
+            navHeight,
+            dashboardHeight,
+            totalTopSpace
+        });
+    }
+}
 
 // ======================================================================
 // ENHANCED INITIALIZATION
@@ -1285,28 +1279,31 @@ async function initializeApp() {
     showLoading("Initializing Enhanced Tracking System...");
     
     try {
-        // Step 1: Check privacy acceptance
+        // Step 1: Update dynamic spacing
+        updateDynamicSpacing();
+        
+        // Step 2: Check privacy acceptance
         await checkPrivacyStatus();
         
-        // Step 2: Initialize session tracking
+        // Step 3: Initialize session tracking
         await initializeEnhancedSession();
         
-        // Step 3: Load user preferences
+        // Step 4: Load user preferences
         loadUserPreferences();
         
-        // Step 4: Check existing login session
+        // Step 5: Check existing login session
         await checkExistingLogin();
         
-        // Step 5: Initialize analytics
+        // Step 6: Initialize analytics
         await initializeAnalytics();
         
-        // Step 6: Set up event listeners
+        // Step 7: Set up event listeners
         setupEventListeners();
         
-        // Step 7: Start background processes
+        // Step 8: Start background processes
         startBackgroundProcesses();
         
-        // Step 8: Hide loading screen
+        // Step 9: Hide loading screen
         setTimeout(() => {
             hideLoading();
             showToast('System initialized successfully!', 'success');
@@ -1669,7 +1666,7 @@ async function updateEnhancedCounters() {
             updateCounterDisplay();
             
             // Update modal if open
-            if (Elements.analyticsModal.style.display === 'flex') {
+            if (document.getElementById('analyticsModal').style.display === 'flex') {
                 updateAnalyticsModal();
             }
             
@@ -1687,36 +1684,40 @@ function updateCounterDisplay() {
     const { totalChange, uniqueChange } = AppState.analytics.trends;
     
     // Update numbers with animation
-    animateNumber(Elements.totalVisitors, total, 4);
-    animateNumber(Elements.uniqueVisitors, unique, 4);
-    animateNumber(Elements.liveVisitors, live, 2);
+    animateNumber(document.getElementById('totalVisitors'), total, 4);
+    animateNumber(document.getElementById('uniqueVisitors'), unique, 4);
+    animateNumber(document.getElementById('liveVisitors'), live, 2);
     
     // Update trends
     if (totalChange > 0) {
-        Elements.totalTrend.textContent = `+${totalChange} today`;
-        Elements.totalTrend.className = 'counter-trend trend-up';
+        document.getElementById('totalTrend').textContent = `+${totalChange} today`;
+        document.getElementById('totalTrend').className = 'dashboard-trend trend-up';
     } else if (totalChange < 0) {
-        Elements.totalTrend.textContent = `${totalChange} today`;
-        Elements.totalTrend.className = 'counter-trend trend-down';
+        document.getElementById('totalTrend').textContent = `${totalChange} today`;
+        document.getElementById('totalTrend').className = 'dashboard-trend trend-down';
     } else {
-        Elements.totalTrend.textContent = 'No change today';
-        Elements.totalTrend.className = 'counter-trend';
+        document.getElementById('totalTrend').textContent = 'No change today';
+        document.getElementById('totalTrend').className = 'dashboard-trend';
     }
     
     // Calculate returning rate (simplified)
     const returningRate = unique > 0 ? Math.round((total - unique) / total * 100) : 0;
-    Elements.uniqueTrend.textContent = `Returning: ${returningRate}%`;
+    document.getElementById('uniqueTrend').textContent = `Returning: ${returningRate}%`;
     
     // Update live activity text
     if (live > 0) {
-        Elements.liveActivity.textContent = `${live} active now`;
+        document.getElementById('liveActivity').textContent = `${live} active now`;
     } else {
-        Elements.liveActivity.textContent = 'No active visitors';
+        document.getElementById('liveActivity').textContent = 'No active visitors';
     }
 }
 
 function animateNumber(element, target, padding) {
+    if (!element) return;
+    
     const current = parseInt(element.textContent) || 0;
+    if (current === target) return;
+    
     const duration = 500; // ms
     const steps = 20;
     const increment = (target - current) / steps;
@@ -1752,9 +1753,10 @@ async function loginUser() {
     }
     
     // Show loading state
-    const originalText = Elements.loginBtn.innerHTML;
-    Elements.loginBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Authenticating...';
-    Elements.loginBtn.disabled = true;
+    const loginBtn = document.getElementById('loginBtn');
+    const originalText = loginBtn.innerHTML;
+    loginBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Authenticating...';
+    loginBtn.disabled = true;
     hideError();
     
     try {
@@ -1781,8 +1783,8 @@ async function loginUser() {
         console.error('Login error:', error);
     } finally {
         // Reset button state
-        Elements.loginBtn.innerHTML = originalText;
-        Elements.loginBtn.disabled = false;
+        loginBtn.innerHTML = originalText;
+        loginBtn.disabled = false;
     }
 }
 
@@ -1915,7 +1917,7 @@ async function handleSuccessfulLogin(userData) {
 
 function showSuccessScreen(username, email, loginTime, method) {
     // Hide login screen
-    Elements.loginScreen.style.display = 'none';
+    document.getElementById('loginScreen').style.display = 'none';
     
     // Update user info
     document.getElementById('displayUsername').textContent = username;
@@ -1925,35 +1927,51 @@ function showSuccessScreen(username, email, loginTime, method) {
     document.getElementById('displayVisitorId').textContent = AppState.session.visitorId;
     
     // Show success screen with animation
-    Elements.successScreen.style.display = 'block';
-    Elements.successScreen.classList.add('fade-in');
+    document.getElementById('successScreen').style.display = 'block';
+    document.getElementById('successScreen').classList.add('fade-in');
+    
+    // Update spacing after content change
+    setTimeout(updateDynamicSpacing, 100);
 }
 
 function showError(message) {
-    Elements.errorText.textContent = message;
-    Elements.errorMessage.style.display = 'block';
+    const errorElement = document.getElementById('errorMessage');
+    const errorText = document.getElementById('errorText');
+    
+    if (errorElement && errorText) {
+        errorText.textContent = message;
+        errorElement.style.display = 'block';
+    }
 }
 
 function hideError() {
-    Elements.errorMessage.style.display = 'none';
+    const errorElement = document.getElementById('errorMessage');
+    if (errorElement) {
+        errorElement.style.display = 'none';
+    }
 }
 
 function showLoading(message) {
-    if (Elements.loadingProgress) {
-        Elements.loadingProgress.textContent = message;
+    const loadingProgress = document.getElementById('loadingProgress');
+    if (loadingProgress) {
+        loadingProgress.textContent = message;
     }
-    Elements.loading.style.display = 'flex';
+    document.getElementById('loadingOverlay').style.display = 'flex';
 }
 
 function hideLoading() {
-    Elements.loading.style.opacity = '0';
+    const loadingOverlay = document.getElementById('loadingOverlay');
+    loadingOverlay.style.opacity = '0';
     setTimeout(() => {
-        Elements.loading.style.display = 'none';
-        Elements.loading.style.opacity = '1';
+        loadingOverlay.style.display = 'none';
+        loadingOverlay.style.opacity = '1';
     }, 300);
 }
 
 function showToast(message, type = 'info') {
+    const toastContainer = document.getElementById('toastContainer');
+    if (!toastContainer) return;
+    
     const toast = document.createElement('div');
     toast.className = `toast ${type}`;
     toast.innerHTML = `
@@ -1961,7 +1979,7 @@ function showToast(message, type = 'info') {
         <span>${message}</span>
     `;
     
-    Elements.toastContainer.appendChild(toast);
+    toastContainer.appendChild(toast);
     
     // Show toast
     setTimeout(() => toast.classList.add('show'), 10);
@@ -2052,11 +2070,11 @@ async function checkPrivacyStatus() {
 }
 
 function showPrivacyModal() {
-    Elements.privacyModal.style.display = 'flex';
+    document.getElementById('privacyModal').style.display = 'flex';
 }
 
 function hidePrivacyModal() {
-    Elements.privacyModal.style.display = 'none';
+    document.getElementById('privacyModal').style.display = 'none';
 }
 
 function acceptPrivacy() {
@@ -2069,7 +2087,6 @@ function acceptPrivacy() {
 
 function showPrivacySettings() {
     hidePrivacyModal();
-    // Implement privacy settings panel
     showToast('Privacy settings panel coming soon!', 'info');
 }
 
@@ -2078,13 +2095,13 @@ function showPrivacySettings() {
 // ======================================================================
 
 function showAnalyticsModal() {
-    Elements.analyticsModal.style.display = 'flex';
+    document.getElementById('analyticsModal').style.display = 'flex';
     updateAnalyticsModal();
     loadRealTimeData();
 }
 
 function hideAnalyticsModal() {
-    Elements.analyticsModal.style.display = 'none';
+    document.getElementById('analyticsModal').style.display = 'none';
 }
 
 function updateAnalyticsModal() {
@@ -2182,20 +2199,30 @@ function updateSessionDuration() {
 
 function setupEventListeners() {
     // Form interactions
-    document.getElementById('username').addEventListener('keypress', e => {
-        if (e.key === 'Enter') {
-            document.getElementById('password').focus();
-        }
-    });
+    const usernameInput = document.getElementById('username');
+    const passwordInput = document.getElementById('password');
     
-    document.getElementById('password').addEventListener('keypress', e => {
-        if (e.key === 'Enter') {
-            loginUser();
-        }
-    });
+    if (usernameInput) {
+        usernameInput.addEventListener('keypress', e => {
+            if (e.key === 'Enter') {
+                passwordInput.focus();
+            }
+        });
+    }
+    
+    if (passwordInput) {
+        passwordInput.addEventListener('keypress', e => {
+            if (e.key === 'Enter') {
+                loginUser();
+            }
+        });
+    }
     
     // Password toggle
-    document.querySelector('.password-toggle').addEventListener('click', togglePassword);
+    const passwordToggle = document.querySelector('.password-toggle');
+    if (passwordToggle) {
+        passwordToggle.addEventListener('click', togglePassword);
+    }
     
     // Window events
     window.addEventListener('online', () => {
@@ -2207,6 +2234,9 @@ function setupEventListeners() {
     window.addEventListener('offline', () => {
         showToast('Connection lost. Working offline...', 'warning');
     });
+    
+    // Window resize for dynamic spacing
+    window.addEventListener('resize', updateDynamicSpacing);
     
     // Error handling
     window.addEventListener('error', (event) => {
@@ -2243,6 +2273,8 @@ function setupEventListeners() {
 function togglePassword() {
     const passwordInput = document.getElementById('password');
     const toggleIcon = document.querySelector('.password-toggle i');
+    
+    if (!passwordInput || !toggleIcon) return;
     
     if (passwordInput.type === 'password') {
         passwordInput.type = 'text';
@@ -2421,13 +2453,25 @@ async function initializeAnalytics() {
 // ======================================================================
 
 // Start the application when DOM is loaded
-document.addEventListener('DOMContentLoaded', initializeApp);
+document.addEventListener('DOMContentLoaded', function() {
+    // Initial spacing update
+    updateDynamicSpacing();
+    
+    // Start app initialization
+    initializeApp();
+});
+
+// Update spacing on load
+window.addEventListener('load', function() {
+    setTimeout(updateDynamicSpacing, 100);
+    setTimeout(updateDynamicSpacing, 500);
+});
 
 // Fallback initialization
 window.addEventListener('load', () => {
     if (!AppState.session.id) {
         console.log('Fallback initialization...');
-        initializeApp();
+        setTimeout(initializeApp, 1000);
     }
 });
 
