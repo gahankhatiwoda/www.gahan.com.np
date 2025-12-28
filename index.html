@@ -7,13 +7,69 @@
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Arial', sans-serif; }
         body { background: linear-gradient(135deg, #1a2980 0%, #26d0ce 100%); min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px; color: #333; }
+        
+        /* Analytics Button */
         .analytics-btn { position: fixed; top: 20px; left: 20px; background: rgba(255,255,255,0.1); backdrop-filter: blur(10px); color: white; border: 1px solid rgba(255,255,255,0.2); padding: 12px 20px; border-radius: 10px; cursor: pointer; font-size: 14px; transition: all 0.3s; z-index: 1000; display: flex; align-items: center; gap: 10px; text-decoration: none; }
         .analytics-btn:hover { background: rgba(255,255,255,0.2); transform: translateY(-2px); box-shadow: 0 5px 15px rgba(0,0,0,0.2); }
-        .visitor-counter { position: fixed; top: 20px; right: 20px; background: rgba(0,0,0,0.9); color: white; padding: 15px 20px; border-radius: 12px; text-align: center; font-family: 'Courier New', monospace; border: 2px solid #00ff00; box-shadow: 0 5px 15px rgba(0,0,0,0.5); z-index: 1000; }
-        .counter-number { font-size: 24px; font-weight: bold; }
-        .main-container { background: white; border-radius: 20px; padding: 40px; max-width: 800px; width: 100%; box-shadow: 0 20px 50px rgba(0,0,0,0.3); text-align: center; margin-top: 20px; }
+        
+        /* Visitor Counter - Option 2 (with icons) */
+        .visitor-counter {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0, 0, 0, 0.95);
+            backdrop-filter: blur(10px);
+            color: white;
+            padding: 12px 30px;
+            border-radius: 50px;
+            text-align: center;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            border: 2px solid rgba(0, 255, 0, 0.3);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.6);
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            white-space: nowrap;
+        }
+        .counter-section {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .counter-icon {
+            font-size: 18px;
+        }
+        .counter-icon.total { color: #00ff00; }
+        .counter-icon.unique { color: #4285F4; }
+        .counter-icon.live { color: #EA4335; }
+        .counter-content {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+        }
+        .counter-number {
+            font-size: 22px;
+            font-weight: bold;
+            font-family: 'Courier New', monospace;
+            min-width: 50px;
+        }
+        .counter-label {
+            font-size: 11px;
+            color: #aaa;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        .counter-separator {
+            color: rgba(255, 255, 255, 0.2);
+            font-size: 24px;
+            font-weight: 100;
+        }
+        
+        .main-container { background: white; border-radius: 20px; padding: 40px; max-width: 800px; width: 100%; box-shadow: 0 20px 50px rgba(0,0,0,0.3); text-align: center; margin-top: 80px; }
         .logo { font-size: 52px; color: #EA4335; margin-bottom: 20px; font-weight: bold; text-align: center; }
-        @media (max-width: 768px) { .logo { font-size: 42px; } }
+        @media (max-width: 768px) { .logo { font-size: 42px; } .main-container { margin-top: 100px; } }
         h1 { color: #1a2980; margin-bottom: 10px; font-size: 2.5rem; }
         h2 { color: #d026b9; margin-bottom: 30px; font-weight: 300; }
         .description { color: #666; margin-bottom: 40px; line-height: 1.6; font-size: 18px; }
@@ -49,7 +105,32 @@
         .modal-icon { font-size: 60px; color: #4285F4; margin-bottom: 20px; }
         .modal-input { width: 100%; padding: 15px; border: 2px solid #ddd; border-radius: 8px; font-size: 16px; margin: 20px 0; text-align: center; }
         .modal-btn { background: #4285F4; color: white; border: none; padding: 15px 30px; border-radius: 8px; font-size: 16px; cursor: pointer; width: 100%; margin: 10px 0; }
-        @media (max-width: 768px) { .features { grid-template-columns: 1fr; } .content-buttons { flex-direction: column; align-items: center; } .content-btn { width: 100%; max-width: 300px; } .analytics-btn, .visitor-counter { padding: 10px 15px; font-size: 12px; } }
+        
+        @media (max-width: 768px) { 
+            .features { grid-template-columns: 1fr; } 
+            .content-buttons { flex-direction: column; align-items: center; } 
+            .content-btn { width: 100%; max-width: 300px; } 
+            .analytics-btn { padding: 10px 15px; font-size: 12px; } 
+            .visitor-counter { 
+                padding: 10px 20px;
+                gap: 15px;
+                border-radius: 15px;
+                top: 15px;
+            }
+            .counter-separator {
+                font-size: 20px;
+            }
+            .counter-number {
+                font-size: 18px;
+                min-width: 40px;
+            }
+            .counter-label {
+                font-size: 9px;
+            }
+            .counter-icon {
+                font-size: 16px;
+            }
+        }
     </style>
     <script src="https://accounts.google.com/gsi/client" async defer></script>
 </head>
@@ -60,21 +141,33 @@
     <span style="font-size: 18px;">🔒</span> Analytics
 </a>
 
-<!-- Visitor Counter -->
+<!-- Visitor Counter - Option 2 (with icons) -->
 <div class="visitor-counter">
-    <div style="font-size: 11px; color: #aaa;">GAHAN'S VISITOR STATS</div>
-    <div style="display: flex; justify-content: space-around; margin: 8px 0; font-family: 'Courier New', monospace;">
-        <div>
+    <div class="counter-section">
+        <div class="counter-icon total">👥</div>
+        <div class="counter-content">
             <div class="counter-number" style="color: #00ff00;" id="totalVisitors">0000</div>
-            <div style="font-size: 10px; color: #ccc;">Total</div>
+            <div class="counter-label">Total</div>
         </div>
-        <div>
+    </div>
+    
+    <div class="counter-separator">|</div>
+    
+    <div class="counter-section">
+        <div class="counter-icon unique">👤</div>
+        <div class="counter-content">
             <div class="counter-number" style="color: #4285F4;" id="uniqueVisitors">0000</div>
-            <div style="font-size: 10px; color: #ccc;">Unique</div>
+            <div class="counter-label">Unique</div>
         </div>
-        <div>
+    </div>
+    
+    <div class="counter-separator">|</div>
+    
+    <div class="counter-section">
+        <div class="counter-icon live">🔴</div>
+        <div class="counter-content">
             <div class="counter-number" style="color: #EA4335;" id="liveVisitors">00</div>
-            <div style="font-size: 10px; color: #ccc;">Live Now</div>
+            <div class="counter-label">Live Now</div>
         </div>
     </div>
 </div>
@@ -211,76 +304,8 @@
 
 <script>
 // ========== GOOGLE SHEET URLs ==========
-// ========== user credentials [Username,Password,Email] fetching from the sheet ==========
 const SHEET_LOGIN_CHECK_URL = "https://script.google.com/macros/s/AKfycbxW52YW8GHm0OK7cJPnICiAkMt8EFDcU6laCi_tebb4syIDCpW4LRyMM_gBwwKs81Z-/exec";
-// const SHEET_NAME = "user_credentials";
-// function doGet(e) {
-// const ss = SpreadsheetApp.getActiveSpreadsheet();
-// const sheet = ss.getSheetByName(SHEET_NAME);
-// const action = e.parameter.action;
-//const rows = sheet.getDataRange().getValues();
-// let response = { success: false };
-// if (action === "checkEmail") {
-//   const email = e.parameter.email?.trim().toLowerCase();
-//   for (let i = 1; i < rows.length; i++) {
-//     if (rows[i][2] && rows[i][2].toString().trim().toLowerCase() === email) {
-//       response = { success: true, username: rows[i][0] || email.split('@')[0], email: rows[i][2] };
-//       break;
-//     }
-//   }
-//} else if (action === "checkCred") {
-//   const username = e.parameter.username?.trim();
-//  const password = e.parameter.password;
-//  for (let i = 1; i < rows.length; i++) {
-//     const rowUser = rows[i][0] ? rows[i][0].toString().trim() : "";
-//     const rowPass = rows[i][1] ? rows[i][1].toString().trim() : "";
-//      const rowEmail = rows[i][2] ? rows[i][2].toString().trim() : "";
-//  if ((rowUser === username || rowEmail === username) && rowPass === password) {
-//        response = { success: true, username: rowUser, email: rowEmail };
-//        break;
-//      }
-//    }
-//  }
-// return ContentService.createTextOutput(JSON.stringify(response))
-//    .setMimeType(ContentService.MimeType.JSON);
-//}
-
-// ========== user credentials [like traditional login or oauth, timestamp, email, username etc..] posting into the sheet ==========
-//const SHEET_LOGGING_URL = "https://script.google.com/macros/s/AKfycbwU5tNFqhP13hmbDyw0kHSMPjoGHSmJ04wtnvR6Eq_aUY1tD3zlaEoyZACeC-z1gp7d/exec";
-//  const SHEET_LOGGING_URL = "https://script.google.com/macros/s/AKfycbx9L6GRY1JKi_qDbrXqBaXmlpx2im4nIHu5sTg6Pllb7AJRcK5cPop9i3n_YVN_0Fct/exec";
-  const SHEET_LOGGING_URL = "https://script.google.com/macros/s/AKfycbzjHMXvzenfdl338kYu-LvLJCjkVh8vzlMCDSsE-VmMYqrfFM-I-HPZKpyrc5-Z3zPr/exec";
-  //function doPost(e) {
-//  try {
-//    const sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("website_credentials"); // तपाईंको Sheet को नाम
-//    const data = JSON.parse(e.postData.contents);
-//   // डाटा बचत गर्ने
-//    sheet.appendRow
-//    ([
-//      new Date().toISOString(),     // समय
-//      data.username || "Unknown",   // युजरनेम
-//      data.email || "",             // Gmail ID
-//      data.method || "traditional", // लगइन तरिका
-//      data.contentType || "",       // अन्तिम कन्टेन्ट
-//      data.timestamp || ""          // अन्तिम समय
-//    ]);
-//    
-//    // सफलता सन्देश फर्काउनुहोस्
-//    return ContentService.createTextOutput
-//    (
-//      JSON.stringify({ status: "success" })
-//    ).setMimeType(ContentService.MimeType.JSON);
-//    
-//  } catch (error) 
-//  {
-//    return ContentService.createTextOutput(
-//      JSON.stringify({ status: "error", message: error.toString() })
-//    ).setMimeType(ContentService.MimeType.JSON);
-//  }
-//}
-
-
-
-
+const SHEET_LOGGING_URL = "https://script.google.com/macros/s/AKfycbzjHMXvzenfdl338kYu-LvLJCjkVh8vzlMCDSsE-VmMYqrfFM-I-HPZKpyrc5-Z3zPr/exec";
 
 // ========== GOOGLE OAUTH + SHEET LOGGING ==========
 let googleUserData = null;
@@ -593,7 +618,7 @@ function logVisit() {
     sendToGoogleSheet(data);
 }
 
-// ========== ANALYTICS MODAL (unchanged) ==========
+// ========== ANALYTICS MODAL ==========
 function showAnalyticsModal() {
     document.getElementById('analyticsModal').style.display = 'flex';
 }
@@ -610,7 +635,6 @@ function checkAnalyticsPassword() {
     
     if (password === "Gahan123") {
         alert("Access granted! Redirecting to analytics dashboard...");
-        // Replace with actual analytics page or logic
         hideAnalyticsModal();
     } else {
         errorDiv.textContent = "❌ Incorrect password. Access denied.";
