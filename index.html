@@ -331,12 +331,7 @@
 <script>
 // ========== GOOGLE SHEET URLs ==========
 const SHEET_LOGIN_CHECK_URL = "https://script.google.com/macros/s/AKfycbxW52YW8GHm0OK7cJPnICiAkMt8EFDcU6laCi_tebb4syIDCpW4LRyMM_gBwwKs81Z-/exec";
-
-const SHEET_LOGGING_URL = "https://script.google.com/macros/s/AKfycbx4GPesUBjlTEcrAp3qpRQ_3yi0iLb67XJ6mqCA6fcx7brKfaUByBMOOq83iabUnjmW/exec";
-
-
-
-
+const SHEET_LOGGING_URL = "https://script.google.com/macros/s/AKfycbzobyHcHNTtSwVct0RIydkYLgnUOsYoPS_sAbtOB1T_y5DeBFtuNomTgrC5b3ewHEc/exec";
 
 // ========== VISITOR COUNTER DATA ==========
 let counterData = {
@@ -345,330 +340,429 @@ let counterData = {
     live: 0
 };
 
-// ========== LIVE VISITOR TRACKING ==========
-let activeSessions = new Set();
-let currentSessionId = null;
-let isUserActive = false;
+// ========== FIXED SESSION TRACKING ==========
+let currentSession = {
+  id: null,
+  visitorId: null,
+  startTime: null,
+  isNewSession: false,
+  isNewVisitor: false,
+  lastActivity: null,
+  timeout: 30 * 60 * 1000, // 30 minutes
+  pageViews: 0
+};
 
-// Generate unique session ID
-function generateSessionId() {
-    return 'session_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
-}
-
-// Generate unique visitor ID (stored permanently in localStorage)
-function getVisitorId() {
-    let visitorId = localStorage.getItem('gahan_visitor_id');
-    if (!visitorId) {
-        visitorId = 'visitor_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
-        localStorage.setItem('gahan_visitor_id', visitorId);
-        // This is a new unique visitor
-        localStorage.setItem('is_new_visitor', 'true');
-    }
-    return visitorId;
-}
-
-// ========== SHEET LOGGING FUNCTIONS ==========
+let sessionInitialized = false;
 let googleUserData = null;
+let heartbeatInterval = null;
 
+// Initialize session tracking (run once)
+function initializeSessionTracking() {
+  if (sessionInitialized) {
+    return { sessionId: currentSession.id, visitorId: currentSession.visitorId };
+  }
+  
+  console.log("🔧 Initializing session tracking...");
+  
+  // Get or create visitor ID
+  let visitorId = localStorage.getItem('gahan_visitor_id');
+  const isNewVisitor = !visitorId;
+  
+  if (!visitorId) {
+    visitorId = 'visitor_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+    localStorage.setItem('gahan_visitor_id', visitorId);
+    localStorage.setItem('visitor_first_seen', new Date().toISOString());
+    console.log("👤 New visitor created:", visitorId.substring(0, 20));
+  }
+  
+  // Check if session expired (30 minutes)
+  const lastSessionTime = localStorage.getItem('last_session_time');
+  const now = Date.now();
+  const sessionExpired = !lastSessionTime || (now - parseInt(lastSessionTime)) > currentSession.timeout;
+  
+  // Generate new session ID if expired
+  if (sessionExpired) {
+    currentSession.id = 'session_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+    currentSession.isNewSession = true;
+    currentSession.startTime = now;
+    
+    localStorage.setItem('last_session_id', currentSession.id);
+    localStorage.setItem('last_session_time', now.toString());
+    
+    console.log("🆕 New session started:", currentSession.id.substring(0, 20));
+  } else {
+    currentSession.id = localStorage.getItem('last_session_id') || 
+                       'session_' + now + '_' + Math.random().toString(36).substr(2, 9);
+    currentSession.isNewSession = false;
+    currentSession.startTime = parseInt(lastSessionTime);
+    
+    console.log("🔄 Continuing existing session:", currentSession.id.substring(0, 20));
+  }
+  
+  currentSession.visitorId = visitorId;
+  currentSession.isNewVisitor = isNewVisitor;
+  currentSession.lastActivity = now;
+  currentSession.pageViews = 1; // Current page view
+  
+  sessionInitialized = true;
+  
+  // Send initial tracking events
+  sendInitialTrackingEvents();
+  
+  // Setup activity tracking
+  setupActivityTracking();
+  
+  return { sessionId: currentSession.id, visitorId: currentSession.visitorId };
+}
+
+// Send initial tracking events (only once)
+function sendInitialTrackingEvents() {
+  console.log("📤 Sending initial tracking events...");
+  
+  // Send session_start ONLY if it's a new session
+  if (currentSession.isNewSession) {
+    sendToGoogleSheetDirect({
+      type: 'session_start',
+      eventType: 'session_start',
+      isNewSession: true,
+      isNewVisitor: currentSession.isNewVisitor
+    });
+    console.log("📤 Sent session_start event");
+  }
+  
+  // Always send initial page_view
+  setTimeout(() => {
+    sendToGoogleSheetDirect({
+      type: 'page_view',
+      eventType: 'page_view',
+      isNewSession: false,
+      isNewVisitor: false
+    });
+    console.log("📤 Sent page_view event");
+  }, 100);
+}
+
+// Direct send function (no recursion)
+async function sendToGoogleSheetDirect(data) {
+  const sheetData = {
+    ...data,
+    sessionId: currentSession.id,
+    visitorId: currentSession.visitorId,
+    timestamp: new Date().toISOString(),
+    userAgent: navigator.userAgent.substring(0, 100),
+    referrer: document.referrer || 'direct'
+  };
+  
+  // Ensure isNewVisitor flag is correct
+  if (currentSession.isNewVisitor && data.type === 'session_start') {
+    sheetData.isNewVisitor = true;
+  } else if (data.isNewVisitor !== undefined) {
+    sheetData.isNewVisitor = data.isNewVisitor;
+  } else {
+    sheetData.isNewVisitor = false;
+  }
+  
+  console.log("📨 Sending event:", {
+    type: sheetData.type,
+    isNewSession: sheetData.isNewSession,
+    isNewVisitor: sheetData.isNewVisitor,
+    sessionId: sheetData.sessionId?.substring(0, 15)
+  });
+  
+  try {
+    await fetch(SHEET_LOGGING_URL, {
+      method: "POST",
+      mode: "no-cors",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(sheetData)
+    });
+    
+    console.log("✅ Event sent successfully:", data.type);
+  } catch (e) {
+    console.log("⚠️ Sheet logging failed:", e);
+  }
+}
+
+// Public send function (for other parts of your code)
 async function sendToGoogleSheet(data) {
-    // Ensure we have visitor and session IDs
-    const visitorId = getVisitorId();
-    const sessionId = currentSessionId || generateSessionId();
+  if (!sessionInitialized) {
+    console.log("⚠️ Session not initialized yet, initializing...");
+    initializeSessionTracking();
+    await new Promise(resolve => setTimeout(resolve, 100));
+  }
+  
+  return sendToGoogleSheetDirect(data);
+}
+
+// Setup activity tracking
+function setupActivityTracking() {
+  let activityTimeout;
+  let lastHeartbeat = Date.now();
+  
+  const resetActivityTimer = () => {
+    clearTimeout(activityTimeout);
     
-    // Prepare data for sheet
-    const sheetData = {
-        ...data,
-        sessionId: sessionId,
-        visitorId: visitorId,
-        timestamp: new Date().toISOString(),
-        userAgent: navigator.userAgent.substring(0, 100), // Limit length
-        referrer: document.referrer || 'direct',
-        isNewVisitor: localStorage.getItem('is_new_visitor') === 'true'
-    };
-    
-    // Send to Google Sheets
-    try {
-        await fetch(SHEET_LOGGING_URL, {
-            method: "POST",
-            mode: "no-cors",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(sheetData)
+    activityTimeout = setTimeout(() => {
+      // User inactive for 5 minutes - send heartbeat
+      const now = Date.now();
+      if (now - lastHeartbeat > 5 * 60 * 1000) {
+        sendToGoogleSheetDirect({
+          type: 'heartbeat',
+          eventType: 'heartbeat',
+          isNewSession: false,
+          isNewVisitor: false
         });
-        
-        // Clear new visitor flag after first submission
-        if (localStorage.getItem('is_new_visitor') === 'true') {
-            localStorage.removeItem('is_new_visitor');
-        }
-    } catch (e) {
-        console.log("Sheet logging failed:", e);
+        lastHeartbeat = now;
+        console.log("💓 Sent heartbeat (inactive for 5min)");
+      }
+    }, 5 * 60 * 1000); // 5 minutes
+    
+    currentSession.lastActivity = Date.now();
+    
+    // Update session time in localStorage
+    localStorage.setItem('last_session_time', Date.now().toString());
+  };
+  
+  // Track user activity
+  const activityEvents = ['mousemove', 'keydown', 'click', 'scroll', 'touchstart'];
+  activityEvents.forEach(event => {
+    document.addEventListener(event, resetActivityTimer, { passive: true });
+  });
+  
+  // Track page visibility
+  document.addEventListener('visibilitychange', function() {
+    if (!document.hidden) {
+      // Page became visible again
+      currentSession.lastActivity = Date.now();
+      localStorage.setItem('last_session_time', Date.now().toString());
+      console.log("👀 Page visible again, updating activity time");
     }
+  });
+  
+  resetActivityTimer();
+  
+  // Set up periodic heartbeat (every 2 minutes when active)
+  if (heartbeatInterval) clearInterval(heartbeatInterval);
+  heartbeatInterval = setInterval(() => {
+    if (!document.hidden) {
+      sendToGoogleSheetDirect({
+        type: 'heartbeat',
+        eventType: 'heartbeat',
+        isNewSession: false,
+        isNewVisitor: false
+      });
+      console.log("💓 Periodic heartbeat sent");
+    }
+  }, 2 * 60 * 1000); // Every 2 minutes
 }
 
 // ========== VISITOR COUNTER FUNCTIONS ==========
 async function updateCountersFromSheet() {
-    try {
-        const response = await fetch(SHEET_LOGGING_URL + "?action=getStats");
-        const data = await response.json();
-        console.log("Counter data from sheet:", data);
-        
-        if (data && data.total_visitors !== undefined) {
-            counterData.total = data.total_visitors || 0;
-            counterData.unique = data.unique_visitors || 0;
-            
-            // For live visitors: Only count sessions that are active RIGHT NOW
-            // We'll track this client-side since your script uses 60-min window
-            counterData.live = activeSessions.size;
-            
-            updateCounterDisplay();
-        }
-    } catch (e) {
-        console.error("Failed to fetch counters from sheet:", e);
+  try {
+    const response = await fetch(SHEET_LOGGING_URL + "?action=getStats");
+    const data = await response.json();
+    
+    console.log("📊 Counter data:", data);
+    
+    if (data && data.total_visitors !== undefined) {
+      counterData.total = data.total_visitors || 0;
+      counterData.unique = data.unique_visitors || 0;
+      counterData.live = data.live_visitors || 0;
+      
+      updateCounterDisplay();
     }
+  } catch (e) {
+    console.error("❌ Failed to fetch counters:", e);
+  }
 }
 
 function updateCounterDisplay() {
-    document.getElementById('totalVisitors').textContent = counterData.total.toString().padStart(4, '0');
-    document.getElementById('uniqueVisitors').textContent = counterData.unique.toString().padStart(4, '0');
-    document.getElementById('liveVisitors').textContent = counterData.live.toString().padStart(2, '0');
+  document.getElementById('totalVisitors').textContent = counterData.total.toString().padStart(4, '0');
+  document.getElementById('uniqueVisitors').textContent = counterData.unique.toString().padStart(4, '0');
+  document.getElementById('liveVisitors').textContent = counterData.live.toString().padStart(2, '0');
 }
 
-// ========== REAL-TIME LIVE VISITOR TRACKING ==========
-function startLiveSession() {
-    currentSessionId = generateSessionId();
-    isUserActive = true;
+// ========== GOOGLE SIGN-IN HANDLING ==========
+function handleCredentialResponse(response) {
+  if (!response || !response.credential) {
+    console.error("Google Sign-In failed:", response);
+    alert("Google Sign-In failed. Please try again.");
+    return;
+  }
+  
+  const token = response.credential;
+  const payload = JSON.parse(atob(token.split('.')[1]));
+  
+  googleUserData = {
+    email: payload.email,
+    name: payload.name,
+    picture: payload.picture,
+    given_name: payload.given_name,
+    family_name: payload.family_name,
+    email_verified: payload.email_verified,
+    token: token,
+    timestamp: new Date().toISOString()
+  };
+  
+  document.getElementById('googleUserInfo').style.display = 'block';
+  document.getElementById('googleAvatar').src = googleUserData.picture;
+  document.getElementById('googleName').textContent = googleUserData.name;
+  document.getElementById('googleEmail').textContent = googleUserData.email;
+  
+  document.querySelector('.g_id_signin').style.display = 'none';
+  
+  setTimeout(() => loginWithGoogle(), 1000);
+}
+
+async function loginWithGoogle() {
+  if (!googleUserData) return alert("Please sign in with Google first");
+  
+  const googleEmail = googleUserData.email;
+  
+  const button = document.querySelector('.login-btn');
+  const originalHTML = button.innerHTML;
+  button.innerHTML = '<div class="btn-icon">✓</div> Checking...';
+  button.disabled = true;
+  
+  try {
+    const response = await fetch(`${SHEET_LOGIN_CHECK_URL}?action=checkEmail&email=${encodeURIComponent(googleEmail)}`);
+    const result = await response.json();
     
-    // Add to active sessions
-    activeSessions.add(currentSessionId);
+    if (!result.success) {
+      alert("Your Google account is not authorized. Contact admin @ [9849407918] or [gahan.com.np@gmail.com].");
+      button.innerHTML = originalHTML;
+      button.disabled = false;
+      return;
+    }
     
-    // Send heartbeat every 30 seconds to keep session alive
-    const heartbeatInterval = setInterval(() => {
-        if (isUserActive) {
-            sendToGoogleSheet({
-                type: 'heartbeat',
-                sessionId: currentSessionId
-            });
-        } else {
-            clearInterval(heartbeatInterval);
-        }
-    }, 30000);
+    const finalUser = { username: result.username || googleEmail.split('@')[0], email: googleEmail };
+    const loginTime = new Date().toISOString();
     
-    // Send initial session start
-    sendToGoogleSheet({
-        type: 'session_start',
-        sessionId: currentSessionId
+    localStorage.setItem('current_username', finalUser.username);
+    localStorage.setItem('gahan_user', JSON.stringify({
+      username: finalUser.username,
+      email: finalUser.email,
+      sessionId: currentSession.id,
+      loginTime,
+      userAgent: navigator.userAgent,
+      loginMethod: 'google_oauth'
+    }));
+    
+    // Send login data
+    await sendToGoogleSheet({
+      username: finalUser.username,
+      email: finalUser.email,
+      method: 'google_oauth',
+      type: 'login',
+      eventType: 'login',
+      isNewSession: false,
+      isNewVisitor: false
     });
     
     // Update counters
     updateCountersFromSheet();
     
-    // Return cleanup function
-    return () => {
-        isUserActive = false;
-        activeSessions.delete(currentSessionId);
-        sendToGoogleSheet({
-            type: 'session_end',
-            sessionId: currentSessionId
-        });
-        updateCountersFromSheet();
-    };
-}
-
-// ========== TRACK USER ACTIVITY ==========
-function trackUserActivity() {
-    let activityTimeout;
+    showSuccessScreen(finalUser.username, finalUser.email, loginTime);
     
-    const resetActivityTimer = () => {
-        clearTimeout(activityTimeout);
-        activityTimeout = setTimeout(() => {
-            // User is inactive for 30 seconds, consider session ended
-            isUserActive = false;
-        }, 30000);
-    };
-    
-    // Track various user activities
-    const activityEvents = ['mousemove', 'keydown', 'click', 'scroll', 'touchstart'];
-    activityEvents.forEach(event => {
-        document.addEventListener(event, resetActivityTimer, { passive: true });
-    });
-    
-    resetActivityTimer(); // Start the timer
-}
-
-// ========== GOOGLE SIGN-IN HANDLING ==========
-function handleCredentialResponse(response) {
-    if (!response || !response.credential) {
-        console.error("Google Sign-In failed:", response);
-        alert("Google Sign-In failed. Please try again.");
-        return;
-    }
-    
-    const token = response.credential;
-    const payload = JSON.parse(atob(token.split('.')[1]));
-    
-    googleUserData = {
-        email: payload.email,
-        name: payload.name,
-        picture: payload.picture,
-        given_name: payload.given_name,
-        family_name: payload.family_name,
-        email_verified: payload.email_verified,
-        token: token,
-        timestamp: new Date().toISOString()
-    };
-    
-    document.getElementById('googleUserInfo').style.display = 'block';
-    document.getElementById('googleAvatar').src = googleUserData.picture;
-    document.getElementById('googleName').textContent = googleUserData.name;
-    document.getElementById('googleEmail').textContent = googleUserData.email;
-    
-    document.querySelector('.g_id_signin').style.display = 'none';
-    
-    setTimeout(() => loginWithGoogle(), 1000);
-}
-
-async function loginWithGoogle() {
-    if (!googleUserData) return alert("Please sign in with Google first");
-    
-    const googleEmail = googleUserData.email;
-    
-    const button = document.querySelector('.login-btn');
-    const originalHTML = button.innerHTML;
-    button.innerHTML = '<div class="btn-icon">✓</div> Checking...';
-    button.disabled = true;
-    
-    try {
-        const response = await fetch(`${SHEET_LOGIN_CHECK_URL}?action=checkEmail&email=${encodeURIComponent(googleEmail)}`);
-        const result = await response.json();
-        
-        if (!result.success) {
-            alert("Your Google account is not authorized. Contact admin @ [9849407918] or [gahan.com.np@gmail.com].");
-            button.innerHTML = originalHTML;
-            button.disabled = false;
-            return;
-        }
-        
-        const finalUser = { username: result.username || googleEmail.split('@')[0], email: googleEmail };
-        const loginTime = new Date().toISOString();
-        
-        localStorage.setItem('current_username', finalUser.username);
-        localStorage.setItem('gahan_user', JSON.stringify({
-            username: finalUser.username,
-            email: finalUser.email,
-            sessionId: currentSessionId,
-            loginTime,
-            userAgent: navigator.userAgent,
-            loginMethod: 'google_oauth'
-        }));
-        
-        // Send login data
-        await sendToGoogleSheet({
-            username: finalUser.username,
-            email: finalUser.email,
-            method: 'google_oauth',
-            type: 'login'
-        });
-        
-        // Update counters
-        updateCountersFromSheet();
-        
-        showSuccessScreen(finalUser.username, finalUser.email, loginTime);
-        
-        button.innerHTML = originalHTML;
-        button.disabled = false;
-    } catch (e) {
-        alert("Network error. Try again.");
-        button.innerHTML = originalHTML;
-        button.disabled = false;
-    }
+    button.innerHTML = originalHTML;
+    button.disabled = false;
+  } catch (e) {
+    alert("Network error. Try again.");
+    button.innerHTML = originalHTML;
+    button.disabled = false;
+  }
 }
 
 // ========== TRADITIONAL LOGIN WITH SHEET CHECK ==========
 async function loginUser() {
-    const username = document.getElementById('username').value.trim();
-    const password = document.getElementById('password').value;
-    const errorDiv = document.getElementById('errorMessage');
+  const username = document.getElementById('username').value.trim();
+  const password = document.getElementById('password').value;
+  const errorDiv = document.getElementById('errorMessage');
+  
+  errorDiv.style.display = 'none';
+  
+  if (!username || !password) {
+    errorDiv.textContent = "❌ Please enter both username and password";
+    errorDiv.style.display = 'block';
+    return;
+  }
+  
+  const button = document.querySelector('.login-btn');
+  const originalHTML = button.innerHTML;
+  button.innerHTML = '<div class="btn-icon">✓</div> Checking...';
+  button.disabled = true;
+  
+  try {
+    const response = await fetch(`${SHEET_LOGIN_CHECK_URL}?action=checkCred&username=${encodeURIComponent(username)}&password=${encodeURIComponent(password)}`);
+    const result = await response.json();
     
-    errorDiv.style.display = 'none';
-    
-    if (!username || !password) {
-        errorDiv.textContent = "❌ Please enter both username and password";
-        errorDiv.style.display = 'block';
-        return;
+    if (result.success) {
+      const user = { username, email: result.email || "" };
+      const loginTime = new Date().toISOString();
+      
+      localStorage.setItem('current_username', user.username);
+      localStorage.setItem('gahan_user', JSON.stringify({
+        username: user.username,
+        email: user.email,
+        sessionId: currentSession.id,
+        loginTime,
+        userAgent: navigator.userAgent,
+        loginMethod: 'traditional'
+      }));
+      
+      // Send login data
+      await sendToGoogleSheet({
+        username: user.username,
+        email: user.email,
+        method: 'traditional',
+        type: 'login',
+        eventType: 'login',
+        isNewSession: false,
+        isNewVisitor: false
+      });
+      
+      // Update counters
+      updateCountersFromSheet();
+      
+      showSuccessScreen(user.username, user.email, loginTime);
+    } else {
+      errorDiv.textContent = "❌ Invalid username or password.";
+      errorDiv.style.display = 'block';
+      document.getElementById('password').value = '';
+      document.getElementById('password').focus();
     }
-    
-    const button = document.querySelector('.login-btn');
-    const originalHTML = button.innerHTML;
-    button.innerHTML = '<div class="btn-icon">✓</div> Checking...';
-    button.disabled = true;
-    
-    try {
-        const response = await fetch(`${SHEET_LOGIN_CHECK_URL}?action=checkCred&username=${encodeURIComponent(username)}&password=${encodeURIComponent(password)}`);
-        const result = await response.json();
-        
-        if (result.success) {
-            const user = { username, email: result.email || "" };
-            const loginTime = new Date().toISOString();
-            
-            localStorage.setItem('current_username', user.username);
-            localStorage.setItem('gahan_user', JSON.stringify({
-                username: user.username,
-                email: user.email,
-                sessionId: currentSessionId,
-                loginTime,
-                userAgent: navigator.userAgent,
-                loginMethod: 'traditional'
-            }));
-            
-            // Send login data
-            await sendToGoogleSheet({
-                username: user.username,
-                email: user.email,
-                method: 'traditional',
-                type: 'login'
-            });
-            
-            // Update counters
-            updateCountersFromSheet();
-            
-            showSuccessScreen(user.username, user.email, loginTime);
-        } else {
-            errorDiv.textContent = "❌ Invalid username or password.";
-            errorDiv.style.display = 'block';
-            document.getElementById('password').value = '';
-            document.getElementById('password').focus();
-        }
-    } catch (e) {
-        errorDiv.textContent = "Network error. Try again.";
-        errorDiv.style.display = 'block';
-    }
-    
-    button.innerHTML = originalHTML;
-    button.disabled = false;
+  } catch (e) {
+    errorDiv.textContent = "Network error. Try again.";
+    errorDiv.style.display = 'block';
+  }
+  
+  button.innerHTML = originalHTML;
+  button.disabled = false;
 }
 
 // ========== OTHER FUNCTIONS ==========
 function googleLogout() {
-    googleUserData = null;
-    document.getElementById('googleUserInfo').style.display = 'none';
-    document.querySelector('.g_id_signin').style.display = 'block';
-    
-    if (typeof google !== 'undefined' && google.accounts) {
-        google.accounts.id.revoke(localStorage.getItem('google_token'), () => console.log('Token revoked'));
-    }
+  googleUserData = null;
+  document.getElementById('googleUserInfo').style.display = 'none';
+  document.querySelector('.g_id_signin').style.display = 'block';
+  
+  if (typeof google !== 'undefined' && google.accounts) {
+    google.accounts.id.revoke(localStorage.getItem('google_token'), () => console.log('Token revoked'));
+  }
 }
 
 function showSuccessScreen(username, email, loginTime) {
-    document.getElementById('loginScreen').style.display = 'none';
-    document.getElementById('successScreen').style.display = 'block';
-    
-    const formattedTime = new Date(loginTime).toLocaleString('en-US', {
-        hour: '2-digit', minute: '2-digit', month: 'short', day: 'numeric'
-    });
-    
-    const userData = JSON.parse(localStorage.getItem('gahan_user') || '{}');
-    const loginMethod = userData.loginMethod?.includes('google') ? 'Google OAuth' : 'Traditional';
-    
-    document.getElementById('userInfoDisplay').innerHTML = `
+  document.getElementById('loginScreen').style.display = 'none';
+  document.getElementById('successScreen').style.display = 'block';
+  
+  const formattedTime = new Date(loginTime).toLocaleString('en-US', {
+    hour: '2-digit', minute: '2-digit', month: 'short', day: 'numeric'
+  });
+  
+  const userData = JSON.parse(localStorage.getItem('gahan_user') || '{}');
+  const loginMethod = userData.loginMethod?.includes('google') ? 'Google OAuth' : 'Traditional';
+  
+  document.getElementById('userInfoDisplay').innerHTML = `
         <strong>Welcome, ${username}!</strong><br>
         <span style="color: #1a2980;">Email: ${email}</span><br>
         <small>Logged in via: ${loginMethod}</small><br>
@@ -677,131 +771,138 @@ function showSuccessScreen(username, email, loginTime) {
 }
 
 function checkExistingSession() {
-    const userData = localStorage.getItem('gahan_user');
-    if (userData) {
-        const user = JSON.parse(userData);
-        const loginTime = new Date(user.loginTime);
-        const now = new Date();
-        if ((now - loginTime) / (1000 * 60 * 60) < 24) {
-            showSuccessScreen(user.username, user.email, user.loginTime);
-        } else {
-            localStorage.removeItem('gahan_user');
-        }
+  const userData = localStorage.getItem('gahan_user');
+  if (userData) {
+    const user = JSON.parse(userData);
+    const loginTime = new Date(user.loginTime);
+    const now = new Date();
+    if ((now - loginTime) / (1000 * 60 * 60) < 24) {
+      showSuccessScreen(user.username, user.email, user.loginTime);
+    } else {
+      localStorage.removeItem('gahan_user');
     }
+  }
 }
 
 function goToContent(contentType) {
-    const userData = JSON.parse(localStorage.getItem('gahan_user') || '{}');
-    
-    sendToGoogleSheet({
-        username: userData.username || 'Unknown',
-        email: userData.email || '',
-        method: userData.loginMethod || 'unknown',
-        contentType,
-        type: 'content_access'
-    });
-    
-    localStorage.setItem('gahan_last_access', contentType);
-    localStorage.setItem('gahan_last_access_time', new Date().toISOString());
-    
-    document.getElementById('successScreen').innerHTML = `
+  const userData = JSON.parse(localStorage.getItem('gahan_user') || '{}');
+  
+  // Send content access event
+  sendToGoogleSheet({
+    username: userData.username || 'Unknown',
+    email: userData.email || '',
+    method: userData.loginMethod || 'unknown',
+    contentType: contentType,
+    type: 'content_access',
+    eventType: 'content_access',
+    isNewSession: false,
+    isNewVisitor: false
+  });
+  
+  localStorage.setItem('gahan_last_access', contentType);
+  localStorage.setItem('gahan_last_access_time', new Date().toISOString());
+  
+  document.getElementById('successScreen').innerHTML = `
         <div style="padding: 40px; text-align: center;">
             <div style="font-size: 60px; color: #4285F4;">⏳</div>
             <h2 style="color: #1a2980; margin: 20px 0;">Loading ${contentType.toUpperCase()} SETS</h2>
             <p>Please wait...</p>
         </div>
     `;
-    
-    setTimeout(() => {
-        const pages = { odd: 'odd.html', even: 'even.html', obj: 'obj.html' };
-        window.location.href = pages[contentType];
-    }, 1500);
+  
+  setTimeout(() => {
+    const pages = { odd: 'odd.html', even: 'even.html', obj: 'obj.html' };
+    window.location.href = pages[contentType];
+  }, 1500);
 }
 
 function logout() {
-    const userData = JSON.parse(localStorage.getItem('gahan_user') || '{}');
-    
-    if (userData.loginMethod?.includes('google')) googleLogout();
-    
-    // Send logout data
-    sendToGoogleSheet({
-        username: userData.username || 'Unknown',
-        type: 'logout'
-    });
-    
-    localStorage.removeItem('gahan_user');
-    localStorage.removeItem('current_username');
-    location.reload();
+  const userData = JSON.parse(localStorage.getItem('gahan_user') || '{}');
+  
+  if (userData.loginMethod?.includes('google')) googleLogout();
+  
+  // Send logout data
+  sendToGoogleSheet({
+    username: userData.username || 'Unknown',
+    type: 'logout',
+    eventType: 'logout',
+    isNewSession: false,
+    isNewVisitor: false
+  });
+  
+  // Send session end
+  sendToGoogleSheetDirect({
+    type: 'session_end',
+    eventType: 'session_end',
+    isNewSession: false,
+    isNewVisitor: false
+  });
+  
+  localStorage.removeItem('gahan_user');
+  localStorage.removeItem('current_username');
+  location.reload();
 }
 
 // ========== ANALYTICS MODAL ==========
 function showAnalyticsModal() {
-    document.getElementById('analyticsModal').style.display = 'flex';
+  document.getElementById('analyticsModal').style.display = 'flex';
 }
 
 function hideAnalyticsModal() {
-    document.getElementById('analyticsModal').style.display = 'none';
-    document.getElementById('analyticsPassword').value = '';
-    document.getElementById('analyticsError').style.display = 'none';
+  document.getElementById('analyticsModal').style.display = 'none';
+  document.getElementById('analyticsPassword').value = '';
+  document.getElementById('analyticsError').style.display = 'none';
 }
 
 function checkAnalyticsPassword() {
-    const password = document.getElementById('analyticsPassword').value;
-    const errorDiv = document.getElementById('analyticsError');
-    
-    if (password === "Gahan123") {
-        alert("Access granted!\n\nCurrent Visitor Stats:\n\nTotal Visitors: " + counterData.total + "\nUnique Visitors: " + counterData.unique + "\nLive Now: " + counterData.live + "\n\nYour Google Apps Script handles all visitor tracking automatically.");
-        hideAnalyticsModal();
-    } else {
-        errorDiv.textContent = "❌ Incorrect password. Access denied.";
-        errorDiv.style.display = 'block';
-        document.getElementById('analyticsPassword').value = '';
-    }
+  const password = document.getElementById('analyticsPassword').value;
+  const errorDiv = document.getElementById('analyticsError');
+  
+  if (password === "Gahan123") {
+    alert("Access granted!\n\nCurrent Visitor Stats:\n\nTotal Visitors: " + counterData.total + "\nUnique Visitors: " + counterData.unique + "\nLive Now: " + counterData.live + "\n\nYour Google Apps Script handles all visitor tracking automatically.");
+    hideAnalyticsModal();
+  } else {
+    errorDiv.textContent = "❌ Incorrect password. Access denied.";
+    errorDiv.style.display = 'block';
+    document.getElementById('analyticsPassword').value = '';
+  }
 }
 
 // ========== INITIALIZATION ==========
-let endSession = null;
-
 window.onload = function() {
-    // Start live session tracking
-    endSession = startLiveSession();
-    
-    // Track user activity
-    trackUserActivity();
-    
-    // Load initial counter values
-    updateCountersFromSheet();
-    
-    // Refresh counters every 20 seconds
-    setInterval(updateCountersFromSheet, 20000);
-    
-    // Check for existing session
-    checkExistingSession();
-    
-    // Set up form interactions
-    document.getElementById('username').focus();
-    document.getElementById('password').addEventListener('keypress', e => { 
-        if (e.key === 'Enter') loginUser(); 
+  console.log("🚀 Page loading, initializing tracking...");
+  
+  // Initialize session tracking FIRST
+  initializeSessionTracking();
+  
+  // Load initial counter values
+  updateCountersFromSheet();
+  
+  // Refresh counters every 30 seconds
+  setInterval(updateCountersFromSheet, 30000);
+  
+  // Check for existing session
+  checkExistingSession();
+  
+  // Set up form interactions
+  document.getElementById('username').focus();
+  document.getElementById('password').addEventListener('keypress', e => { 
+    if (e.key === 'Enter') loginUser(); 
+  });
+  
+  // Clean up session when page unloads
+  window.addEventListener('beforeunload', function() {
+    // Send session_end event
+    sendToGoogleSheetDirect({
+      type: 'session_end',
+      eventType: 'session_end',
+      isNewSession: false,
+      isNewVisitor: false
     });
-    
-    // Handle page visibility changes
-    document.addEventListener('visibilitychange', function() {
-        if (document.hidden) {
-            // Page is hidden, user might have switched tabs or minimized
-            isUserActive = false;
-        } else {
-            // Page is visible again
-            isUserActive = true;
-            updateCountersFromSheet();
-        }
-    });
-    
-    // Clean up session when page unloads
-    window.addEventListener('beforeunload', function() {
-        if (endSession) {
-            endSession();
-        }
-    });
+    console.log("👋 Sending session_end before page unload");
+  });
+  
+  console.log("✅ Tracking initialized successfully");
 };
 </script>
 
