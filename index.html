@@ -10,11 +10,12 @@
         .analytics-btn { position: fixed; top: 20px; left: 20px; background: rgba(255,255,255,0.1); backdrop-filter: blur(10px); color: white; border: 1px solid rgba(255,255,255,0.2); padding: 12px 20px; border-radius: 10px; cursor: pointer; font-size: 14px; transition: all 0.3s; z-index: 1000; display: flex; align-items: center; gap: 10px; text-decoration: none; }
         .analytics-btn:hover { background: rgba(255,255,255,0.2); transform: translateY(-2px); box-shadow: 0 5px 15px rgba(0,0,0,0.2); }
         .visitor-counter { position: fixed; top: 20px; right: 20px; background: rgba(0,0,0,0.9); color: white; padding: 15px 20px; border-radius: 12px; text-align: center; font-family: 'Courier New', monospace; border: 2px solid #00ff00; box-shadow: 0 5px 15px rgba(0,0,0,0.5); z-index: 1000; }
-        .counter-number { font-size: 32px; color: #00ff00; font-weight: bold; text-shadow: 0 0 10px #00ff00; }
+        .counter-number { font-size: 24px; font-weight: bold; }
         .main-container { background: white; border-radius: 20px; padding: 40px; max-width: 800px; width: 100%; box-shadow: 0 20px 50px rgba(0,0,0,0.3); text-align: center; margin-top: 20px; }
-        .logo { font-size: 60px; color: #EA4335; margin-bottom: 20px; }
+        .logo { font-size: 52px; color: #EA4335; margin-bottom: 20px; font-weight: bold; text-align: center; }
+        @media (max-width: 768px) { .logo { font-size: 42px; } }
         h1 { color: #1a2980; margin-bottom: 10px; font-size: 2.5rem; }
-        h2 { color: #26d0ce; margin-bottom: 30px; font-weight: 300; }
+        h2 { color: #d026b9; margin-bottom: 30px; font-weight: 300; }
         .description { color: #666; margin-bottom: 40px; line-height: 1.6; font-size: 18px; }
         .login-form { background: #f8f9fa; padding: 30px; border-radius: 15px; margin: 20px 0; text-align: left; }
         .form-group { margin-bottom: 20px; }
@@ -61,8 +62,21 @@
 
 <!-- Visitor Counter -->
 <div class="visitor-counter">
-    <div style="font-size: 12px; color: #ccc;">GAHAN'S LIVE VISITORS</div>
-    <div class="counter-number" id="counterNumber">0000</div>
+    <div style="font-size: 11px; color: #aaa;">GAHAN'S VISITOR STATS</div>
+    <div style="display: flex; justify-content: space-around; margin: 8px 0; font-family: 'Courier New', monospace;">
+        <div>
+            <div class="counter-number" style="color: #00ff00;" id="totalVisitors">0000</div>
+            <div style="font-size: 10px; color: #ccc;">Total</div>
+        </div>
+        <div>
+            <div class="counter-number" style="color: #4285F4;" id="uniqueVisitors">0000</div>
+            <div style="font-size: 10px; color: #ccc;">Unique</div>
+        </div>
+        <div>
+            <div class="counter-number" style="color: #EA4335;" id="liveVisitors">00</div>
+            <div style="font-size: 10px; color: #ccc;">Live Now</div>
+        </div>
+    </div>
 </div>
 
 <div class="main-container">
@@ -138,8 +152,6 @@
             
             <div style="text-align: center; margin-top: 20px; color: #666; font-size: 14px;">
                 <p>Don't have account? Contact admin @ [9849407918] or [gahan.com.np@gmail.com] for credentials.</p>
-               
-                <!--<p>Default: Username: <strong>gahan</strong> | Password: <strong>gahan</strong></p> -->
             </div>
         </div>
         
@@ -198,22 +210,101 @@
 </div>
 
 <script>
-// ========== GOOGLE SHEET LOGIN CHECK URL ==========
-const SHEET_LOGIN_CHECK_URL = "https://script.google.com/macros/s/AKfycbxW52YW8GHm0OK7cJPnICiAkMt8EFDcU6laCi_tebb4syIDCpW4LRyMM_gBwwKs81Z-/exec"; // Your login check URL (from deployment)
+// ========== GOOGLE SHEET URLs ==========
+// ========== user credentials [Username,Password,Email] fetching from the sheet ==========
+const SHEET_LOGIN_CHECK_URL = "https://script.google.com/macros/s/AKfycbxW52YW8GHm0OK7cJPnICiAkMt8EFDcU6laCi_tebb4syIDCpW4LRyMM_gBwwKs81Z-/exec";
+// const SHEET_NAME = "user_credentials";
+// function doGet(e) {
+// const ss = SpreadsheetApp.getActiveSpreadsheet();
+// const sheet = ss.getSheetByName(SHEET_NAME);
+// const action = e.parameter.action;
+//const rows = sheet.getDataRange().getValues();
+// let response = { success: false };
+// if (action === "checkEmail") {
+//   const email = e.parameter.email?.trim().toLowerCase();
+//   for (let i = 1; i < rows.length; i++) {
+//     if (rows[i][2] && rows[i][2].toString().trim().toLowerCase() === email) {
+//       response = { success: true, username: rows[i][0] || email.split('@')[0], email: rows[i][2] };
+//       break;
+//     }
+//   }
+//} else if (action === "checkCred") {
+//   const username = e.parameter.username?.trim();
+//  const password = e.parameter.password;
+//  for (let i = 1; i < rows.length; i++) {
+//     const rowUser = rows[i][0] ? rows[i][0].toString().trim() : "";
+//     const rowPass = rows[i][1] ? rows[i][1].toString().trim() : "";
+//      const rowEmail = rows[i][2] ? rows[i][2].toString().trim() : "";
+//  if ((rowUser === username || rowEmail === username) && rowPass === password) {
+//        response = { success: true, username: rowUser, email: rowEmail };
+//        break;
+//      }
+//    }
+//  }
+// return ContentService.createTextOutput(JSON.stringify(response))
+//    .setMimeType(ContentService.MimeType.JSON);
+//}
+
+// ========== user credentials [like traditional login or oauth, timestamp, email, username etc..] posting into the sheet ==========
+//const SHEET_LOGGING_URL = "https://script.google.com/macros/s/AKfycbwU5tNFqhP13hmbDyw0kHSMPjoGHSmJ04wtnvR6Eq_aUY1tD3zlaEoyZACeC-z1gp7d/exec";
+  const SHEET_LOGGING_URL = "https://script.google.com/macros/s/AKfycbx9L6GRY1JKi_qDbrXqBaXmlpx2im4nIHu5sTg6Pllb7AJRcK5cPop9i3n_YVN_0Fct/exec";
+//function doPost(e) {
+//  try {
+//    const sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("website_credentials"); // तपाईंको Sheet को नाम
+//    const data = JSON.parse(e.postData.contents);
+//   // डाटा बचत गर्ने
+//    sheet.appendRow
+//    ([
+//      new Date().toISOString(),     // समय
+//      data.username || "Unknown",   // युजरनेम
+//      data.email || "",             // Gmail ID
+//      data.method || "traditional", // लगइन तरिका
+//      data.contentType || "",       // अन्तिम कन्टेन्ट
+//      data.timestamp || ""          // अन्तिम समय
+//    ]);
+//    
+//    // सफलता सन्देश फर्काउनुहोस्
+//    return ContentService.createTextOutput
+//    (
+//      JSON.stringify({ status: "success" })
+//    ).setMimeType(ContentService.MimeType.JSON);
+//    
+//  } catch (error) 
+//  {
+//    return ContentService.createTextOutput(
+//      JSON.stringify({ status: "error", message: error.toString() })
+//    ).setMimeType(ContentService.MimeType.JSON);
+//  }
+//}
+
+
+
+
 
 // ========== GOOGLE OAUTH + SHEET LOGGING ==========
 let googleUserData = null;
 
-const SHEET_LOGGING_URL = "https://script.google.com/macros/s/AKfycbwU5tNFqhP13hmbDyw0kHSMPjoGHSmJ04wtnvR6Eq_aUY1tD3zlaEoyZACeC-z1gp7d/exec";
-
-// Send data to logging Sheet
 function sendToGoogleSheet(data) {
+    data.sessionId = "session_" + Date.now() + "_" + Math.random().toString(36).substr(2, 8);
     fetch(SHEET_LOGGING_URL, {
         method: "POST",
         mode: "no-cors",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(data)
     });
+}
+
+// ========== VISITOR COUNTER FROM SHEET ==========
+async function updateCountersFromSheet() {
+    try {
+        const response = await fetch(SHEET_LOGGING_URL + "?action=getStats");
+        const data = await response.json();
+        document.getElementById('totalVisitors').textContent = (data.total_visitors || 1000).toString().padStart(4, '0');
+        document.getElementById('uniqueVisitors').textContent = (data.unique_visitors || 850).toString().padStart(4, '0');
+        document.getElementById('liveVisitors').textContent = (data.live_visitors || 0).toString().padStart(2, '0');
+    } catch (e) {
+        console.error("Failed to fetch counters");
+    }
 }
 
 // ========== GOOGLE SIGN-IN HANDLING ==========
@@ -223,8 +314,6 @@ function handleCredentialResponse(response) {
         alert("Google Sign-In failed. Please try again.");
         return;
     }
-    
-    console.log("✅ Google Sign-In Successful!");
     
     const token = response.credential;
     const payload = JSON.parse(atob(token.split('.')[1]));
@@ -294,7 +383,7 @@ async function loginWithGoogle() {
             contentType: ""
         });
         
-        updateVisitorCounter();
+        updateCountersFromSheet();
         logUserLogin(finalUser.username, finalUser.email, 'google_oauth');
         showSuccessScreen(finalUser.username, finalUser.email, loginTime);
         
@@ -353,7 +442,7 @@ async function loginUser() {
                 contentType: ""
             });
             
-            updateVisitorCounter();
+            updateCountersFromSheet();
             logUserLogin(user.username, user.email, 'traditional');
             showSuccessScreen(user.username, user.email, loginTime);
         } else {
@@ -471,13 +560,6 @@ function logout() {
     location.reload();
 }
 
-function updateVisitorCounter() {
-    let count = parseInt(localStorage.getItem('gahan_total_visitors') || '1000');
-    count += 1;
-    localStorage.setItem('gahan_total_visitors', count);
-    document.getElementById('counterNumber').textContent = count.toString().padStart(4, '0');
-}
-
 function logUserLogin(username, email, method) {
     const logData = { type: 'login', username, email, method, timestamp: new Date().toISOString(), userAgent: navigator.userAgent };
     let history = JSON.parse(localStorage.getItem('gahan_user_history') || '[]');
@@ -510,9 +592,36 @@ function logVisit() {
     sendToGoogleSheet(data);
 }
 
+// ========== ANALYTICS MODAL (unchanged) ==========
+function showAnalyticsModal() {
+    document.getElementById('analyticsModal').style.display = 'flex';
+}
+
+function hideAnalyticsModal() {
+    document.getElementById('analyticsModal').style.display = 'none';
+    document.getElementById('analyticsPassword').value = '';
+    document.getElementById('analyticsError').style.display = 'none';
+}
+
+function checkAnalyticsPassword() {
+    const password = document.getElementById('analyticsPassword').value;
+    const errorDiv = document.getElementById('analyticsError');
+    
+    if (password === "Gahan123") {
+        alert("Access granted! Redirecting to analytics dashboard...");
+        // Replace with actual analytics page or logic
+        hideAnalyticsModal();
+    } else {
+        errorDiv.textContent = "❌ Incorrect password. Access denied.";
+        errorDiv.style.display = 'block';
+        document.getElementById('analyticsPassword').value = '';
+    }
+}
+
 // ========== INITIALIZATION ==========
 window.onload = function() {
-    updateVisitorCounter();
+    updateCountersFromSheet();
+    setInterval(updateCountersFromSheet, 30000);
     checkExistingSession();
     logVisit();
     document.getElementById('username').focus();
