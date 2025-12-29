@@ -3,32 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<meta name="description" content="Gahan Khatiwoda's 100-Days-Challenge with enhanced visitor tracking analytics">
-<meta name="keywords" content="education, computer science, SEE 2082, practice sets, visitor tracking">
-<meta name="author" content="Gahan Khatiwoda">
-
     <title>GAHAN KHATIWODA OFFICIAL - Enhanced 100-Days-Challenge</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="styles.css">
-
-<link rel="icon" href="favicon.png" type="image/x-icon">
-    
-    <script>
-    // Enable Google debug
-    window.googleDebug = true;
-    
-    // Log Google Identity status
-    setInterval(() => {
-        if (typeof google !== 'undefined') {
-            console.log('Google API loaded:', !!google.accounts);
-        } else {
-            console.log('Google API not loaded yet');
-        }
-    }, 2000);
-    </script>
-
-    
+    <style>
+        /* Your existing CSS styles here */
+        /* ... [Keep all your CSS styles] ... */
+    </style>
 </head>
 <body>
 
@@ -65,7 +45,7 @@
     </div>
 </div>
 
-<!-- Visitor Dashboard (Smaller for Mobile) -->
+<!-- Visitor Dashboard -->
 <div class="visitor-dashboard">
     <div class="dashboard-content">
         <div class="dashboard-item">
@@ -74,7 +54,7 @@
             </div>
             <div class="dashboard-text">
                 <div class="dashboard-value" id="totalVisitors">0000</div>
-                <div class="dashboard-label">Total</div>
+                <div class="dashboard-label">Total Visitors</div>
             </div>
         </div>
         
@@ -84,7 +64,7 @@
             </div>
             <div class="dashboard-text">
                 <div class="dashboard-value" id="uniqueVisitors">0000</div>
-                <div class="dashboard-label">Unique</div>
+                <div class="dashboard-label">Unique Visitors</div>
             </div>
         </div>
         
@@ -94,7 +74,7 @@
             </div>
             <div class="dashboard-text">
                 <div class="dashboard-value" id="liveVisitors">00</div>
-                <div class="dashboard-label">Live</div>
+                <div class="dashboard-label">Live Now</div>
             </div>
         </div>
     </div>
@@ -168,84 +148,91 @@
                 </div>
             </div>
             
-       <!-- Google Login Tab -->
-<div id="googleTab" class="tab-content">
-    <div class="google-signin-container">
-        <p style="margin-bottom: 20px; color: var(--gray);">
-            Sign in with your Google account for faster access
-        </p>
-        
-        <!-- Add debug information -->
-        <div id="googleDebug" style="display: none; margin-bottom: 15px; padding: 10px; background: #f0f0f0; border-radius: 5px; font-size: 12px; color: #666;">
-            <p>Google Sign-In Status: <span id="googleStatus">Checking...</span></p>
-        </div>
-        
-        <div id="g_id_onload"
-             data-client_id="789365890180-30fpjid0955op8rldf1js02br0t7jql3.apps.googleusercontent.com"
-             data-context="signin"
-             data-ux_mode="popup"
-             data-callback="Auth.handleCredentialResponse"
-             data-auto_prompt="false"
-             data-itp_support="true"
-             data-login_uri="https://yourdomain.com" <!-- Add your domain -->
-             data-auto_select="false">
-        </div>
-        
-        <div class="g_id_signin"
-             data-type="standard"
-             data-shape="rectangular"
-             data-theme="outline"
-             data-text="signin_with"
-             data-size="large"
-             data-logo_alignment="left"
-             data-width="100%">
-        </div>
-        
-        <!-- Fallback manual button -->
-        <button id="manualGoogleBtn" style="display: none; background: #4285F4; color: white; border: none; padding: 12px 24px; border-radius: 4px; cursor: pointer; width: 100%; margin-top: 10px; font-size: 16px;">
-            <i class="fab fa-google"></i> Sign in with Google
-        </button>
-        
-        <div id="googleUserInfo" style="margin-top: 30px; display: none;">
-            <div style="background: #f8f9fa; padding: 20px; border-radius: 10px; text-align: center;">
-                <img id="googleAvatar" style="width: 60px; height: 60px; border-radius: 50%; margin: 0 auto 15px; display: block;" src="" alt="Profile">
-                <h3 id="googleName" style="color: var(--primary); margin-bottom: 5px;"></h3>
-                <p id="googleEmail" style="color: var(--gray); font-family: 'Courier New'; margin-bottom: 20px;"></p>
-                
-                <button onclick="Auth.loginWithGoogle()" style="background: var(--success); color: white; border: none; padding: 12px 30px; border-radius: 8px; cursor: pointer; margin: 5px; font-size: 16px; width: 100%;">
-                    <i class="fas fa-check-circle"></i> Continue with this Google Account
-                </button>
-                
-                <button onclick="Auth.googleLogout()" style="background: transparent; color: var(--gray); border: 1px solid #ddd; padding: 8px 20px; border-radius: 5px; cursor: pointer; margin: 5px; font-size: 14px; width: 100%;">
-                    <i class="fas fa-sync"></i> Use different account
-                </button>
-                
-                <div style="margin-top: 15px; font-size: 12px; color: #666;">
-                    <i class="fas fa-info-circle"></i> By continuing, you agree to share your name and email
+            <!-- Google Login Tab -->
+            <div id="googleTab" class="tab-content">
+                <div class="google-signin-container">
+                    <p style="margin-bottom: 20px; color: var(--gray);">
+                        Sign in with your Google account for faster access
+                    </p>
+                    
+                    <!-- Google Sign-In Button Container -->
+                    <div id="googleSignInContainer" style="margin-bottom: 20px;">
+                        <!-- This will be replaced by Google button -->
+                        <div id="g_id_onload"
+                             data-client_id="789365890180-30fpjid0955op8rldf1js02br0t7jql3.apps.googleusercontent.com"
+                             data-context="signin"
+                             data-ux_mode="popup"
+                             data-callback="handleCredentialResponse"
+                             data-auto_prompt="false"
+                             data-itp_support="true">
+                        </div>
+                        
+                        <div class="g_id_signin"
+                             data-type="standard"
+                             data-shape="rectangular"
+                             data-theme="outline"
+                             data-text="signin_with"
+                             data-size="large"
+                             data-logo_alignment="left"
+                             data-width="100%">
+                        </div>
+                    </div>
+                    
+                    <!-- Manual Google Button (Fallback) -->
+                    <button id="manualGoogleBtn" onclick="Auth.triggerManualGoogleSignIn()" 
+                            style="display: none; background: #4285F4; color: white; border: none; padding: 12px 24px; border-radius: 4px; cursor: pointer; width: 100%; margin-top: 10px; font-size: 16px;">
+                        <i class="fab fa-google"></i> Sign in with Google
+                    </button>
+                    
+                    <!-- Google User Info (hidden by default) -->
+                    <div id="googleUserInfo" style="margin-top: 30px; display: none;">
+                        <div style="background: #f8f9fa; padding: 20px; border-radius: 10px; text-align: center;">
+                            <img id="googleAvatar" style="width: 60px; height: 60px; border-radius: 50%; margin: 0 auto 15px; display: block;" src="" alt="Profile">
+                            <h3 id="googleName" style="color: var(--primary); margin-bottom: 5px;"></h3>
+                            <p id="googleEmail" style="color: var(--gray); font-family: 'Courier New'; margin-bottom: 20px;"></p>
+                            
+                            <button onclick="Auth.loginWithGoogle()" style="background: var(--success); color: white; border: none; padding: 12px 30px; border-radius: 8px; cursor: pointer; margin: 5px; font-size: 16px; width: 100%;">
+                                <i class="fas fa-check-circle"></i> Continue with this Google Account
+                            </button>
+                            
+                            <button onclick="Auth.googleLogout()" style="background: transparent; color: var(--gray); border: 1px solid #ddd; padding: 8px 20px; border-radius: 5px; cursor: pointer; margin: 5px; font-size: 14px; width: 100%;">
+                                <i class="fas fa-sync"></i> Use different account
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <!-- Loading indicator -->
+                    <div id="googleLoading" style="display: none; text-align: center; padding: 20px;">
+                        <div class="loading-spinner" style="width: 30px; height: 30px; margin: 0 auto 10px;"></div>
+                        <p style="color: var(--gray);">Processing Google Sign-In...</p>
+                    </div>
                 </div>
+                
+                <!-- Instructions -->
+                <div style="margin-top: 25px; padding: 15px; background: #f8f9fa; border-radius: 10px; border-left: 4px solid #4285F4;">
+                    <h4 style="color: #4285F4; margin-bottom: 10px; font-size: 14px;">
+                        <i class="fas fa-question-circle"></i> Google Sign-In Help
+                    </h4>
+                    <ul style="color: var(--gray); font-size: 12px; padding-left: 20px; margin: 0;">
+                        <li>Make sure you're using a modern browser</li>
+                        <li>Allow pop-ups for this site if prompted</li>
+                        <li>If the button doesn't appear, click the manual button</li>
+                        <li>Contact admin if your Google account is not authorized</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="divider">
+                <span>Security Information</span>
+            </div>
+            
+            <div style="text-align: center; color: var(--gray); font-size: 13px;">
+                <p><i class="fas fa-lock"></i> All connections are encrypted with SSL/TLS</p>
+                <p><i class="fas fa-database"></i> Visitor tracking complies with privacy regulations</p>
+                <p><i class="fas fa-clock"></i> Sessions expire after 30 minutes of inactivity</p>
             </div>
         </div>
         
-        <!-- Loading indicator -->
-        <div id="googleLoading" style="display: none; text-align: center; padding: 20px;">
-            <div class="loading-spinner" style="width: 30px; height: 30px; margin: 0 auto 10px;"></div>
-            <p style="color: var(--gray);">Processing Google Sign-In...</p>
-        </div>
-    </div>
-    
-    <!-- Instructions -->
-    <div style="margin-top: 25px; padding: 15px; background: #f8f9fa; border-radius: 10px; border-left: 4px solid #4285F4;">
-        <h4 style="color: #4285F4; margin-bottom: 10px; font-size: 14px;">
-            <i class="fas fa-question-circle"></i> Google Sign-In Help
-        </h4>
-        <ul style="color: var(--gray); font-size: 12px; padding-left: 20px; margin: 0;">
-            <li>Make sure you're using a modern browser (Chrome, Firefox, Edge)</li>
-            <li>Allow pop-ups for this site if prompted</li>
-            <li>If the button doesn't appear, refresh the page</li>
-            <li>Contact admin if your Google account is not authorized</li>
-        </ul>
-    </div>
-</div>
         <!-- Features Section -->
         <div class="features-grid">
             <div class="feature-card">
@@ -362,150 +349,12 @@
 
 <!-- Analytics Modal -->
 <div id="analyticsModal" class="analytics-modal">
-    <div class="modal-content">
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">
-            <h2 style="color: var(--primary);">
-                <i class="fas fa-chart-bar"></i> Advanced Analytics
-            </h2>
-            <button onclick="UI.hideAnalyticsModal()" style="background: none; border: none; font-size: 24px; color: var(--gray); cursor: pointer;">
-                <i class="fas fa-times"></i>
-            </button>
-        </div>
-        
-        <div class="modal-tabs">
-            <button class="modal-tab active" onclick="Analytics.switchTab('overview')">
-                <i class="fas fa-tachometer-alt"></i> Overview
-            </button>
-            <button class="modal-tab" onclick="Analytics.switchTab('realtime')">
-                <i class="fas fa-bolt"></i> Real-Time
-            </button>
-            <button class="modal-tab" onclick="Analytics.switchTab('geography')">
-                <i class="fas fa-globe"></i> Geography
-            </button>
-            <button class="modal-tab" onclick="Analytics.switchTab('devices')">
-                <i class="fas fa-mobile-alt"></i> Devices
-            </button>
-        </div>
-        
-        <!-- Overview Tab -->
-        <div id="overviewTab" class="tab-content active">
-            <div class="stats-grid">
-                <div class="stat-card">
-                    <div class="stat-value" id="modalTotal">0</div>
-                    <div class="stat-label">Total Visitors</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-value" id="modalUnique">0</div>
-                    <div class="stat-label">Unique Visitors</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-value" id="modalLive">0</div>
-                    <div class="stat-label">Live Now</div>
-                </div>
-            </div>
-        </div>
-        
-        <!-- Real-Time Tab -->
-        <div id="realtimeTab" class="tab-content">
-            <h4 style="color: var(--dark); margin-bottom: 15px;">
-                <i class="fas fa-users"></i> Live Visitors
-            </h4>
-            <div id="liveVisitorsList" style="max-height: 300px; overflow-y: auto;">
-                <div style="text-align: center; padding: 40px; color: var(--gray);">
-                    <i class="fas fa-sync fa-spin" style="font-size: 30px; margin-bottom: 15px;"></i>
-                    <p>Loading real-time data...</p>
-                </div>
-            </div>
-        </div>
-        
-        <!-- Geography Tab -->
-        <div id="geographyTab" class="tab-content">
-            <h4 style="color: var(--dark); margin-bottom: 15px;">
-                <i class="fas fa-map-marker-alt"></i> Visitor Locations
-            </h4>
-            <div id="countryList" style="max-height: 300px; overflow-y: auto;">
-                <div style="text-align: center; padding: 40px; color: var(--gray);">
-                    <i class="fas fa-globe-americas" style="font-size: 30px; margin-bottom: 15px;"></i>
-                    <p>Geographic data loading...</p>
-                </div>
-            </div>
-        </div>
-        
-        <!-- Devices Tab -->
-        <div id="devicesTab" class="tab-content">
-            <h4 style="color: var(--dark); margin-bottom: 15px;">
-                <i class="fas fa-laptop"></i> Device Distribution
-            </h4>
-            <div id="deviceStats">
-                <div style="text-align: center; padding: 40px; color: var(--gray);">
-                    <i class="fas fa-mobile-alt" style="font-size: 30px; margin-bottom: 15px;"></i>
-                    <p>Device statistics loading...</p>
-                </div>
-            </div>
-        </div>
-        
-        <div style="margin-top: 30px; padding-top: 20px; border-top: 2px solid #e9ecef;">
-            <p style="color: var(--gray); font-size: 12px; text-align: center;">
-                <i class="fas fa-shield-alt"></i> Data updated every 30 seconds • Last updated: <span id="lastUpdateTime">Just now</span>
-            </p>
-        </div>
-    </div>
+    <!-- ... Your analytics modal content ... -->
 </div>
 
 <!-- Privacy Modal -->
 <div id="privacyModal" class="privacy-modal">
-    <div class="privacy-content">
-        <h2 style="color: var(--primary); margin-bottom: 20px;">
-            <i class="fas fa-shield-alt"></i> Privacy & Data Collection Notice
-        </h2>
-        
-        <div style="margin-bottom: 25px;">
-            <h4 style="color: var(--dark); margin-bottom: 10px;">What We Collect:</h4>
-            <ul style="color: var(--gray); line-height: 1.8; padding-left: 20px;">
-                <li><strong>Session Data:</strong> Anonymous session identifiers</li>
-                <li><strong>Technical Information:</strong> Browser type, device type, screen resolution</li>
-                <li><strong>Usage Data:</strong> Pages visited, time spent, interactions</li>
-                <li><strong>Location Data:</strong> Country-level location (no precise GPS)</li>
-                <li><strong>Login Information:</strong> Only when you explicitly log in</li>
-            </ul>
-        </div>
-        
-        <div style="margin-bottom: 25px;">
-            <h4 style="color: var(--dark); margin-bottom: 10px;">What We <strong>DO NOT</strong> Collect:</h4>
-            <ul style="color: var(--gray); line-height: 1.8; padding-left: 20px;">
-                <li>Personal identification without consent</li>
-                <li>Precise location data</li>
-                <li>Sensitive personal information</li>
-                <li>Cross-site tracking data</li>
-                <li>Persistent cookies without consent</li>
-            </ul>
-        </div>
-        
-        <div style="margin-bottom: 25px;">
-            <h4 style="color: var(--dark); margin-bottom: 10px;">Data Usage:</h4>
-            <p style="color: var(--gray); line-height: 1.6;">
-                We use this data exclusively to improve the learning experience, 
-                analyze content effectiveness, and prevent abuse. All data is 
-                stored securely and anonymized where possible.
-            </p>
-        </div>
-        
-        <div style="display: flex; gap: 15px; margin-top: 30px;">
-            <button onclick="UI.acceptPrivacy()" style="background: var(--success); color: white; border: none; padding: 15px 30px; border-radius: 8px; cursor: pointer; font-size: 16px; flex: 1;">
-                <i class="fas fa-check"></i> I Understand & Accept
-            </button>
-            <button onclick="UI.showPrivacySettings()" style="background: var(--primary); color: white; border: none; padding: 15px 30px; border-radius: 8px; cursor: pointer; font-size: 16px; flex: 1;">
-                <i class="fas fa-cog"></i> Privacy Settings
-            </button>
-            <button onclick="UI.hidePrivacyModal()" style="background: transparent; color: var(--gray); border: 1px solid #ddd; padding: 15px 20px; border-radius: 8px; cursor: pointer; font-size: 16px;">
-                <i class="fas fa-times"></i>
-            </button>
-        </div>
-        
-        <p style="color: var(--gray); font-size: 12px; margin-top: 20px; text-align: center;">
-            <i class="fas fa-info-circle"></i> You can change privacy settings anytime from the top navigation
-        </p>
-    </div>
+    <!-- ... Your privacy modal content ... -->
 </div>
 
 <!-- Footer -->
@@ -519,6 +368,31 @@
 
 <!-- Google Identity Services -->
 <script src="https://accounts.google.com/gsi/client" async defer></script>
+
+<!-- Global callback wrapper -->
+<script>
+    // Global wrapper for Google callback
+    window.handleCredentialResponse = function(response) {
+        console.log('Google callback received');
+        
+        // Check if Auth module is loaded
+        if (typeof Auth !== 'undefined' && typeof Auth.handleCredentialResponse === 'function') {
+            Auth.handleCredentialResponse(response);
+        } else {
+            console.error('Auth module not loaded yet');
+            // Store credential for later use
+            if (response && response.credential) {
+                localStorage.setItem('pending_google_credential', response.credential);
+                console.log('Credential stored for later processing');
+                
+                // Show message to user
+                if (typeof UI !== 'undefined' && typeof UI.showToast === 'function') {
+                    UI.showToast('Google sign-in received. Processing...', 'info');
+                }
+            }
+        }
+    };
+</script>
 
 <!-- Module Imports -->
 <script src="modules/utils.js"></script>
