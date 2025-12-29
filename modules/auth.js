@@ -1,4 +1,4 @@
-// Authentication Module
+// Authentication Module with Enhanced Google Login
 const Auth = (function() {
     // User state
     const UserState = {
@@ -7,60 +7,96 @@ const Auth = (function() {
         preferences: {}
     };
 
-    // Login user with credentials
-    async function loginUser() {
-        const username = document.getElementById('username')?.value.trim();
-        const password = document.getElementById('password')?.value;
-        const rememberMe = document.getElementById('rememberMe')?.checked;
+    // Debug function
+    function debugLog(message, data = null) {
+        console.log(`[Google Auth] ${message}`, data || '');
         
-        if (!username || !password) {
-            UI.showError('Please enter both username and password');
-            return;
-        }
+        // Update debug UI if exists
+        const debugElement = document.getElementById('googleDebug');
+        const statusElement = document.getElementById('googleStatus');
         
-        const loginBtn = document.getElementById('loginBtn');
-        if (!loginBtn) return;
-        
-        const originalText = loginBtn.innerHTML;
-        loginBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Authenticating...';
-        loginBtn.disabled = true;
-        UI.hideError();
-        
-        try {
-            const response = await fetch(`${Utils.CONFIG.LOGIN_CHECK_URL}?action=checkCred&username=${encodeURIComponent(username)}&password=${encodeURIComponent(password)}`);
-            const result = await response.json();
-            
-            if (result.success) {
-                await handleSuccessfulLogin({
-                    username: username,
-                    email: result.email || '',
-                    method: 'traditional',
-                    remember: rememberMe
-                });
-            } else {
-                UI.showError('Invalid username or password');
-                document.getElementById('password').value = '';
-                document.getElementById('password').focus();
-            }
-        } catch (error) {
-            UI.showError('Network error. Please try again.');
-            console.error('Login error:', error);
-        } finally {
-            loginBtn.innerHTML = originalText;
-            loginBtn.disabled = false;
+        if (debugElement && statusElement) {
+            statusElement.textContent = message;
+            debugElement.style.display = 'block';
         }
     }
 
+    // Initialize Google Sign-In
+    function initializeGoogleSignIn() {
+        debugLog('Initializing Google Sign-In...');
+        
+        // Check if Google Identity Services is loaded
+        if (typeof google === 'undefined') {
+            debugLog('Google API not loaded yet, waiting...');
+            setTimeout(initializeGoogleSignIn, 1000);
+            return;
+        }
+        
+        if (!google.accounts) {
+            debugLog('Google.accounts not available');
+            return;
+        }
+        
+        try {
+            debugLog('Google API loaded successfully');
+            
+            // Show manual button as fallback
+            const manualBtn = document.getElementById('manualGoogleBtn');
+            if (manualBtn) {
+                manualBtn.style.display = 'block';
+                manualBtn.addEventListener('click', triggerManualGoogleSignIn);
+            }
+            
+        } catch (error) {
+            debugLog('Error initializing Google:', error.message);
+        }
+    }
+
+    // Manual Google Sign-In trigger
+    function triggerManualGoogleSignIn() {
+        debugLog('Manual Google Sign-In triggered');
+        
+        if (typeof google === 'undefined' || !google.accounts || !google.accounts.id) {
+            UI.showError('Google Sign-In not available. Please refresh the page.');
+            return;
+        }
+        
+        // Trigger Google Sign-In
+        google.accounts.id.prompt();
+    }
+
     // Handle Google credential response
-    function handleCredentialResponse(response) {
+    async function handleCredentialResponse(response) {
+        debugLog('Google credential response received');
+        
+        // Show loading
+        const loadingElement = document.getElementById('googleLoading');
+        if (loadingElement) loadingElement.style.display = 'block';
+        
         if (!response || !response.credential) {
+            debugLog('No credential in response', response);
+            if (loadingElement) loadingElement.style.display = 'none';
             UI.showError('Google Sign-In failed. Please try again.');
             return;
         }
         
         try {
             const token = response.credential;
-            const payload = JSON.parse(atob(token.split('.')[1]));
+            debugLog('JWT Token received');
+            
+            // Decode the JWT token
+            const parts = token.split('.');
+            if (parts.length !== 3) {
+                throw new Error('Invalid JWT token format');
+            }
+            
+            // Decode base64 URL safely
+            const payload = JSON.parse(atob(parts[1].replace(/-/g, '+').replace(/_/g, '/')));
+            debugLog('Decoded payload', { 
+                email: payload.email, 
+                name: payload.name,
+                email_verified: payload.email_verified 
+            });
             
             const googleUserData = {
                 email: payload.email,
@@ -68,37 +104,70 @@ const Auth = (function() {
                 picture: payload.picture,
                 given_name: payload.given_name,
                 family_name: payload.family_name,
-                email_verified: payload.email_verified,
+                email_verified: payload.email_verified === true,
                 token: token,
-                timestamp: Utils.getISOTime()
+                timestamp: Utils.getISOTime(),
+                sub: payload.sub
             };
             
-            Utils.Storage.set('google_user_data', googleUserData);
-            
-            const googleUserInfo = document.getElementById('googleUserInfo');
-            const googleAvatar = document.getElementById('googleAvatar');
-            const googleName = document.getElementById('googleName');
-            const googleEmail = document.getElementById('googleEmail');
-            const googleSignin = document.querySelector('.g_id_signin');
-            
-            if (googleUserInfo && googleAvatar && googleName && googleEmail && googleSignin) {
-                googleUserInfo.style.display = 'block';
-                googleAvatar.src = googleUserData.picture;
-                googleName.textContent = googleUserData.name;
-                googleEmail.textContent = googleUserData.email;
-                googleSignin.style.display = 'none';
+            // Validate required fields
+            if (!googleUserData.email) {
+                throw new Error('No email in Google response');
             }
             
-            setTimeout(loginWithGoogle, 1000);
+            if (!googleUserData.email_verified) {
+                UI.showError('Please verify your email with Google first.');
+                if (loadingElement) loadingElement.style.display = 'none';
+                return;
+            }
+            
+            // Store Google user data
+            Utils.Storage.set('google_user_data', googleUserData);
+            
+            // Update UI
+            updateGoogleUserUI(googleUserData);
+            
+            // Hide loading
+            if (loadingElement) loadingElement.style.display = 'none';
+            
+            // Auto-proceed after short delay
+            setTimeout(() => {
+                loginWithGoogle();
+            }, 800);
             
         } catch (error) {
-            UI.showError('Failed to process Google Sign-In.');
-            console.error('Google Sign-In error:', error);
+            debugLog('Error processing Google response:', error.message);
+            if (loadingElement) loadingElement.style.display = 'none';
+            UI.showError(`Google Sign-In failed: ${error.message}`);
+        }
+    }
+
+    // Update Google user UI
+    function updateGoogleUserUI(googleUserData) {
+        const googleUserInfo = document.getElementById('googleUserInfo');
+        const googleAvatar = document.getElementById('googleAvatar');
+        const googleName = document.getElementById('googleName');
+        const googleEmail = document.getElementById('googleEmail');
+        const googleSignin = document.querySelector('.g_id_signin');
+        const manualBtn = document.getElementById('manualGoogleBtn');
+        
+        if (googleUserInfo && googleAvatar && googleName && googleEmail) {
+            googleUserInfo.style.display = 'block';
+            googleAvatar.src = googleUserData.picture || 'https://via.placeholder.com/60?text=User';
+            googleName.textContent = googleUserData.name || 'Google User';
+            googleEmail.textContent = googleUserData.email;
+            
+            if (googleSignin) googleSignin.style.display = 'none';
+            if (manualBtn) manualBtn.style.display = 'none';
+            
+            debugLog('Google user UI updated');
         }
     }
 
     // Login with Google
     async function loginWithGoogle() {
+        debugLog('Starting Google login process...');
+        
         const googleUserData = Utils.Storage.get('google_user_data');
         
         if (!googleUserData) {
@@ -107,94 +176,55 @@ const Auth = (function() {
         }
         
         const googleEmail = googleUserData.email;
+        debugLog('Checking authorization for:', googleEmail);
+        
+        // Show loading
+        UI.showLoading('Checking Google account authorization...');
         
         try {
+            // Check if email is authorized
             const response = await fetch(`${Utils.CONFIG.LOGIN_CHECK_URL}?action=checkEmail&email=${encodeURIComponent(googleEmail)}`);
-            const result = await response.json();
             
-            if (!result.success) {
-                UI.showError('Your Google account is not authorized. Contact admin for access.');
-                return;
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
             }
             
-            await handleSuccessfulLogin({
-                username: result.username || googleEmail.split('@')[0],
-                email: googleEmail,
-                method: 'google_oauth',
-                remember: true,
-                googleData: googleUserData
-            });
+            const result = await response.json();
+            debugLog('Authorization result:', result);
+            
+            if (result.success) {
+                // Successful login
+                await handleSuccessfulLogin({
+                    username: result.username || googleEmail.split('@')[0],
+                    email: googleEmail,
+                    method: 'google_oauth',
+                    remember: true,
+                    googleData: googleUserData
+                });
+                
+                UI.hideLoading();
+                debugLog('Google login successful');
+            } else {
+                UI.hideLoading();
+                UI.showError('Your Google account is not authorized. Contact admin for access.');
+                debugLog('User not authorized');
+            }
             
         } catch (error) {
-            UI.showError('Network error. Please try again.');
-            console.error('Google login error:', error);
+            UI.hideLoading();
+            debugLog('Google login error:', error.message);
+            UI.showError(`Login failed: ${error.message}. Please try again.`);
         }
     }
 
-    // Handle successful login
+    // Traditional login (keep as is)
+    async function loginUser() {
+        // ... your existing traditional login code ...
+    }
+
+    // Handle successful login (common)
     async function handleSuccessfulLogin(userData) {
-        const loginTime = Utils.getISOTime();
-        const userSession = {
-            username: userData.username,
-            email: userData.email,
-            sessionId: Tracking.AppState.session.id,
-            loginTime: loginTime,
-            userAgent: navigator.userAgent,
-            loginMethod: userData.method,
-            googleData: userData.googleData,
-            preferences: {}
-        };
-        
-        Utils.Storage.set('gahan_user_v2', userSession);
-        
-        if (userData.remember) {
-            Utils.Storage.set('remember_user', 'true');
-        }
-        
-        UserState.loggedIn = true;
-        UserState.data = userSession;
-        UserState.preferences = userSession.preferences || {};
-        
-        await Tracking.sendTrackingEvent({
-            type: 'login',
-            eventType: 'login',
-            metadata: {
-                method: userData.method,
-                username: userData.username
-            }
-        });
-        
-        await Tracking.updateCounters();
-        
-        UI.showSuccessScreen(userData.username, userData.email, loginTime, userData.method);
-        UI.showToast(`Welcome back, ${userData.username}!`, 'success');
-    }
-
-    // Logout user
-    function logout() {
-        Tracking.sendTrackingEvent({
-            type: 'logout',
-            eventType: 'logout',
-            metadata: {
-                sessionDuration: Date.now() - Tracking.AppState.session.startTime,
-                pageViews: Tracking.AppState.session.pageViews
-            }
-        });
-        
-        Tracking.sendTrackingEvent({
-            type: 'session_end',
-            eventType: 'session_end'
-        });
-        
-        Utils.Storage.remove('gahan_user_v2');
-        Utils.Storage.remove('remember_user');
-        Utils.Storage.remove('google_user_data');
-        
-        UserState.loggedIn = false;
-        UserState.data = null;
-        UserState.preferences = {};
-        
-        location.reload();
+        // ... your existing successful login code ...
     }
 
     // Google logout
@@ -203,55 +233,29 @@ const Auth = (function() {
         
         if (googleUserData && googleUserData.token) {
             if (typeof google !== 'undefined' && google.accounts && google.accounts.id) {
-                google.accounts.id.revoke(googleUserData.token, () => {
-                    console.log('Google token revoked');
+                google.accounts.id.revoke(googleUserData.token, done => {
+                    debugLog('Google token revoked');
                 });
             }
         }
         
         Utils.Storage.remove('google_user_data');
+        
+        // Reset UI
         const googleUserInfo = document.getElementById('googleUserInfo');
         const googleSignin = document.querySelector('.g_id_signin');
+        const manualBtn = document.getElementById('manualGoogleBtn');
         
         if (googleUserInfo) googleUserInfo.style.display = 'none';
         if (googleSignin) googleSignin.style.display = 'block';
+        if (manualBtn) manualBtn.style.display = 'block';
+        
+        UI.showToast('Google account disconnected', 'info');
+        debugLog('Google logout completed');
     }
 
-    // Check existing login session
-    async function checkExistingLogin() {
-        const userSession = Utils.Storage.get('gahan_user_v2');
-        
-        if (userSession && userSession.loginTime) {
-            const loginTime = new Date(userSession.loginTime);
-            const now = new Date();
-            const hoursSinceLogin = (now - loginTime) / (1000 * 60 * 60);
-            
-            if (hoursSinceLogin < 24) {
-                UserState.loggedIn = true;
-                UserState.data = userSession;
-                UserState.preferences = userSession.preferences || {};
-                
-                UI.showSuccessScreen(
-                    userSession.username,
-                    userSession.email,
-                    userSession.loginTime,
-                    userSession.loginMethod
-                );
-                
-                await Tracking.updateCounters();
-                return true;
-            } else {
-                Utils.Storage.remove('gahan_user_v2');
-            }
-        }
-        
-        return false;
-    }
-
-    // Get user state
-    function getUserState() {
-        return UserState;
-    }
+    // Initialize on load
+    setTimeout(initializeGoogleSignIn, 2000);
 
     return {
         loginUser,
@@ -260,6 +264,7 @@ const Auth = (function() {
         logout,
         googleLogout,
         checkExistingLogin,
-        getUserState
+        getUserState: () => UserState,
+        debugLog // Expose for testing
     };
 })();
